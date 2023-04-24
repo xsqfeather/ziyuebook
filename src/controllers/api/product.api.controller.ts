@@ -1,4 +1,4 @@
-import { controller, get, options, put } from "hapi-decorators";
+import { controller, get, options } from "hapi-decorators";
 import {
   MController,
   ListData,
@@ -37,43 +37,4 @@ export class ProductApiController extends MController {
     notes: "测试",
   })
   async checkExcelInputState(req: Request): Promise<any> {}
-
-  @put("/put_from_excel")
-  @options({
-    description: "从excel导入商品",
-    notes: "返回被更新的文章ID",
-    tags: ["api", "商品"],
-    auth: {
-      strategies: ["jwt"],
-      scope: ["admin"],
-    },
-    payload: {
-      output: "stream",
-      parse: true,
-      maxBytes: 1024 * 1024 * 100, //100m
-      allow: "multipart/form-data",
-      multipart: {
-        output: "stream",
-      },
-    },
-    validate: {
-      failAction: (request, h, err) => {
-        console.error(err);
-
-        throw err;
-      },
-    },
-    plugins: {
-      "hapi-swagger": {
-        payloadType: "form",
-      },
-    },
-  })
-  async putFromExcel(req: Request): Promise<string[]> {
-    try {
-      return this.productService.putCreateExcel(req.payload);
-    } catch (error) {
-      console.error(error);
-    }
-  }
 }

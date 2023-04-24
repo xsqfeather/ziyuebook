@@ -73,7 +73,6 @@ export class XianProductService {
         const detail = await this.getProductDetail(xianProduct.product_id);
         product.onXian = true;
         product.xian = detail;
-        product.ISBN = detail?.book_data?.isbn;
         product.cover = detail?.images[0];
         product.bookData = detail?.book_data;
         await product.save();
