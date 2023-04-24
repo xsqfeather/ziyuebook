@@ -7,8 +7,8 @@ import {
 } from "../../lib";
 import { Inject, Service } from "typedi";
 import { Request } from "@hapi/hapi";
-import { Product } from "models";
-import { ProductService } from "services";
+import { Product } from "../../models";
+import { ProductService } from "../../services";
 
 @Service()
 @controller("/api/products")

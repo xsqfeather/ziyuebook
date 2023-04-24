@@ -1,12 +1,12 @@
 import { controller, get, options, post } from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
-import { ListData } from "lib/types";
-import { Article } from "models";
-import { ArticleService } from "services";
+import { ListData } from "../../lib/types";
+import { Article } from "../../models";
+import { ArticleService } from "../../services";
 import { Request } from "@hapi/hapi";
-import { CreateArticleDto, CreateArticleSchema } from "dtos";
-import { ListQueryDto, ListQuerySchema } from "lib/dtos/list.query.dto";
+import { CreateArticleDto, CreateArticleSchema } from "../../dtos";
+import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
 
 @Service()
 @controller("/api/articles")
