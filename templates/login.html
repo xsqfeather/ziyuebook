@@ -1,0 +1,39 @@
+<div class="row">
+    <div class="col s12 m12 l12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m12 l12">
+
+                    <h5 class="center-align">登錄</h5>
+                    {{#if error}}
+                    <div class="row">
+                        用户名或者密码错误哦{{statusCode}}
+                    </div>
+                    {{/if}}
+                    <div class="row">
+                        <form class="col s12" action="/login" method="post">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="username" type="text" class="validate" name="username">
+                                    <label for="username">用户名</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="password" type="password" class="validate" name="password">
+                                    <label for="password">密碼</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <button class="btn waves-effect waves-light" type="submit" name="action">登入
+                                        <i class="material-icons right">send</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

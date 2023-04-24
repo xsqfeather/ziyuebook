@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>我的部落格</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/static/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="/static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+</head>
+
+<body>
+
+    <div class="navbar-fixed" id="main">
+
+
+        {{> header}}
+        <div class="container" style="flex: 1;padding-top: 5%;">
+            {{{content}}}
+        </div>
+        <footer class="page-footer teal  footer-copyright ">
+            Made by <a class="brown-text text-lighten-3" href="/about">Simon</a>
+        </footer>
+    </div>
+
+
+
+
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="/static/js/materialize.js"></script>
+    <script src="/static/js/init.js"></script>
+    <ul id="slide-out" class="sidenav">
+        <li><a href="/hot">熱門</a></li>
+        <li><a href="/tags">標籤</a></li>
+        <li><a href="/about">關於</a></li>
+        <li><a href="/search">
+                <i class="material-icons left">search</i>
+            </a></li>
+    </ul>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+node_modules
+.vscode
+yarn-error.log
+yarn.lock
+env
+.env
+level_cache
+dist
+userData
