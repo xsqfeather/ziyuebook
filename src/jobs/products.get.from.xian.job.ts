@@ -1,8 +1,9 @@
 import { Inject, Service } from "typedi";
+import Agenda, { Job } from "agenda";
+
 import { PRODUCT_JOB } from "./namespaces";
 import { AgendaService } from "../lib/types";
-import Agenda, { Job } from "agenda";
-import { XianProductService } from "services/xian.product.service";
+import { XianProductService } from "../services/xian.product.service";
 import { LevelCacheService } from "../lib/services";
 import { getAgendaMongoURI } from "../lib/config";
 
