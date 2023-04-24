@@ -511,7 +511,7 @@ export class KongProductService {
       product.bookData.newSellPrice = newSellPrice;
       product.bookData.newPrice = newPrice;
       product.bookData.price = newPrice;
-      product.price = newPrice * 1.3;
+      product.price = newPrice * 1.5;
       product.type = "book";
       await product.save();
     }
@@ -537,6 +537,7 @@ export class KongProductService {
       .replace(" ", "")
       .replace("快递", "")
       .replace("快递", "")
+      .replace("普通", "")
       .replace("包裹", "")
       .replace("挂号印刷品", "")
       .replace("无需物流", "")
