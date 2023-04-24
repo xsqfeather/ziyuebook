@@ -39,7 +39,7 @@ export class ProductsGetFromXianJob
     const levelKey = PRODUCT_JOB + this.eventName + "currentPage";
     const currentPage = await this.levelCacheService.get(levelKey);
     await this.levelCacheService.put(levelKey, +currentPage + 1);
-    this.agenda.schedule("in 20 seconds", PRODUCT_JOB + this.eventName, {
+    this.agenda.schedule("in 5 minutes", PRODUCT_JOB + this.eventName, {
       currentPage: currentPage || 1,
     });
   };

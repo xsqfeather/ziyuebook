@@ -57,28 +57,8 @@ export class XianProductService {
     }
     for (let index = 0; index < productListData?.data.length; index++) {
       const xianProduct = productListData?.data[index];
-      const product = new ProductModel({
-        xian: xianProduct,
-        xianProductId: xianProduct.product_id,
-        title: xianProduct.title,
-        price: xianProduct.price,
-        stock: xianProduct.stock,
-        onXian: false,
-      });
-      const existProduct = await ProductModel.findOne({
-        xianProductId: xianProduct.product_id,
-      });
-      if (!existProduct) {
-        console.log(xianProduct.product_id + "不存在", "创建");
-        const detail = await this.getProductDetail(xianProduct.product_id);
-        product.onXian = true;
-        product.xian = detail;
-        product.cover = detail?.images[0];
-        product.bookData = detail?.book_data;
-        await product.save();
-      } else {
-        console.log(xianProduct.product_id + "已存在", "跳过");
-      }
+
+      await this.getProductDetail(xianProduct.product_id);
     }
     if (!productListData?.data && productListData?.data?.length === 0) {
       const levelKey = PRODUCT_JOB + "FromXianList" + "currentPage";
@@ -110,22 +90,24 @@ export class XianProductService {
 
     const { data: detail } = await axios(config);
     const { data: productDetail } = detail;
-    const existProduct = await ProductModel.findOne({
-      xianProductId: productId,
-    });
-    await ProductModel.updateOne(
+    if (!productDetail.book_data?.isbn || productDetail.book_data?.isbn == "") {
+      return;
+    }
+
+    const rlt = await ProductModel.updateOne(
       {
-        xianProductId: productId,
+        "bookData.isbn": productDetail.book_data?.isbn,
       },
       {
-        $inc: {
-          getDetailTime: 1,
+        $set: {
+          onXian: true,
+          updatedAt: new Date(),
+          xian: productDetail,
+          xianProductId: productDetail.product_id,
         },
       }
     );
-    if (existProduct?.onXian) {
-      return false;
-    }
+    console.log("==========更新了", rlt.modifiedCount, "条数据==========");
 
     return productDetail;
   }

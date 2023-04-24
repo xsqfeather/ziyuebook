@@ -30,11 +30,19 @@ export class ProductApiController extends MController {
     return this.productService.getProductList(listQuery);
   }
 
-  @get("/check_excel_input_state")
+  @get("/add_to_xian")
   @options({
     tags: ["api", "商品"],
-    description: "查询商品导入状态",
-    notes: "测试",
+    description: "添加到闲管家",
+    notes: "返回闲管家",
   })
-  async checkExcelInputState(req: Request): Promise<any> {}
+  async addToXian(req: Request): Promise<any> {}
+
+  @get("/update_to_xian")
+  @options({
+    tags: ["api", "商品"],
+    description: "添加到闲管家",
+    notes: "返回闲管家",
+  })
+  async updateToXian(req: Request): Promise<any> {}
 }

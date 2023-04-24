@@ -11,7 +11,7 @@ export class ProductService extends BaseService<Product> {
     const { data, total } = await this.getListData<Product>(
       ProductModel,
       input,
-      ["title", "ISBN"]
+      ["title", "bookData.isbn", "category"]
     );
     return {
       data,

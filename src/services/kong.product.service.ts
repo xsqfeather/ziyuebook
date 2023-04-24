@@ -16,6 +16,7 @@ import {
   BeAnObject,
   IObjectWithTypegooseFunction,
 } from "@typegoose/typegoose/lib/types";
+import trimAll from "utils/trimAll";
 
 const generator = new AvatarGenerator();
 
@@ -448,8 +449,7 @@ export class KongProductService {
     for (let index = 0; index < listItems.length; index++) {
       const item = listItems[index];
       const title = await item?.innerText();
-      // console.log({ title });
-      if (title === bookData.title) {
+      if (title.includes(trimAll(bookData.title))) {
         const href = await item.getAttribute("href");
         itemDetail = await this.getItemDetailByUrl(
           href,

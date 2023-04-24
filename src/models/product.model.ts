@@ -98,7 +98,7 @@ export class XianProduct {
 @modelOptions({ options: { allowMixed: 0 } })
 export class Product extends Base {
   @prop({
-    type: XianProduct,
+    type: Object,
   })
   xian: XianProduct;
 
