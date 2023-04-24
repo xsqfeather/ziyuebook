@@ -97,7 +97,7 @@ export class KongProductService {
     await sellEle.click();
     const lastPageEle = await page.$$(".item-page");
 
-    const pageText = await lastPageEle[lastPageEle.length - 1].innerText();
+    const pageText = await lastPageEle[lastPageEle.length - 1]?.innerText();
 
     for (let pageIndex = 2; pageIndex <= +pageText; pageIndex++) {
       const listItems = await page.$$("#listBox .item");
@@ -152,7 +152,7 @@ export class KongProductService {
       const bookInfoItems = await page.$$(".detail-con-right-top .item");
       for (let index = 0; index < bookInfoItems.length; index++) {
         const bookInfoItem = bookInfoItems[index];
-        const bookInfoText = await bookInfoItem.innerText();
+        const bookInfoText = await bookInfoItem?.innerText();
         if (bookInfoText.includes("ISBN")) {
           const isbn = bookInfoText.replace("ISBN:", "").replace(" ", "");
           const productExists = await ProductModel.findOne({
@@ -326,7 +326,7 @@ export class KongProductService {
         // console.log({ bookInfoText });
       }
       const titleEle = await page.waitForSelector(".detail-title");
-      const title = await titleEle.innerText();
+      const title = await titleEle?.innerText();
 
       product.title = title;
       bookData.title = title;
@@ -447,7 +447,7 @@ export class KongProductService {
 
     for (let index = 0; index < listItems.length; index++) {
       const item = listItems[index];
-      const title = await item.innerText();
+      const title = await item?.innerText();
       // console.log({ title });
       if (title === bookData.title) {
         const href = await item.getAttribute("href");
@@ -523,11 +523,11 @@ export class KongProductService {
     await page.waitForLoadState();
 
     const priceEle = await page.waitForSelector(".now-price .now-price-text");
-    const nowPrice = await priceEle.innerText();
+    const nowPrice = await priceEle?.innerText();
     const shipPriceEle = await page.waitForSelector(
       ".carry-cont .express-wrapper"
     );
-    let shipPriceText = await shipPriceEle.innerText();
+    let shipPriceText = await shipPriceEle?.innerText();
     let shipPrice = shipPriceText
       .replace("￥", "")
       .replace(" ", "")
@@ -552,7 +552,7 @@ export class KongProductService {
 
     if (!productExists) {
       const qualityEle = await page.$(".quality .quality-desc-common");
-      quality = await qualityEle.innerText();
+      quality = await qualityEle?.innerText();
       for (let index = 0; index < 10; index++) {
         await page.waitForTimeout(150);
         await page.mouse.wheel(0, 500);
