@@ -87,37 +87,41 @@ export class KongProductService {
   };
 
   async toCategoryPage(url: string) {
-    beginTime = new Date();
-    await this.checkToLogin();
-    const context = await this.getBrowser();
-    const page = await context.newPage();
-    await page.goto(url);
-    const listEle = page.getByText("图书条目");
-    await listEle.click();
-    const sellEle = page.getByText("销量");
-    await sellEle.click();
-    const lastPageEle = await page.$$(".item-page");
+    try {
+      beginTime = new Date();
+      await this.checkToLogin();
+      const context = await this.getBrowser();
+      const page = await context.newPage();
+      await page.goto(url);
+      const listEle = page.getByText("图书条目");
+      await listEle.click();
+      const sellEle = page.getByText("销量");
+      await sellEle.click();
+      const lastPageEle = await page.$$(".item-page");
 
-    const pageText = await lastPageEle[lastPageEle.length - 1]?.innerText();
+      const pageText = await lastPageEle[lastPageEle.length - 1]?.innerText();
 
-    for (let pageIndex = 2; pageIndex <= +pageText; pageIndex++) {
-      const listItems = await page.$$("#listBox .item");
-      for (let index = 0; index < listItems.length; index++) {
-        beginTime = new Date();
-        const item = listItems[index];
-        const itemHtml = await item.$(".title a");
-        const detailUrl = await itemHtml.getAttribute("href");
-        try {
-          await this.getProductFromDetail(detailUrl);
-        } catch (error) {
-          console.error(error);
+      for (let pageIndex = 2; pageIndex <= +pageText; pageIndex++) {
+        const listItems = await page.$$("#listBox .item");
+        for (let index = 0; index < listItems.length; index++) {
+          beginTime = new Date();
+          const item = listItems[index];
+          const itemHtml = await item.$(".title a");
+          const detailUrl = await itemHtml.getAttribute("href");
+          try {
+            await this.getProductFromDetail(detailUrl);
+          } catch (error) {
+            console.error(error);
+          }
+          // break;
         }
+        await page.goto(`${url}/v1w${pageIndex}`);
         // break;
       }
-      await page.goto(`${url}/v1w${pageIndex}`);
-      // break;
+      await page.close();
+    } catch (error) {
+      console.error(error);
     }
-    await page.close();
   }
 
   async getProductFromDetail(url: string) {
