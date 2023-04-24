@@ -44,6 +44,6 @@ export class ProductDetailFromXianJob implements AgendaService<Product> {
     }).sort({
       updatedAt: 1,
     });
-    this.agenda.schedule("in 5 seconds", PRODUCT_JOB + this.eventName, product);
+    this.agenda.schedule("in 1 seconds", PRODUCT_JOB + this.eventName, product);
   };
 }

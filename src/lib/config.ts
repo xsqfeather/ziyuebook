@@ -10,29 +10,7 @@ export const serverConfig: ServerOptions = {
   port: config["APP_PORT"] || 4000,
   host: "0.0.0.0",
   routes: {
-    cors: {
-      origin: ["*"], // an array of origins or 'ignore'
-      headers: [
-        "Accept",
-        "Authorization",
-        "authorization",
-        "www-authorization",
-        "Content-Type",
-        "If-None-Match",
-        "Set-Cookie",
-      ], // an array of strings - 'Access-Control-Allow-Headers'
-      exposedHeaders: [
-        "WWW-Authenticate",
-        "Server-Authorization",
-        "Set-Cookie",
-        "authorization",
-        "Cookie",
-      ], // an array of exposed headers - 'Access-Control-Expose-Headers',
-      additionalExposedHeaders: ["Accept"], // an array of additional exposed headers
-      maxAge: 6000000,
-
-      credentials: true, // boolean - 'Access-Control-Allow-Credentials'
-    },
+    cors: true,
     files: {
       relativeTo: process.cwd() + "/public",
     },

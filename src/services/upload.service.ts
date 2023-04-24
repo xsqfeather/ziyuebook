@@ -33,7 +33,7 @@ export class UploadService {
           if (err) {
             rej(err);
           }
-          res(data.Location);
+          res(data?.Location);
         }
       );
     });
