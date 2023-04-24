@@ -1,6 +1,6 @@
 import { CreateProductCategoryDto } from "dtos";
 import { GetListQuery, ListData } from "lib/types";
-import { ProductCategory, ProductCategoryModel } from "models";
+import { ProductCategory, ProductCategoryModel } from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
 

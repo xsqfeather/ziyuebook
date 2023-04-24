@@ -2,15 +2,15 @@ import { Inject, Service } from "typedi";
 import { BrowserContext, Page, chromium } from "playwright";
 import path from "path";
 import { Book, Product, ProductCategoryModel, ProductModel } from "models";
-import { BookAuthorModel } from "models/book.author.model";
+import { BookAuthorModel } from "../models/book.author.model";
 
 import { AvatarGenerator } from "random-avatar-generator";
-import { BookPublisherModel } from "models/book.publisher.model";
+import { BookPublisherModel } from "../models/book.publisher.model";
 import moment from "moment";
 import { ProductCategoryService } from "./product.category.service";
 import axios from "axios";
 import { UploadService } from "./upload.service";
-import { BookSeriesModel } from "models/book.series.model";
+import { BookSeriesModel } from "../models/book.series.model";
 import { Document, Types } from "mongoose";
 import {
   BeAnObject,

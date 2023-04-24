@@ -3,7 +3,7 @@ import {
   getTTBucketRegion,
   getTTSecretId,
   getTTSecretKey,
-} from "lib/config";
+} from "../lib/config";
 import { Service } from "typedi";
 
 import COS from "cos-nodejs-sdk-v5";

@@ -25,12 +25,12 @@ const KongCategoryUrls = [
   "https://item.kongfz.com/Cjiaocai/",
 ];
 import Agenda, { Job } from "agenda";
-import { AgendaService } from "lib";
-import { getAgendaMongoURI } from "lib/config";
+import { AgendaService } from "../lib";
+import { getAgendaMongoURI } from "../lib/config";
 import { PRODUCT_JOB } from "./namespaces";
 import { Inject, Service } from "typedi";
-import { LevelCacheService } from "lib/services";
-import { KongProductService } from "services/kong.product.service";
+import { LevelCacheService } from "../lib/services";
+import { KongProductService } from "../services/kong.product.service";
 
 @Service()
 export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
