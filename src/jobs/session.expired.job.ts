@@ -3,7 +3,7 @@ import { SESSION_JOB } from "./namespaces";
 import { AgendaService } from "../lib/types";
 import { Session, SessionModel } from "../models/session.model";
 import Agenda, { Job } from "agenda";
-import { getAgendaMongoURI } from "lib/config";
+import { getAgendaMongoURI } from "../lib/config";
 
 @Service()
 export class SessionExpiredJob implements AgendaService<Session> {

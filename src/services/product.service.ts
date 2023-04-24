@@ -1,9 +1,7 @@
-import xlsx from "node-xlsx";
-import { Product, ProductModel } from "models";
+import { Product, ProductModel } from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
 import { GetListQuery, ListData } from "../lib";
-import trimAll from "utils/trimAll";
 
 @Service()
 export class ProductService extends BaseService<Product> {

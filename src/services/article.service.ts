@@ -1,6 +1,6 @@
-import { CreateArticleDto } from "dtos";
-import { GetListQuery, ListData } from "lib/types";
-import { Article, ArticleModel } from "models";
+import { CreateArticleDto } from "../dtos";
+import { GetListQuery, ListData } from "../lib/types";
+import { Article, ArticleModel } from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
 

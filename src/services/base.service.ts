@@ -1,7 +1,6 @@
 import { ReturnModelType } from "@typegoose/typegoose";
 import { BeAnObject } from "@typegoose/typegoose/lib/types";
 import { GetListQuery, ListData } from "../lib/types";
-import { FilterQuery } from "mongoose";
 import { Service } from "typedi";
 
 @Service()

@@ -1,10 +1,10 @@
 import Agenda, { Job } from "agenda";
-import { AgendaService } from "lib";
-import { Product, ProductModel } from "models";
+import { AgendaService } from "../lib";
+import { Product, ProductModel } from "../models";
 import { Inject, Service } from "typedi";
 import { PRODUCT_JOB } from "./namespaces";
-import { XianProductService } from "services/xian.product.service";
-import { getAgendaMongoURI } from "lib/config";
+import { XianProductService } from "../services/xian.product.service";
+import { getAgendaMongoURI } from "../lib/config";
 
 @Service()
 export class ProductDetailFromXianJob implements AgendaService<Product> {

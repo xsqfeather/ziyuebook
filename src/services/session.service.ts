@@ -7,7 +7,7 @@ import JWT from "jsonwebtoken";
 import { getJwtSecret } from "../lib/config";
 import { SessionExpiredJob } from "../jobs/session.expired.job";
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { SessionLogJob } from "jobs/session.log.job";
+import { SessionLogJob } from "../jobs/session.log.job";
 
 @Service()
 export class SessionService {

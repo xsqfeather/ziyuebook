@@ -1,8 +1,8 @@
 import axios from "axios";
 import { MD5 } from "crypto-js";
-import { PRODUCT_JOB } from "jobs/namespaces";
-import { LevelCacheService } from "lib/services";
-import { ProductModel } from "models/product.model";
+import { PRODUCT_JOB } from "../jobs/namespaces";
+import { LevelCacheService } from "../lib/services";
+import { ProductModel } from "../models/product.model";
 import moment from "moment";
 
 import { Inject, Service } from "typedi";
