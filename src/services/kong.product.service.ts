@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import { BrowserContext, Page, chromium } from "playwright";
 import path from "path";
-import { Book, Product, ProductCategoryModel, ProductModel } from "models";
+import { Book, Product, ProductCategoryModel, ProductModel } from "../models";
 import { BookAuthorModel } from "../models/book.author.model";
 
 import { AvatarGenerator } from "random-avatar-generator";
