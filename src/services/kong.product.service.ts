@@ -456,12 +456,16 @@ export class KongProductService {
       const title = await item?.innerText();
       if (title.includes(trimAll(bookData.title))) {
         const href = await item.getAttribute("href");
-        itemDetail = await this.getItemDetailByUrl(
-          href,
-          product.id,
-          bookData.isbn
-        );
-        break;
+        try {
+          itemDetail = await this.getItemDetailByUrl(
+            href,
+            product.id,
+            bookData.isbn
+          );
+          break;
+        } catch (error) {
+          console.error({ error });
+        }
       }
     }
     const { itemImages, nowPrice, shipPrice, quality } = itemDetail;
@@ -512,7 +516,9 @@ export class KongProductService {
                 newShipPrice: newShipPrice,
                 newSellPrice: newSellPrice,
               },
-              price: (newSellPrice + newShipPrice) * 1.5,
+              profitRate:
+                (productToPut.price - (newSellPrice + newShipPrice)) /
+                productToPut.price,
               updatedAt: new Date(),
             },
           }
@@ -525,8 +531,8 @@ export class KongProductService {
         );
         return;
       } else {
-        productToPut.needToAdjustLatestPrice = false;
         console.log("价格一致，不需要调整======================");
+        productToPut.needToAdjustLatestPrice = false;
 
         await ProductModel.updateOne(
           { id: productToPut.id },
@@ -542,9 +548,10 @@ export class KongProductService {
                 newShipPrice: newShipPrice,
                 newSellPrice: newSellPrice,
               },
-              price: (newSellPrice + newShipPrice) * 1.5,
+              profitRate:
+                (productToPut.price - (newSellPrice + newShipPrice)) /
+                productToPut.price,
               needToAdjustLatestPrice: false,
-              updatedAt: new Date(),
             },
           }
         );
@@ -573,6 +580,8 @@ export class KongProductService {
       product.bookData.newPrice = newPrice;
       product.bookData.price = newPrice;
       product.price = newPrice * 1.5;
+      product.profitRate =
+        (product.price - (newSellPrice + newShipPrice)) / product.price;
       product.type = "book";
       await product.save();
     }

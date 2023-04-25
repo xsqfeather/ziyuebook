@@ -23,4 +23,8 @@ export class ProductService extends BaseService<Product> {
     const product = await ProductModel.create(input);
     return product;
   }
+
+  public async getProductById(id: string): Promise<Product> {
+    return ProductModel.findOne({ id });
+  }
 }

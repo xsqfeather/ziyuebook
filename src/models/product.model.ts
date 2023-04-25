@@ -137,6 +137,9 @@ export class Product extends Base {
   })
   bookData?: Book;
 
+  @prop({ type: Number, default: 0 })
+  profitRate: number;
+
   @prop({
     type: String,
     default: false,

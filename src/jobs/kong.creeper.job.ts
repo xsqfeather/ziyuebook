@@ -70,6 +70,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       this.started = true;
     }
     const currentIndex = await this.levelCacheService.get(this.levelKey);
+    console.log({ currentIndex });
     const categoryUrl = KongCategoryUrls[Number(currentIndex || "0")];
     await this.levelCacheService.put(
       this.levelKey,

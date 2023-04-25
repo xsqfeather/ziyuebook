@@ -5,6 +5,7 @@ import {
   ArticleApiController,
   HomeController,
   ProductApiController,
+  ProductCategoryApiController,
   SessionApiController,
   UserApiController,
 } from "./controllers";
@@ -16,6 +17,7 @@ startApp({
     SessionApiController,
     UserApiController,
     ProductApiController,
+    ProductCategoryApiController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,
