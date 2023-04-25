@@ -186,6 +186,9 @@ export class Product extends Base {
 
   @prop({ type: Boolean, default: false })
   needToAdjustLatestPrice?: boolean;
+
+  @prop({ type: Date, default: Date.now })
+  lastCheckTime?: Date;
 }
 
 export const ProductModel = getModelForClass(Product);
