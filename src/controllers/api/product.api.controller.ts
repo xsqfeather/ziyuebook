@@ -1,4 +1,4 @@
-import { controller, get, options } from "hapi-decorators";
+import { controller, get, options, route } from "hapi-decorators";
 import {
   MController,
   ListData,
@@ -80,5 +80,16 @@ export class ProductApiController extends MController {
   async detail(req: Request): Promise<Product> {
     const id = req.params.id;
     return this.productService.getProductById(id);
+  }
+
+  @route("delete", "/{id}")
+  @options({
+    tags: ["api", "商品"],
+    description: "删除商品",
+    notes: "测试",
+  })
+  async delete(req: Request): Promise<any> {
+    const id = req.params.id;
+    return this.productService.deleteProductById(id);
   }
 }

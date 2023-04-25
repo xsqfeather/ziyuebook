@@ -94,16 +94,23 @@ export class XianProductService {
       return;
     }
 
+    const exitsProduct = await ProductModel.findOne({
+      "bookData.isbn": productDetail.book_data?.isbn,
+    });
+
     const rlt = await ProductModel.updateOne(
       {
         "bookData.isbn": productDetail.book_data?.isbn,
-        onXian: false,
       },
       {
         $set: {
           onXian: true,
           updatedAt: new Date(),
           xian: productDetail,
+          price: productDetail.price,
+          profitRate:
+            (productDetail.price - exitsProduct?.bookData?.newPrice) /
+            productDetail.price,
           xianProductId: productDetail.product_id,
         },
       }

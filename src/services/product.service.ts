@@ -2,6 +2,7 @@ import { Product, ProductModel } from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
 import { GetListQuery, ListData } from "../lib";
+import Boom from "@hapi/boom";
 
 @Service()
 export class ProductService extends BaseService<Product> {
@@ -26,5 +27,14 @@ export class ProductService extends BaseService<Product> {
 
   public async getProductById(id: string): Promise<Product> {
     return ProductModel.findOne({ id });
+  }
+  public async deleteProductById(id: string) {
+    const product = await ProductModel.findOne({ id });
+    if (!product) {
+      throw Boom.notFound("商品不存在");
+    }
+    await ProductModel.deleteMany({ id });
+
+    return product;
   }
 }
