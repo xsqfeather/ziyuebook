@@ -56,12 +56,11 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       const { categoryUrl } = job.attrs.data;
       console.log({ categoryUrl });
       await this.kongProductService.toCategoryPage(categoryUrl);
-      await this.start();
       done?.();
     } catch (error) {
       console.error(error);
-      await this.start();
     }
+    await this.start();
   };
 
   start = async () => {
