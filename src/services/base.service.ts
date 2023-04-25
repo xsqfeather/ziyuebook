@@ -16,10 +16,6 @@ export class BaseService<T> {
         };
       });
 
-    console.log({ searchFields });
-
-    console.log({ filter });
-
     if ((filter as any).q && searchFields.length > 0) {
       filterArray.push({
         $or: searchFields.map((field) => {
@@ -44,11 +40,11 @@ export class BaseService<T> {
     searchFields: string[] = []
   ) {
     const { filter, sort, skip, limit } = input;
-    console.log({
-      filter: JSON.stringify(this.parseFilter(filter, searchFields)),
-    });
+
+    const paredFilter = this.parseFilter(filter, searchFields);
+    console.log({ paredFilter: JSON.stringify(paredFilter) });
     const data = await model
-      .find(this.parseFilter(filter, searchFields))
+      .find(paredFilter)
       .limit(limit)
       .skip(skip)
       .sort(sort);

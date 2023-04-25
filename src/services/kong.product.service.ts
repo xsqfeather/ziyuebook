@@ -88,7 +88,6 @@ export class KongProductService {
 
   async toCategoryPage(url: string) {
     try {
-      beginTime = new Date();
       await this.checkToLogin();
       const context = await this.getBrowser();
       const page = await context.newPage();
@@ -126,6 +125,7 @@ export class KongProductService {
 
   async getProductFromDetail(url: string) {
     console.log("开始在", url, "获取数据");
+    beginTime = new Date();
     const context = await this.getBrowser();
     const page = await context.newPage();
     await page.goto(url);
@@ -163,6 +163,7 @@ export class KongProductService {
           const productExists = await ProductModel.findOne({
             "bookData.isbn": isbn,
           });
+          bookData.isbn = isbn;
           if (productExists) {
             return await this.getPriceByCurrentPage(
               page,
@@ -492,15 +493,70 @@ export class KongProductService {
         productToPut.bookData?.price.toFixed(2) !==
         (newSellPrice + newShipPrice).toFixed(2)
       ) {
-        console.log("价格不一致，需要调整======================");
+        console.log(
+          "价格不一致，需要调整======================",
+          productToPut.bookData?.price.toFixed(2),
+          (newSellPrice + newShipPrice).toFixed(2)
+        );
         productToPut.needToAdjustLatestPrice = true;
+
+        await ProductModel.updateOne(
+          { id: productToPut.id },
+          {
+            $set: {
+              needToAdjustLatestPrice: true,
+              lastCheckTime: new Date(),
+              images: product.images,
+              bookData: {
+                ...productToPut.bookData,
+                newShipPrice: newShipPrice,
+                newSellPrice: newSellPrice,
+              },
+              price: (newSellPrice + newShipPrice) * 1.5,
+              updatedAt: new Date(),
+            },
+          }
+        );
+        endTime = new Date();
+        console.log(
+          "耗时",
+          (endTime.getTime() - beginTime.getTime()) / 1000,
+          "秒"
+        );
+        return;
       } else {
-        console.log("价格一致，不需要调整======================");
         productToPut.needToAdjustLatestPrice = false;
+        console.log("价格一致，不需要调整======================");
+
+        await ProductModel.updateOne(
+          { id: productToPut.id },
+          {
+            $set: {
+              images: product.images,
+              lastCheckTime: new Date(),
+              bookData: {
+                ...productToPut.bookData,
+                sellPrice: newSellPrice,
+                shipPrice: newShipPrice,
+                price: newSellPrice + newShipPrice,
+                newShipPrice: newShipPrice,
+                newSellPrice: newSellPrice,
+              },
+              price: (newSellPrice + newShipPrice) * 1.5,
+              needToAdjustLatestPrice: false,
+              updatedAt: new Date(),
+            },
+          }
+        );
       }
-      productToPut.lastCheckTime = new Date();
-      productToPut.appearance = quality;
-      await productToPut.save();
+      endTime = new Date();
+      console.log(
+        "耗时",
+        (endTime.getTime() - beginTime.getTime()) / 1000,
+        "秒"
+      );
+
+      return;
     } else {
       product.bookData = bookData;
       product.appearance = quality;

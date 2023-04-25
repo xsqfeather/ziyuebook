@@ -9,7 +9,7 @@ import { Product, ProductModel } from "../models";
 
 @Service()
 export class KongPriceJob implements AgendaService<Product> {
-  eventName = "KongCreeperJob";
+  eventName = "KongPriceJob";
 
   levelKey = PRODUCT_JOB + this.eventName + "categoryUrlIndex";
 
@@ -35,7 +35,9 @@ export class KongPriceJob implements AgendaService<Product> {
         "是否有新价格",
         product.originUrl
       );
-      await this.kongProductService.getProductFromDetail(product.originUrl);
+      if (product) {
+        await this.kongProductService.getProductFromDetail(product.originUrl);
+      }
       await this.start();
       done?.();
     } catch (error) {
@@ -52,7 +54,9 @@ export class KongPriceJob implements AgendaService<Product> {
       },
     }).sort({
       lastCheckTime: 1,
+      updatedAt: 1,
     });
+
     await this.agenda.schedule("in 50 seconds", this.eventName, product);
   };
 }

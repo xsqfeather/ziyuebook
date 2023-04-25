@@ -1,4 +1,10 @@
-import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
+import {
+  Index,
+  getModelForClass,
+  index,
+  modelOptions,
+  prop,
+} from "@typegoose/typegoose";
 import { getSchema } from "joi-typescript-validator";
 import { Base } from "../lib/models";
 import { SchemaTypes } from "mongoose";
@@ -96,6 +102,12 @@ export class XianProduct {
   report_data: any; //这个字段待定填写
 }
 @modelOptions({ options: { allowMixed: 0 } })
+@index({
+  title: "text",
+  "bookData.title": "text",
+  needToAdjustLatestPrice: 1,
+  originUrl: 1,
+})
 export class Product extends Base {
   @prop({
     type: Object,
@@ -185,7 +197,7 @@ export class Product extends Base {
   categoryId?: string;
 
   @prop({ type: Boolean, default: false })
-  needToAdjustLatestPrice?: boolean;
+  needToAdjustLatestPrice: boolean;
 
   @prop({ type: Date, default: Date.now })
   lastCheckTime?: Date;
