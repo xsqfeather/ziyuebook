@@ -181,7 +181,7 @@ export class KongProductService {
             await insideImagesPage.goto(href);
             await insideImagesPage.waitForLoadState();
             for (let index = 0; index < 20; index++) {
-              await insideImagesPage.waitForTimeout(150);
+              await insideImagesPage.waitForTimeout(500);
               await insideImagesPage.mouse.wheel(0, 500);
             }
             const imageEles = await insideImagesPage.$$("a img");
@@ -623,7 +623,7 @@ export class KongProductService {
       const qualityEle = await page.$(".quality .quality-desc-common");
       quality = await qualityEle?.innerText();
       for (let index = 0; index < 20; index++) {
-        await page.waitForTimeout(150);
+        await page.waitForTimeout(500);
         await page.mouse.wheel(0, 500);
       }
 
