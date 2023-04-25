@@ -45,7 +45,12 @@ export class KongPriceJob implements AgendaService<Product> {
 
   start = async () => {
     await this.agenda.start();
-    const product = await ProductModel.findOne({}).sort({
+    const product = await ProductModel.findOne({
+      originUrl: {
+        $exists: true,
+        $ne: "",
+      },
+    }).sort({
       lastCheckTime: 1,
     });
     await this.agenda.schedule("in 50 seconds", this.eventName, product);
