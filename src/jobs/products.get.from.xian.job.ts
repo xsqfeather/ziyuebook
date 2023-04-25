@@ -38,7 +38,7 @@ export class ProductsGetFromXianJob
   };
   start = async () => {
     if (!this.started) {
-      await this.start();
+      await this.agenda.start();
       this.started = true;
     }
     await this.agenda.start();

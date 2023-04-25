@@ -49,7 +49,7 @@ export class KongPriceJob implements AgendaService<Product> {
 
   start = async () => {
     if (!this.started) {
-      await this.start();
+      await this.agenda.start();
       this.started = true;
     }
     const product = await ProductModel.findOne({

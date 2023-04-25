@@ -66,7 +66,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
 
   start = async () => {
     if (!this.started) {
-      await this.start();
+      await this.agenda.start();
       this.started = true;
     }
     const currentIndex = await this.levelCacheService.get(this.levelKey);
