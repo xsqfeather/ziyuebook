@@ -1,4 +1,15 @@
 const KongCategoryUrls = [
+  "https://item.kongfz.com/Ckexue/",
+  "https://item.kongfz.com/Cyiyao/",
+  "https://item.kongfz.com/Cjiaocai/",
+  "https://item.kongfz.com/Cguoxue/",
+  "https://item.kongfz.com/Cscyjs/",
+  "https://item.kongfz.com/Cxiaoshuo/",
+  "https://item.kongfz.com/Cwenxue/",
+  "https://item.kongfz.com/Cyuyan/",
+  "https://item.kongfz.com/Clishi/",
+  "https://item.kongfz.com/Cdili/",
+  "https://item.kongfz.com/Cyishu/",
   "https://item.kongfz.com/Czhengzhi/",
   "https://item.kongfz.com/Cfalv/",
   "https://item.kongfz.com/Cjunshi/",
@@ -12,17 +23,6 @@ const KongCategoryUrls = [
   "https://item.kongfz.com/Ctiyu/",
   "https://item.kongfz.com/Cjishu/",
   "https://item.kongfz.com/Cjisuanji/",
-  "https://item.kongfz.com/Ckexue/",
-  "https://item.kongfz.com/Cyiyao/",
-  "https://item.kongfz.com/Cjiaocai/",
-  "https://item.kongfz.com/Cguoxue/",
-  "https://item.kongfz.com/Cscyjs/",
-  "https://item.kongfz.com/Cxiaoshuo/",
-  "https://item.kongfz.com/Cwenxue/",
-  "https://item.kongfz.com/Cyuyan/",
-  "https://item.kongfz.com/Clishi/",
-  "https://item.kongfz.com/Cdili/",
-  "https://item.kongfz.com/Cyishu/",
 ];
 import Agenda, { Job } from "agenda";
 import { AgendaService } from "../lib";
