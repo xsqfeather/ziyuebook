@@ -11,6 +11,8 @@ import { Product, ProductModel } from "../models";
 export class KongPriceJob implements AgendaService<Product> {
   eventName = "KongPriceJob";
 
+  started = false;
+
   levelKey = PRODUCT_JOB + this.eventName + "categoryUrlIndex";
 
   agenda = new Agenda({
@@ -46,7 +48,10 @@ export class KongPriceJob implements AgendaService<Product> {
   };
 
   start = async () => {
-    await this.agenda.start();
+    if (!this.started) {
+      await this.start();
+      this.started = true;
+    }
     const product = await ProductModel.findOne({
       originUrl: {
         $exists: true,

@@ -35,6 +35,7 @@ import { KongProductService } from "../services/kong.product.service";
 @Service()
 export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   eventName = "KongCreeperJob";
+  started = false;
 
   levelKey = PRODUCT_JOB + this.eventName + "categoryUrlIndex";
 
@@ -64,7 +65,10 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   };
 
   start = async () => {
-    await this.agenda.start();
+    if (!this.started) {
+      await this.start();
+      this.started = true;
+    }
     const currentIndex = await this.levelCacheService.get(this.levelKey);
     const categoryUrl = KongCategoryUrls[Number(currentIndex || "0")];
     await this.levelCacheService.put(

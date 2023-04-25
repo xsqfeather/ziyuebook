@@ -21,6 +21,7 @@ export class ProductsGetFromXianJob
   agenda = new Agenda({
     db: { address: getAgendaMongoURI(), collection: "fromXianListJobs" },
   });
+  started = false;
   constructor() {
     this.agenda.define(PRODUCT_JOB + this.eventName, this.handle);
   }
@@ -36,6 +37,10 @@ export class ProductsGetFromXianJob
     }
   };
   start = async () => {
+    if (!this.started) {
+      await this.start();
+      this.started = true;
+    }
     await this.agenda.start();
     const levelKey = PRODUCT_JOB + this.eventName + "currentPage";
     const currentPage = await this.levelCacheService.get(levelKey);
