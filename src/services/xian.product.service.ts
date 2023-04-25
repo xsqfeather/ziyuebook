@@ -97,6 +97,7 @@ export class XianProductService {
     const rlt = await ProductModel.updateOne(
       {
         "bookData.isbn": productDetail.book_data?.isbn,
+        onXian: false,
       },
       {
         $set: {
