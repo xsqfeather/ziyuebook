@@ -42,6 +42,7 @@ export class KongPriceJob implements AgendaService<Product> {
       done?.();
     } catch (error) {
       console.error(error);
+      await this.start();
     }
   };
 

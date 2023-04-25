@@ -60,6 +60,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       done?.();
     } catch (error) {
       console.error(error);
+      await this.start();
     }
   };
 
