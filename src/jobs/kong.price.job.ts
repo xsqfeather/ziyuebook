@@ -48,6 +48,6 @@ export class KongPriceJob implements AgendaService<Product> {
     const product = await ProductModel.findOne({}).sort({
       lastCheckTime: 1,
     });
-    await this.agenda.schedule("in 60 seconds", this.eventName, product);
+    await this.agenda.schedule("in 50 seconds", this.eventName, product);
   };
 }
