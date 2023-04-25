@@ -515,6 +515,7 @@ export class KongProductService {
                 ...productToPut.bookData,
                 newShipPrice: newShipPrice,
                 newSellPrice: newSellPrice,
+                newPrice: newSellPrice + newShipPrice,
               },
               profitRate:
                 (productToPut.price - (newSellPrice + newShipPrice)) /
@@ -544,6 +545,7 @@ export class KongProductService {
                 ...productToPut.bookData,
                 sellPrice: newSellPrice,
                 shipPrice: newShipPrice,
+                newPrice: newSellPrice + newShipPrice,
                 price: newSellPrice + newShipPrice,
                 newShipPrice: newShipPrice,
                 newSellPrice: newSellPrice,
