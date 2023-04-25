@@ -129,6 +129,13 @@ export class KongProductService {
     const context = await this.getBrowser();
     const page = await context.newPage();
     await page.goto(url);
+    const priceArea = await page.waitForSelector("#priceOrder");
+    await priceArea.click();
+    const sortArea = await page.waitForSelector(
+      "#priceOrder .price-select-box a:first-child"
+    );
+    await sortArea.click();
+    await page.waitForLoadState();
     try {
       const product = new ProductModel();
       const images: string[] = [];
@@ -409,13 +416,6 @@ export class KongProductService {
         return await page.close();
       }
 
-      const priceArea = await page.waitForSelector("#priceOrder");
-      await priceArea.click();
-      const sortArea = await page.waitForSelector(
-        "#priceOrder .price-select-box a:first-child"
-      );
-      await sortArea.click();
-      await page.waitForLoadState();
       product.originUrl = page.url();
       await this.getPriceByCurrentPage(
         page,
