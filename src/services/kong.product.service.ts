@@ -167,22 +167,10 @@ export class KongProductService {
         const bookInfoText = await bookInfoItem?.innerText();
         if (bookInfoText.includes("ISBN")) {
           const isbn = bookInfoText.replace("ISBN:", "").replace(" ", "");
-          const productExists = await ProductModel.findOne({
-            "bookData.isbn": isbn,
-          });
-          bookData.isbn = isbn;
-          if (productExists) {
-            return await this.getPriceByCurrentPage(
-              page,
-              bookData,
-              product,
-              images,
-              insideImages
-            );
-          }
           bookData.isbn = isbn;
         }
         if (bookInfoText.includes("插图图片")) {
+          //插图方式
           const imagesEle = await bookInfoItem.$("a");
           const insideImagesPage = await this.context.newPage();
           try {
@@ -192,6 +180,10 @@ export class KongProductService {
             // console.log("开始获取图片", href);
             await insideImagesPage.goto(href);
             await insideImagesPage.waitForLoadState();
+            for (let index = 0; index < 20; index++) {
+              await insideImagesPage.waitForTimeout(150);
+              await insideImagesPage.mouse.wheel(0, 500);
+            }
             const imageEles = await insideImagesPage.$$("a img");
             for (let index = 0; index < imageEles.length; index++) {
               const element = imageEles[index];
@@ -630,7 +622,7 @@ export class KongProductService {
     if (!productExists) {
       const qualityEle = await page.$(".quality .quality-desc-common");
       quality = await qualityEle?.innerText();
-      for (let index = 0; index < 10; index++) {
+      for (let index = 0; index < 20; index++) {
         await page.waitForTimeout(150);
         await page.mouse.wheel(0, 500);
       }
