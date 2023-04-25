@@ -492,8 +492,13 @@ export class KongProductService {
         productToPut.bookData?.price.toFixed(2) !==
         (newSellPrice + newShipPrice).toFixed(2)
       ) {
+        console.log("价格不一致，需要调整======================");
         productToPut.needToAdjustLatestPrice = true;
+      } else {
+        console.log("价格一致，不需要调整======================");
+        productToPut.needToAdjustLatestPrice = false;
       }
+      productToPut.lastCheckTime = new Date();
       productToPut.appearance = quality;
       await productToPut.save();
     } else {
