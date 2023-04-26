@@ -43,6 +43,8 @@ export class KongPriceJob implements AgendaService<Product> {
       done?.();
     } catch (error) {
       console.error(error);
+      await this.agenda.stop();
+      this.started = false;
     }
     await this.start();
   };
@@ -62,6 +64,6 @@ export class KongPriceJob implements AgendaService<Product> {
       updatedAt: 1,
     });
 
-    await this.agenda.schedule("in 5 seconds", this.eventName, product);
+    await this.agenda.schedule("in 15 minutes", this.eventName, product);
   };
 }

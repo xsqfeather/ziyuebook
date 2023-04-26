@@ -60,6 +60,8 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       done?.();
     } catch (error) {
       console.error(error);
+      await this.agenda.stop();
+      this.started = false;
     }
     await this.start();
   };
@@ -76,7 +78,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       this.levelKey,
       categoryUrl ? Number(currentIndex || "0") + 1 : 0
     );
-    this.agenda.now(this.eventName, {
+    this.agenda.schedule("in 20 minutes", this.eventName, {
       categoryUrl: categoryUrl || KongCategoryUrls[0],
     });
   };

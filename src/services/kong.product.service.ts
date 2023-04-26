@@ -35,7 +35,7 @@ export class KongProductService {
   uploadService: UploadService;
 
   checkToLogin = async () => {
-    const context = await this.getBrowser();
+    let context = await this.getBrowser();
     const homePage = await context.newPage();
     await homePage.goto("https://kongfz.com/");
     const nicknameEle = await homePage.waitForSelector("#nickName .info-text");
@@ -45,6 +45,7 @@ export class KongProductService {
       await homePage.close();
       return;
     }
+    context = await this.getBrowser();
     const page = await context.newPage();
     await page.goto(
       "https://login.kongfz.com/Pc/Login/iframe?returnUrl=https://www.kongfz.com/"
@@ -128,6 +129,7 @@ export class KongProductService {
     beginTime = new Date();
     const context = await this.getBrowser();
     const page = await context.newPage();
+    await page.waitForTimeout((Math.random() + 1) * 5000);
     await page.goto(url);
     const priceArea = await page.waitForSelector("#priceOrder");
     await priceArea.click();
@@ -172,7 +174,8 @@ export class KongProductService {
         if (bookInfoText.includes("插图图片")) {
           //插图方式
           const imagesEle = await bookInfoItem.$("a");
-          const insideImagesPage = await this.context.newPage();
+          const context = await this.getBrowser();
+          const insideImagesPage = await context.newPage();
           try {
             const href =
               "https://item.kongfz.com" +
@@ -383,7 +386,8 @@ export class KongProductService {
       //获取封面
       const coverImage = await page.$(".detail-con-left .detail-img a");
       const coverImageUrl = await coverImage.getAttribute("href");
-      const coverPage = await this.context.newPage();
+      const context = await this.getBrowser();
+      const coverPage = await context.newPage();
       try {
         await coverPage.goto(coverImageUrl);
         const coverElement = await coverPage.waitForSelector("img");
@@ -464,7 +468,7 @@ export class KongProductService {
     product.images = [...images, ...(itemImages || []), ...insideImages];
     console.log({ quality, shipPrice, nowPrice });
     if (!quality || !nowPrice) {
-      await page.close();
+      return await page.close();
     }
 
     let productToPut = await ProductModel.findOne({
@@ -511,7 +515,7 @@ export class KongProductService {
               },
               profitRate:
                 (productToPut.price - (newSellPrice + newShipPrice)) /
-                productToPut.price,
+                  productToPut.price || 0,
               updatedAt: new Date(),
             },
           }
@@ -544,7 +548,7 @@ export class KongProductService {
               },
               profitRate:
                 (productToPut.price - (newSellPrice + newShipPrice)) /
-                productToPut.price,
+                  productToPut.price || 0,
               needToAdjustLatestPrice: false,
             },
           }
@@ -575,7 +579,7 @@ export class KongProductService {
       product.bookData.price = newPrice;
       product.price = newPrice * 1.5;
       product.profitRate =
-        (product.price - (newSellPrice + newShipPrice)) / product.price;
+        (product.price - (newSellPrice + newShipPrice)) / product.price || 0;
       product.type = "book";
       await product.save();
     }
@@ -586,7 +590,8 @@ export class KongProductService {
 
   async getItemDetailByUrl(url: string, productId: string, isbn: string) {
     console.log("开始获取价格详情=======", url);
-    const page = await this.context.newPage();
+    const context = await this.getBrowser();
+    const page = await context.newPage();
     await page.goto(url);
     await page.waitForLoadState();
 
