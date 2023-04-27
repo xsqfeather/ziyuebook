@@ -40,13 +40,16 @@ export class KongPriceJob implements AgendaService<Product> {
       if (product) {
         await this.kongProductService.getProductFromDetail(product.originUrl);
       }
+      await this.start();
       done?.();
     } catch (error) {
       console.error(error);
       await this.agenda.stop();
       this.started = false;
+      await this.start();
+
+      done?.();
     }
-    await this.start();
   };
 
   start = async () => {
