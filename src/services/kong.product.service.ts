@@ -478,6 +478,7 @@ export class KongProductService {
     });
 
     if (productToPut) {
+      console.log("找到了相同的isbn，开始更新===============================");
       bookData = {
         ...bookData,
         ...productToPut.bookData,
@@ -569,6 +570,9 @@ export class KongProductService {
 
       return;
     } else {
+      console.log(
+        "没有找到相同的isbn，开始创建==============================="
+      );
       product.bookData = bookData;
       product.appearance = quality;
       const newSellPrice = Number(nowPrice) * 100 || 0;
@@ -588,6 +592,7 @@ export class KongProductService {
       product.type = "book";
       try {
         const profitRate = (product.price - newSellPrice) / product.price;
+        console.log("新产品的利润率", { profitRate });
         product.profitRate = profitRate ? profitRate : 0;
         await product.save();
       } catch (error) {
