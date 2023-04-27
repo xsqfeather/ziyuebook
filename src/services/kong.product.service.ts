@@ -502,6 +502,8 @@ export class KongProductService {
         );
         productToPut.needToAdjustLatestPrice = true;
         try {
+          const profitRate =
+            (productToPut.price - newSellPrice) / productToPut.price;
           await ProductModel.updateOne(
             { id: productToPut.id },
             {
@@ -515,9 +517,7 @@ export class KongProductService {
                   newSellPrice: newSellPrice,
                   newPrice: newSellPrice + newShipPrice,
                 },
-                profitRate:
-                  (productToPut.price - (newSellPrice + newShipPrice)) /
-                    productToPut.price || 0,
+                profitRate: profitRate ? profitRate : 0,
                 updatedAt: new Date(),
               },
             }
@@ -534,6 +534,8 @@ export class KongProductService {
         console.log("价格一致，不需要调整======================");
         productToPut.needToAdjustLatestPrice = false;
         try {
+          const profitRate =
+            (productToPut.price - newSellPrice) / productToPut.price;
           await ProductModel.updateOne(
             { id: productToPut.id },
             {
@@ -549,9 +551,7 @@ export class KongProductService {
                   newShipPrice: newShipPrice,
                   newSellPrice: newSellPrice,
                 },
-                profitRate:
-                  (productToPut.price - (newSellPrice + newShipPrice)) /
-                    productToPut.price || 0,
+                profitRate: profitRate && profitRate > 0 ? profitRate : 0,
                 needToAdjustLatestPrice: false,
               },
             }
@@ -587,8 +587,8 @@ export class KongProductService {
 
       product.type = "book";
       try {
-        product.profitRate =
-          (product.price - (newSellPrice + newShipPrice)) / product.price || 0;
+        const profitRate = (product.price - newSellPrice) / product.price;
+        product.profitRate = profitRate ? profitRate : 0;
         await product.save();
       } catch (error) {
         console.log(error);
