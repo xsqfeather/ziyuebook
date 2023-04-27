@@ -71,6 +71,7 @@ export class KongProductService {
       console.error(error);
       await page.close();
       await homePage.close();
+      await this.getBrowser();
     }
   };
 
@@ -112,6 +113,7 @@ export class KongProductService {
             await this.getProductFromDetail(detailUrl);
           } catch (error) {
             console.error(error);
+            await this.getBrowser();
           }
           // break;
         }
@@ -121,6 +123,7 @@ export class KongProductService {
       await page.close();
     } catch (error) {
       console.error(error);
+      await this.getBrowser();
     }
   }
 
@@ -199,6 +202,7 @@ export class KongProductService {
             await insideImagesPage.close();
           } catch (error) {
             console.error(error);
+            await this.getBrowser();
             await insideImagesPage.close();
           }
         }
@@ -230,6 +234,7 @@ export class KongProductService {
             ).toDate();
           } catch (error) {
             console.error(error);
+            await this.getBrowser();
             bookData.publishTime = new Date();
           }
         }
@@ -408,6 +413,7 @@ export class KongProductService {
         await coverPage.close();
       } catch (error) {
         console.error(error);
+        await this.getBrowser();
         await coverPage.close();
         return await page.close();
       }
@@ -421,6 +427,7 @@ export class KongProductService {
         insideImages
       );
     } catch (error) {
+      await this.getBrowser();
       console.error(error);
       await page.close();
     }
@@ -460,6 +467,7 @@ export class KongProductService {
           );
           break;
         } catch (error) {
+          await this.getBrowser();
           console.error({ error });
         }
       }
@@ -523,7 +531,10 @@ export class KongProductService {
               },
             }
           );
-        } catch (error) {}
+        } catch (error) {
+          console.error("更新价格失败", error);
+          await this.getBrowser();
+        }
         endTime = new Date();
         console.log(
           "耗时",
@@ -559,6 +570,7 @@ export class KongProductService {
             }
           );
         } catch (error) {
+          await this.getBrowser();
           console.log(error);
         }
       }
@@ -597,6 +609,7 @@ export class KongProductService {
         product.profitRate = !Number.isNaN(profitRate) ? profitRate : 0;
         await product.save();
       } catch (error) {
+        await this.getBrowser();
         console.log(error);
       }
     }
