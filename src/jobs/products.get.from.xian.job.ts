@@ -36,6 +36,8 @@ export class ProductsGetFromXianJob
       console.error(error);
       await this.agenda.stop();
       this.started = false;
+      await this.start();
+      done();
     }
   };
   start = async () => {
