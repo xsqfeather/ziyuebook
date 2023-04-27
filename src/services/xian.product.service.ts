@@ -99,7 +99,8 @@ export class XianProductService {
       "bookData.isbn": productDetail.book_data?.isbn,
     });
     const profitRate =
-      (productDetail.price - exitsProduct.bookData?.price) / exitsProduct.price;
+      (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
+      productDetail.price;
 
     const rlt = await ProductModel.updateOne(
       {
