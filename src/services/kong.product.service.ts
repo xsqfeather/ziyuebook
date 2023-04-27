@@ -137,7 +137,7 @@ export class KongProductService {
       "#priceOrder .price-select-box a:first-child"
     );
     await sortArea.click();
-    await page.waitForLoadState();
+    await page.waitForTimeout((Math.random() + 1) * 2000);
     try {
       const product = new ProductModel();
       const images: string[] = [];
@@ -471,6 +471,8 @@ export class KongProductService {
       return await page.close();
     }
 
+    product.buyUrlOnKong = page.url();
+
     let productToPut = await ProductModel.findOne({
       "bookData.isbn": bookData.isbn,
     });
@@ -593,7 +595,6 @@ export class KongProductService {
     const context = await this.getBrowser();
     const page = await context.newPage();
     await page.goto(url);
-    await page.waitForLoadState();
 
     const priceEle = await page.waitForSelector(".now-price .now-price-text");
     const nowPrice = await priceEle?.innerText();

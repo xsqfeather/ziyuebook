@@ -31,12 +31,26 @@ export class ArticleApiController extends MController {
 
   @post("/")
   @options({
-    tags: ["api", "创建文章"],
-    description: "测试",
-    notes: "测试",
+    description: "新建文章",
+    notes: "返回文章数据",
+    tags: ["api", "文章"],
     auth: {
       strategy: "jwt",
       scope: ["admin"],
+    },
+    payload: {
+      output: "stream",
+      parse: true,
+      maxBytes: 1024 * 1024 * 100, //100m
+      allow: "multipart/form-data",
+      multipart: {
+        output: "stream",
+      },
+    },
+    plugins: {
+      "hapi-swagger": {
+        payloadType: "form",
+      },
     },
     validate: {
       payload: CreateArticleSchema,

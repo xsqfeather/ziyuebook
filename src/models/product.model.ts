@@ -204,6 +204,9 @@ export class Product extends Base {
 
   @prop({ type: Date, default: Date.now })
   lastCheckTime?: Date;
+
+  @prop({ type: String, default: "" })
+  buyUrlOnKong: string;
 }
 
 export const ProductModel = getModelForClass(Product);

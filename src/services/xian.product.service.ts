@@ -6,6 +6,7 @@ import { ProductModel } from "../models/product.model";
 import moment from "moment";
 
 import { Inject, Service } from "typedi";
+import { XianProductCreateDto, XianProductEditDto } from "dtos";
 
 const XIANGUANJIA_APP_KEY = "395975399510085";
 
@@ -79,7 +80,7 @@ export class XianProductService {
       data
     );
 
-    var config = {
+    const config = {
       method: "post",
       url: `https://api.goofish.pro/sop/product/query?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
       headers: {
@@ -112,6 +113,7 @@ export class XianProductService {
             (productDetail.price - exitsProduct?.bookData?.newPrice) /
             productDetail.price,
           xianProductId: productDetail.product_id,
+          stock: productDetail.stock,
         },
       }
     );
@@ -120,59 +122,20 @@ export class XianProductService {
     return productDetail;
   }
 
-  async createNewProduct() {
-    const data = JSON.stringify({
-      item_biz_type: 2,
-      sp_biz_type: 1,
-      channel_cat_id: "xxx",
-      original_price: 700000,
-      price: 550000,
-      stock: 10,
-      title: "iPhone 12 128G 黑色",
-      images: ["https://xxx.com/xxx1.jpg", "https://xxx.com/xxx2.jpg"],
-      desc: "商品描述",
-      sku_items: [
-        {
-          price: 500000,
-          stock: 10,
-          outer_id: "",
-          sku_text: "颜色:白色;容量:128G",
-        },
-        {
-          price: 600000,
-          stock: 10,
-          outer_id: "",
-          sku_text: "颜色:白色;容量:256G",
-        },
-        {
-          price: 500000,
-          stock: 10,
-          outer_id: "",
-          sku_text: "颜色:黑色;容量:128G",
-        },
-        {
-          price: 600000,
-          stock: 10,
-          outer_id: "",
-          sku_text: "颜色:黑色;容量:256G",
-        },
-      ],
-      district_id: 440305,
-      outer_id: "2021110112345",
-      stuff_status: 100,
-      express_fee: 10,
-      book_data: {
-        title: "北京法源寺",
-        author: "李敖",
-        publisher: "中国友谊出版公司",
-        isbn: "9787505720176",
-      },
-      sp_guarantee: "1,2",
-    });
+  async createNewProduct(input: XianProductCreateDto) {
+    const data = JSON.stringify(input);
+
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+    const sign = this.sign(
+      XIANGUANJIA_APP_KEY,
+      XIANGUANJIA_APP_SECRET,
+      timestamp,
+      data
+    );
 
     const config = {
       method: "post",
-      url: "https://api.goofish.pro/sop/product/create?appid={{appid}}&timestamp={{timestamp}}&sign={{sign}}",
+      url: `https://api.goofish.pro/sop/product/create?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
       headers: {
         "User-Agent": "Apifox/1.0.0 (https://www.apifox.cn)",
         "Content-Type": "application/json",
@@ -181,5 +144,30 @@ export class XianProductService {
     };
 
     const { data: createRlt } = await axios(config);
+    return createRlt;
+  }
+
+  async editXianProduct(input: XianProductEditDto) {
+    const data = JSON.stringify(input);
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+    const sign = this.sign(
+      XIANGUANJIA_APP_KEY,
+      XIANGUANJIA_APP_SECRET,
+      timestamp,
+      data
+    );
+
+    const config = {
+      method: "post",
+      url: `https://api.goofish.pro/sop/product/edit?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
+      headers: {
+        "User-Agent": "Apifox/1.0.0 (https://www.apifox.cn)",
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const { data: updateRlt } = await axios(config);
+    return updateRlt;
   }
 }
