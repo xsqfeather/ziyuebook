@@ -98,6 +98,8 @@ export class XianProductService {
     const exitsProduct = await ProductModel.findOne({
       "bookData.isbn": productDetail.book_data?.isbn,
     });
+    const profitRate =
+      (productDetail.price - exitsProduct.bookData?.price) / exitsProduct.price;
 
     const rlt = await ProductModel.updateOne(
       {
@@ -109,9 +111,7 @@ export class XianProductService {
           updatedAt: new Date(),
           xian: productDetail,
           price: productDetail.price,
-          profitRate:
-            (productDetail.price - exitsProduct?.bookData?.newPrice) /
-            productDetail.price,
+          profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
           xianProductId: productDetail.product_id,
           stock: productDetail.stock,
         },
