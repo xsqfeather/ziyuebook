@@ -37,7 +37,7 @@ export class KongProductService {
   checkToLogin = async () => {
     let context = await this.getBrowser();
     const homePage = await context.newPage();
-    await homePage.goto("https://kongfz.com/");
+    await homePage.goto("https://shop.kongfz.com/");
     const nicknameEle = await homePage.waitForSelector("#nickName .info-text");
     const bookFriend = await nicknameEle.innerHTML();
     if (!bookFriend.includes("登录")) {

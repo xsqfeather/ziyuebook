@@ -8,7 +8,7 @@ import Joi from "joi";
 
 @Service()
 @controller("/api/uploads")
-export class UserApiController extends MController {
+export class UploadApiController extends MController {
   uploadService: any;
   @post("/")
   @options({
@@ -34,7 +34,7 @@ export class UserApiController extends MController {
       },
     },
   })
-  async update(req: Request) {
+  async upload(req: Request) {
     const { file } = req.payload as any;
     const { filename, headers } = file;
     const { "content-type": contentType } = headers;

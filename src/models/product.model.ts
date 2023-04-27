@@ -1,5 +1,4 @@
 import {
-  Index,
   getModelForClass,
   index,
   modelOptions,
