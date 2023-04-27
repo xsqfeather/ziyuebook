@@ -64,6 +64,6 @@ export class KongPriceJob implements AgendaService<Product> {
       updatedAt: 1,
     });
 
-    await this.agenda.schedule("in 15 minutes", this.eventName, product);
+    await this.agenda.schedule("in 2 minutes", this.eventName, product);
   };
 }

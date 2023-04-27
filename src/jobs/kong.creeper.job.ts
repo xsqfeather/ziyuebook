@@ -78,7 +78,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       this.levelKey,
       categoryUrl ? Number(currentIndex || "0") + 1 : 0
     );
-    this.agenda.schedule("in 20 minutes", this.eventName, {
+    this.agenda.schedule("in 2 hours", this.eventName, {
       categoryUrl: categoryUrl || KongCategoryUrls[0],
     });
   };
