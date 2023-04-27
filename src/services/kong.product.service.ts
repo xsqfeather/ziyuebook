@@ -464,10 +464,10 @@ export class KongProductService {
         }
       }
     }
-    const { itemImages, nowPrice, shipPrice, quality } = itemDetail;
+    const { itemImages, nowPrice, shipPrice, quality = "" } = itemDetail;
     product.images = [...images, ...(itemImages || []), ...insideImages];
     console.log({ quality, shipPrice, nowPrice });
-    if (!quality || !nowPrice) {
+    if (!nowPrice) {
       return await page.close();
     }
 
@@ -518,7 +518,7 @@ export class KongProductService {
                   newSellPrice: newSellPrice,
                   newPrice: newSellPrice + newShipPrice,
                 },
-                profitRate: profitRate ? profitRate : 0,
+                profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
                 updatedAt: new Date(),
               },
             }
@@ -552,7 +552,8 @@ export class KongProductService {
                   newShipPrice: newShipPrice,
                   newSellPrice: newSellPrice,
                 },
-                profitRate: profitRate && profitRate > 0 ? profitRate : 0,
+                profitRate:
+                  !Number.isNaN(profitRate) && profitRate > 0 ? profitRate : 0,
                 needToAdjustLatestPrice: false,
               },
             }
@@ -593,7 +594,7 @@ export class KongProductService {
       try {
         const profitRate = (product.price - newSellPrice) / product.price;
         console.log("新产品的利润率", { profitRate });
-        product.profitRate = profitRate ? profitRate : 0;
+        product.profitRate = !Number.isNaN(profitRate) ? profitRate : 0;
         await product.save();
       } catch (error) {
         console.log(error);
