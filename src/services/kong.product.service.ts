@@ -501,27 +501,28 @@ export class KongProductService {
           (newSellPrice + newShipPrice).toFixed(2)
         );
         productToPut.needToAdjustLatestPrice = true;
-
-        await ProductModel.updateOne(
-          { id: productToPut.id },
-          {
-            $set: {
-              needToAdjustLatestPrice: true,
-              lastCheckTime: new Date(),
-              images: product.images,
-              bookData: {
-                ...productToPut.bookData,
-                newShipPrice: newShipPrice,
-                newSellPrice: newSellPrice,
-                newPrice: newSellPrice + newShipPrice,
+        try {
+          await ProductModel.updateOne(
+            { id: productToPut.id },
+            {
+              $set: {
+                needToAdjustLatestPrice: true,
+                lastCheckTime: new Date(),
+                images: product.images,
+                bookData: {
+                  ...productToPut.bookData,
+                  newShipPrice: newShipPrice,
+                  newSellPrice: newSellPrice,
+                  newPrice: newSellPrice + newShipPrice,
+                },
+                profitRate:
+                  (productToPut.price - (newSellPrice + newShipPrice)) /
+                    productToPut.price || 0,
+                updatedAt: new Date(),
               },
-              profitRate:
-                (productToPut.price - (newSellPrice + newShipPrice)) /
-                  productToPut.price || 0,
-              updatedAt: new Date(),
-            },
-          }
-        );
+            }
+          );
+        } catch (error) {}
         endTime = new Date();
         console.log(
           "耗时",
@@ -532,29 +533,32 @@ export class KongProductService {
       } else {
         console.log("价格一致，不需要调整======================");
         productToPut.needToAdjustLatestPrice = false;
-
-        await ProductModel.updateOne(
-          { id: productToPut.id },
-          {
-            $set: {
-              images: product.images,
-              lastCheckTime: new Date(),
-              bookData: {
-                ...productToPut.bookData,
-                sellPrice: newSellPrice,
-                shipPrice: newShipPrice,
-                newPrice: newSellPrice + newShipPrice,
-                price: newSellPrice + newShipPrice,
-                newShipPrice: newShipPrice,
-                newSellPrice: newSellPrice,
+        try {
+          await ProductModel.updateOne(
+            { id: productToPut.id },
+            {
+              $set: {
+                images: product.images,
+                lastCheckTime: new Date(),
+                bookData: {
+                  ...productToPut.bookData,
+                  sellPrice: newSellPrice,
+                  shipPrice: newShipPrice,
+                  newPrice: newSellPrice + newShipPrice,
+                  price: newSellPrice + newShipPrice,
+                  newShipPrice: newShipPrice,
+                  newSellPrice: newSellPrice,
+                },
+                profitRate:
+                  (productToPut.price - (newSellPrice + newShipPrice)) /
+                    productToPut.price || 0,
+                needToAdjustLatestPrice: false,
               },
-              profitRate:
-                (productToPut.price - (newSellPrice + newShipPrice)) /
-                  productToPut.price || 0,
-              needToAdjustLatestPrice: false,
-            },
-          }
-        );
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
       }
       endTime = new Date();
       console.log(
@@ -580,10 +584,15 @@ export class KongProductService {
       product.bookData.newPrice = newPrice;
       product.bookData.price = newPrice;
       product.price = newPrice * 1.5;
-      product.profitRate =
-        (product.price - (newSellPrice + newShipPrice)) / product.price || 0;
+
       product.type = "book";
-      await product.save();
+      try {
+        product.profitRate =
+          (product.price - (newSellPrice + newShipPrice)) / product.price || 0;
+        await product.save();
+      } catch (error) {
+        console.log(error);
+      }
     }
     await page.close();
     endTime = new Date();
