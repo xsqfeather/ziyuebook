@@ -9,7 +9,7 @@ import { Inject, Service } from "typedi";
 import { Request } from "@hapi/hapi";
 import { Product, ProductCategoryModel } from "../../models";
 import { ProductService } from "../../services";
-import { XianProductPublishDto, XianProductPublishDtoSchema } from "dtos";
+import { XianProductPublishDto, XianProductPublishDtoSchema } from "../../dtos";
 import Joi from "joi";
 
 @Service()

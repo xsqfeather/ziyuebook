@@ -6,7 +6,7 @@ import { ProductModel } from "../models/product.model";
 import moment from "moment";
 
 import { Inject, Service } from "typedi";
-import { XianProductCreateDto, XianProductEditDto } from "dtos";
+import { XianProductCreateDto, XianProductEditDto } from "../dtos";
 
 const XIANGUANJIA_APP_KEY = "395975399510085";
 
