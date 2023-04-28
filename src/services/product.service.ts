@@ -43,7 +43,7 @@ export class ProductService extends BaseService<Product> {
       throw Boom.notFound("商品不存在");
     }
     await ProductModel.deleteMany({ id });
-
+    await this.xianProductService.deleteXianProduct(product.xianProductId);
     return product;
   }
 

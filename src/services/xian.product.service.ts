@@ -173,9 +173,9 @@ export class XianProductService {
   }
 
   async deleteXianProduct(productId: string) {
-    const data = JSON.stringify({
+    const data = {
       product_id: productId,
-    });
+    };
 
     const timestamp = Math.floor(new Date().getTime() / 1000);
     const sign = this.sign(
