@@ -657,7 +657,7 @@ export class KongProductService {
 
       product.type = "book";
       try {
-        const profitRate = (product.price - newSellPrice) / product.price;
+        const profitRate = (product.price - newPrice) / product.price;
         console.log("新产品的利润率", { profitRate });
         product.profitRate = !Number.isNaN(profitRate) ? profitRate : 0;
         await product.save();

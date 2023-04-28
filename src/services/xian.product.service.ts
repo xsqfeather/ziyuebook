@@ -149,7 +149,6 @@ export class XianProductService {
 
   async editXianProduct(input: XianProductEditDto) {
     const data = JSON.parse(JSON.stringify(input));
-    console.log({ data });
     const timestamp = Math.floor(new Date().getTime() / 1000);
     const sign = this.sign(
       XIANGUANJIA_APP_KEY,
