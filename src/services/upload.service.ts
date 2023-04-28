@@ -5,10 +5,10 @@ import {
   getTTSecretKey,
 } from "../lib/config";
 import { Service } from "typedi";
-import { fileTypeFromBuffer } from "file-type";
-
 import COS from "cos-nodejs-sdk-v5";
-import { nanoid } from "nanoid";
+
+const { fileTypeFromBuffer } = require("file-type");
+const { nanoid } = require("nanoid");
 
 @Service()
 export class UploadService {

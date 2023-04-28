@@ -57,7 +57,7 @@ export class SessionService {
     console.log({ userSession });
 
     const idRoles =
-      userSession?.roles.map((role) => {
+      userSession?.roles.map((role: any) => {
         return `${role}-${userSession?.userId}`;
       }) || [];
 
