@@ -1,4 +1,4 @@
-import { controller, get, options, route } from "hapi-decorators";
+import { controller, get, options, route, put } from "hapi-decorators";
 import {
   MController,
   ListData,
@@ -9,6 +9,8 @@ import { Inject, Service } from "typedi";
 import { Request } from "@hapi/hapi";
 import { Product, ProductCategoryModel } from "../../models";
 import { ProductService } from "../../services";
+import { XianProductPublishDto, XianProductPublishDtoSchema } from "dtos";
+import Joi from "joi";
 
 @Service()
 @controller("/api/products")
@@ -55,19 +57,30 @@ export class ProductApiController extends MController {
     return this.productService.getProductList(listQuery);
   }
 
-  @get("/publish_to_xian")
+  @put("/publish_to_xian")
   @options({
     tags: ["api", "商品"],
     description: "添加到闲管家",
     notes: "返回闲管家",
+    validate: {
+      payload: XianProductPublishDtoSchema,
+    },
   })
-  async updateToXian(req: Request): Promise<any> {}
+  async updateToXian(req: Request): Promise<any> {
+    const input = req.payload as XianProductPublishDto;
+    return this.productService.putXianProduct(input);
+  }
 
   @get("/{id}")
   @options({
     tags: ["api", "商品"],
     description: "查询商品详情",
     notes: "测试",
+    validate: {
+      params: Joi.object({
+        id: Joi.string().required().description("商品ID"),
+      }),
+    },
   })
   async detail(req: Request): Promise<Product> {
     const id = req.params.id;

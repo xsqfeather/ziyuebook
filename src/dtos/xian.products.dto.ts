@@ -1,3 +1,35 @@
+import Joi from "joi";
+import {
+  ClassDescription,
+  CustomSchema,
+  Required,
+  getSchema,
+  getSchemaDescription,
+} from "joi-typescript-validator";
+
+export class XianProductPublishDto {
+  @Required()
+  productId: string;
+
+  @CustomSchema(
+    Joi.object({
+      channel_cat_id: Joi.string(),
+      title: Joi.string(),
+      desc: Joi.string(),
+      images: Joi.array().items(Joi.string()),
+      price: Joi.number(),
+    })
+  )
+  xianInfo: {
+    channel_cat_id: string;
+    title: string;
+    desc: string;
+    images: string[];
+    price: number;
+  };
+}
+export const XianProductPublishDtoSchema = getSchema(XianProductPublishDto);
+
 export class XianProductCreateDto {
   /**
    * 图书信息，仅图书商品传入
