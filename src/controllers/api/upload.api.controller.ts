@@ -1,10 +1,7 @@
 import { controller, get, options, post, put } from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
-import { UserService } from "../../services";
-import { User } from "../../models";
 import { Request } from "@hapi/hapi";
-import Joi from "joi";
 import { UploadService } from "../../services/upload.service";
 
 @Service()

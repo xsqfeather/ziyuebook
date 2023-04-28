@@ -1,6 +1,6 @@
 import { getModelForClass, prop } from "@typegoose/typegoose";
 import { Required, getSchema } from "joi-typescript-validator";
-import { nanoid } from "nanoid";
+const { nanoid } = require("nanoid");
 
 class BaseClass {
   @Required()

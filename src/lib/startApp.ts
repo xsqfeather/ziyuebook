@@ -14,6 +14,7 @@ export const startApp = async (startAppConfig: {
 }) => {
   const { pageControllers, apiControllers, jwtValidation } = startAppConfig;
   try {
+    mongoose.set("strictQuery", true);
     await mongoose.connect(getMongoURI());
   } catch (error) {
     console.error(error);

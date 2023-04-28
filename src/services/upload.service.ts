@@ -5,10 +5,8 @@ import {
   getTTSecretKey,
 } from "../lib/config";
 import { Service } from "typedi";
-import COS from "cos-nodejs-sdk-v5";
 
-const { fileTypeFromBuffer } = require("file-type");
-const { nanoid } = require("nanoid");
+import COS from "cos-nodejs-sdk-v5";
 
 @Service()
 export class UploadService {
@@ -42,6 +40,9 @@ export class UploadService {
   }
 
   async upload(file: Buffer) {
+    const { nanoid } = require("nanoid");
+    const { fileTypeFromBuffer } = require("file-type");
+
     const originId = nanoid();
 
     const fileType = await fileTypeFromBuffer(file);
