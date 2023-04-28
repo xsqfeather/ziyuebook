@@ -8,6 +8,7 @@ import {
   ProductCategoryApiController,
   SessionApiController,
   UserApiController,
+  UploadApiController,
 } from "./controllers";
 
 startApp({
@@ -18,6 +19,7 @@ startApp({
     UserApiController,
     ProductApiController,
     ProductCategoryApiController,
+    UploadApiController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,

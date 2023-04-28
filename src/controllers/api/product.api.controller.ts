@@ -55,15 +55,7 @@ export class ProductApiController extends MController {
     return this.productService.getProductList(listQuery);
   }
 
-  @get("/add_to_xian")
-  @options({
-    tags: ["api", "商品"],
-    description: "添加到闲管家",
-    notes: "返回闲管家",
-  })
-  async addToXian(req: Request): Promise<any> {}
-
-  @get("/update_to_xian")
+  @get("/publish_to_xian")
   @options({
     tags: ["api", "商品"],
     description: "添加到闲管家",

@@ -5,11 +5,14 @@ import { UserService } from "../../services";
 import { User } from "../../models";
 import { Request } from "@hapi/hapi";
 import Joi from "joi";
+import { UploadService } from "../../services/upload.service";
 
 @Service()
 @controller("/api/uploads")
 export class UploadApiController extends MController {
-  uploadService: any;
+  @Inject(() => UploadService)
+  uploadService!: UploadService;
+
   @post("/")
   @options({
     tags: ["api", "上传文件"],
@@ -36,13 +39,7 @@ export class UploadApiController extends MController {
   })
   async upload(req: Request) {
     const { file } = req.payload as any;
-    const { filename, headers } = file;
-    const { "content-type": contentType } = headers;
-    const result = await this.uploadService.uploadFile(
-      file,
-      filename,
-      contentType
-    );
+    const result = await this.uploadService.upload(file._data);
     return result;
   }
 }

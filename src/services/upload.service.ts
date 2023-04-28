@@ -5,8 +5,10 @@ import {
   getTTSecretKey,
 } from "../lib/config";
 import { Service } from "typedi";
+import { fileTypeFromBuffer } from "file-type";
 
 import COS from "cos-nodejs-sdk-v5";
+import { nanoid } from "nanoid";
 
 @Service()
 export class UploadService {
@@ -37,5 +39,20 @@ export class UploadService {
         }
       );
     });
+  }
+
+  async upload(file: Buffer) {
+    const originId = nanoid();
+
+    const fileType = await fileTypeFromBuffer(file);
+
+    const ossUrl = await this.uploadTTImage(
+      file,
+      originId + "." + fileType.ext
+    );
+
+    return {
+      url: "https://" + ossUrl,
+    };
   }
 }

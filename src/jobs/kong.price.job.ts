@@ -37,9 +37,14 @@ export class KongPriceJob implements AgendaService<Product> {
         "是否有新价格",
         product.originUrl
       );
+      await ProductModel.updateOne(
+        { id: product.id },
+        { lastCheckTime: new Date() }
+      );
       if (product) {
         await this.kongProductService.getProductFromDetail(product.originUrl);
       }
+
       await this.start();
       done?.();
     } catch (error) {

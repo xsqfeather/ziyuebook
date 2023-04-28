@@ -36,8 +36,16 @@ export class KongProductService {
 
   checkToLogin = async () => {
     let context = await this.getBrowser();
-    const homePage = await context.newPage();
-    await homePage.goto("https://shop.kongfz.com/");
+    let homePage = await context.newPage();
+    try {
+      await homePage.goto("https://shop.kongfz.com/");
+    } catch (error) {
+      console.error(error);
+      await homePage.close();
+      await this.getBrowser();
+      return;
+    }
+
     const nicknameEle = await homePage.waitForSelector("#nickName .info-text");
     const bookFriend = await nicknameEle.innerHTML();
     if (!bookFriend.includes("登录")) {
@@ -46,10 +54,19 @@ export class KongProductService {
       return;
     }
     context = await this.getBrowser();
-    const page = await context.newPage();
-    await page.goto(
-      "https://login.kongfz.com/Pc/Login/iframe?returnUrl=https://www.kongfz.com/"
-    );
+    let page = await context.newPage();
+    try {
+      await page.goto(
+        "https://login.kongfz.com/Pc/Login/iframe?returnUrl=https://www.kongfz.com/"
+      );
+    } catch (error) {
+      console.error(error);
+      await page.close();
+      await homePage.close();
+      await this.getBrowser();
+      return;
+    }
+
     try {
       const usernameInput = await page.waitForSelector("#username");
       await usernameInput.focus();
@@ -92,8 +109,16 @@ export class KongProductService {
     try {
       await this.checkToLogin();
       const context = await this.getBrowser();
-      const page = await context.newPage();
-      await page.goto(url);
+      let page = await context.newPage();
+      try {
+        await page.goto(url);
+      } catch (error) {
+        console.error(error);
+        await page.close();
+        await this.getBrowser();
+        return;
+      }
+
       const listEle = page.getByText("图书条目");
       await listEle.click();
       const sellEle = page.getByText("销量");
@@ -115,10 +140,15 @@ export class KongProductService {
             console.error(error);
             await this.getBrowser();
           }
-          // break;
         }
-        await page.goto(`${url}/v1w${pageIndex}`);
-        // break;
+        try {
+          await page.goto(`${url}/v1w${pageIndex}`);
+        } catch (error) {
+          console.error(error);
+          await page.close();
+          await this.getBrowser();
+          return;
+        }
       }
       await page.close();
     } catch (error) {
@@ -133,7 +163,15 @@ export class KongProductService {
     const context = await this.getBrowser();
     const page = await context.newPage();
     await page.waitForTimeout((Math.random() + 1) * 5000);
-    await page.goto(url);
+    try {
+      await page.goto(url);
+    } catch (error) {
+      console.error(error);
+      await page.close();
+      await this.getBrowser();
+      return;
+    }
+
     const priceArea = await page.waitForSelector("#priceOrder");
     await priceArea.click();
     const sortArea = await page.waitForSelector(
@@ -184,7 +222,15 @@ export class KongProductService {
               "https://item.kongfz.com" +
               (await imagesEle.getAttribute("href"));
             // console.log("开始获取图片", href);
-            await insideImagesPage.goto(href);
+            try {
+              await insideImagesPage.goto(href);
+            } catch (error) {
+              console.error(error);
+              await insideImagesPage.close();
+              await this.getBrowser();
+              return;
+            }
+
             await insideImagesPage.waitForLoadState();
             for (let index = 0; index < 20; index++) {
               await insideImagesPage.waitForTimeout(500);
@@ -394,7 +440,14 @@ export class KongProductService {
       const context = await this.getBrowser();
       const coverPage = await context.newPage();
       try {
-        await coverPage.goto(coverImageUrl);
+        try {
+          await coverPage.goto(coverImageUrl);
+        } catch (error) {
+          await coverPage.close();
+          await this.getBrowser();
+          return await page.close();
+        }
+
         const coverElement = await coverPage.waitForSelector("img");
         let coverUrl = await coverElement.getAttribute("src");
         coverUrl = coverUrl.replace("_water", "");
@@ -412,7 +465,7 @@ export class KongProductService {
         product.cover = bookData.cover;
         await coverPage.close();
       } catch (error) {
-        console.error(error);
+        console.log(error);
         await this.getBrowser();
         await coverPage.close();
         return await page.close();
@@ -620,9 +673,14 @@ export class KongProductService {
 
   async getItemDetailByUrl(url: string, productId: string, isbn: string) {
     console.log("开始获取价格详情=======", url);
-    const context = await this.getBrowser();
-    const page = await context.newPage();
-    await page.goto(url);
+    let context = await this.getBrowser();
+    let page = await context.newPage();
+    try {
+      await page.goto(url);
+    } catch (error) {
+      error("打开页面失败，重新打开", error);
+      context = await this.getBrowser();
+    }
 
     const priceEle = await page.waitForSelector(".now-price .now-price-text");
     const nowPrice = await priceEle?.innerText();
@@ -669,15 +727,20 @@ export class KongProductService {
         if (!imageUrl.includes("_b")) {
           continue;
         }
-        const response = await axios.get(imageUrl.replace("_b", ""), {
-          responseType: "arraybuffer",
-        });
-        const buffer = Buffer.from(response.data, "utf-8");
-        const uploadRlt = await this.uploadService.uploadTTImage(
-          buffer,
-          productId + index + ".png"
-        );
-        itemImages.push("https://" + uploadRlt);
+        try {
+          const response = await axios.get(imageUrl.replace("_b", ""), {
+            responseType: "arraybuffer",
+          });
+          const buffer = Buffer.from(response.data, "utf-8");
+          const uploadRlt = await this.uploadService.uploadTTImage(
+            buffer,
+            productId + index + ".png"
+          );
+          itemImages.push("https://" + uploadRlt);
+        } catch (error) {
+          console.log(error);
+          itemImages.push(imageUrl.replace("_b", ""));
+        }
       }
     }
 

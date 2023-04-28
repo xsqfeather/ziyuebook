@@ -3,3 +3,4 @@ export * from "./session.api.controller";
 export * from "./user.api.controller";
 export * from "./product.api.controller";
 export * from "./product.category.api.controller";
+export * from "./upload.api.controller";

@@ -109,7 +109,6 @@ export class XianProductService {
       {
         $set: {
           onXian: true,
-          updatedAt: new Date(),
           xian: productDetail,
           price: productDetail.price,
           profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
@@ -170,5 +169,29 @@ export class XianProductService {
 
     const { data: updateRlt } = await axios(config);
     return updateRlt;
+  }
+
+  async deleteXianProduct(productId: string) {
+    const data = JSON.stringify({
+      product_id: productId,
+    });
+
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+    const sign = this.sign(
+      XIANGUANJIA_APP_KEY,
+      XIANGUANJIA_APP_SECRET,
+      timestamp,
+      data
+    );
+
+    var config = {
+      method: "post",
+      url: `https://api.goofish.pro/sop/product/delete?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
+
+      data: data,
+    };
+
+    const { data: deleteRlt } = await axios(config);
+    return deleteRlt;
   }
 }
