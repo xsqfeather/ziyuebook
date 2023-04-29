@@ -565,7 +565,8 @@ export class KongProductService {
         productToPut.needToAdjustLatestPrice = true;
         try {
           const profitRate =
-            (productToPut.price - newSellPrice) / productToPut.price;
+            (productToPut.price - newSellPrice - newShipPrice) /
+            productToPut.price;
           await ProductModel.updateOne(
             { id: productToPut.id },
             {
