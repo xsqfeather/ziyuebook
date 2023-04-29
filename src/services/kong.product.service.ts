@@ -42,6 +42,7 @@ export class KongProductService {
     } catch (error) {
       console.error(error);
       await homePage.close();
+      this.context = null;
       await this.getBrowser();
       return;
     }
@@ -63,7 +64,9 @@ export class KongProductService {
       console.error(error);
       await page.close();
       await homePage.close();
+      this.context = null;
       await this.getBrowser();
+
       return;
     }
 
@@ -82,6 +85,7 @@ export class KongProductService {
       const loginBtn = await page.waitForSelector(".login_submit");
       await loginBtn.click();
       await page.waitForLoadState();
+      await page.waitForTimeout(3000);
       await page.close();
       await homePage.close();
     } catch (error) {
@@ -97,7 +101,7 @@ export class KongProductService {
       this.context = await chromium.launchPersistentContext(
         path.resolve("userData"),
         {
-          headless: true,
+          headless: false,
           // proxy: {
           //   server: "http://geo.iproyal.com:12321",
           //   username: "simon123",
@@ -119,6 +123,7 @@ export class KongProductService {
         await page.goto(url);
       } catch (error) {
         console.error(error);
+        this.context = null;
         await page.close();
         await this.getBrowser();
         return;
@@ -143,6 +148,7 @@ export class KongProductService {
             await this.getProductFromDetail(detailUrl);
           } catch (error) {
             console.error(error);
+            this.context = null;
             await this.getBrowser();
           }
         }
@@ -151,6 +157,7 @@ export class KongProductService {
         } catch (error) {
           console.error(error);
           await page.close();
+          this.context = null;
           await this.getBrowser();
           return;
         }
@@ -158,8 +165,12 @@ export class KongProductService {
       await page.close();
     } catch (error) {
       console.error(error);
+      this.context = null;
       await this.getBrowser();
     }
+    const text = await this.getBrowser();
+    text.close();
+    this.context = null;
   }
 
   async getProductFromDetail(url: string) {
@@ -167,13 +178,12 @@ export class KongProductService {
     beginTime = new Date();
     const context = await this.getBrowser();
     const page = await context.newPage();
-    await page.waitForTimeout((Math.random() + 1) * 5000);
     try {
       await page.goto(url);
     } catch (error) {
       console.error(error);
       await page.close();
-      await this.getBrowser();
+      this.context?.close();
       return;
     }
 
@@ -449,6 +459,7 @@ export class KongProductService {
           await coverPage.goto(coverImageUrl);
         } catch (error) {
           await coverPage.close();
+          this.context = null;
           await this.getBrowser();
           return await page.close();
         }
@@ -471,6 +482,7 @@ export class KongProductService {
         await coverPage.close();
       } catch (error) {
         console.log(error);
+        this.context = null;
         await this.getBrowser();
         await coverPage.close();
         return await page.close();
@@ -485,6 +497,7 @@ export class KongProductService {
         insideImages
       );
     } catch (error) {
+      this.context = null;
       await this.getBrowser();
       console.error(error);
       await page.close();
@@ -511,24 +524,29 @@ export class KongProductService {
     const listItems = await page.$$(".list-con-title a");
 
     let itemDetail: any = {};
-
+    let pricePageHref = null;
     for (let index = 0; index < listItems.length; index++) {
       const item = listItems[index];
       const title = await item?.innerText();
       if (title.includes(trimAll(bookData.title))) {
-        const href = await item.getAttribute("href");
-        try {
-          itemDetail = await this.getItemDetailByUrl(
-            href,
-            product.id,
-            bookData.isbn
-          );
-          break;
-        } catch (error) {
-          await this.getBrowser();
-          console.error({ error });
-        }
+        pricePageHref = await item.getAttribute("href");
+        break;
       }
+    }
+    if (pricePageHref) {
+      try {
+        itemDetail = await this.getItemDetailByUrl(
+          pricePageHref,
+          product.id,
+          bookData.isbn
+        );
+      } catch (error) {
+        this.context = null;
+        await this.getBrowser();
+        console.error({ error });
+      }
+    } else {
+      return await page.close();
     }
     const { itemImages, nowPrice, shipPrice, quality = "" } = itemDetail;
     product.images = [...images, ...(itemImages || []), ...insideImages];
@@ -572,6 +590,7 @@ export class KongProductService {
           const profitRate =
             (productToPut.price - newSellPrice - newShipPrice) /
             productToPut.price;
+          await page.close();
           await ProductModel.updateOne(
             { id: productToPut.id },
             {
@@ -592,6 +611,7 @@ export class KongProductService {
           );
         } catch (error) {
           console.error("更新价格失败", error);
+          this.context = null;
           await this.getBrowser();
         }
         endTime = new Date();
@@ -603,6 +623,7 @@ export class KongProductService {
         return;
       } else {
         console.log("价格一致，不需要调整======================");
+        await page.close();
         productToPut.needToAdjustLatestPrice = false;
         try {
           const profitRate =
@@ -630,6 +651,7 @@ export class KongProductService {
             }
           );
         } catch (error) {
+          this.context = null;
           await this.getBrowser();
           console.log(error);
         }
@@ -669,9 +691,16 @@ export class KongProductService {
         product.profitRate = !Number.isNaN(profitRate) ? profitRate : 0;
         await product.save();
       } catch (error) {
+        this.context = null;
         await this.getBrowser();
         console.log(error);
       }
+      endTime = new Date();
+      console.log(
+        "耗时",
+        (endTime.getTime() - beginTime.getTime()) / 1000,
+        "秒"
+      );
     }
     await page.close();
     endTime = new Date();
