@@ -97,7 +97,8 @@ export class KongProductService {
       this.context = await chromium.launchPersistentContext(
         path.resolve("userData"),
         {
-          headless: false,
+          headless: true,
+
           proxy: {
             server: "http://geo.iproyal.com:12321",
             username: "simon123",
