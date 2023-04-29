@@ -98,12 +98,11 @@ export class KongProductService {
         path.resolve("userData"),
         {
           headless: true,
-
-          proxy: {
-            server: "http://geo.iproyal.com:12321",
-            username: "simon123",
-            password: "lyp82ndlf",
-          },
+          // proxy: {
+          //   server: "http://geo.iproyal.com:12321",
+          //   username: "simon123",
+          //   password: "lyp82ndlf",
+          // },
         }
       );
     }
