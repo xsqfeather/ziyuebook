@@ -97,7 +97,12 @@ export class KongProductService {
       this.context = await chromium.launchPersistentContext(
         path.resolve("userData"),
         {
-          headless: true,
+          headless: false,
+          proxy: {
+            server: "http://geo.iproyal.com:12321",
+            username: "simon123",
+            password: "lyp82ndlf",
+          },
         }
       );
     }
