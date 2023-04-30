@@ -42,8 +42,6 @@ export class KongProductService {
     } catch (error) {
       console.error(error);
       await homePage.close();
-      this.context = null;
-      await this.getBrowser();
       return;
     }
 
@@ -63,10 +61,6 @@ export class KongProductService {
     } catch (error) {
       console.error(error);
       await page.close();
-      await homePage.close();
-      this.context = null;
-      await this.getBrowser();
-
       return;
     }
 
@@ -123,9 +117,7 @@ export class KongProductService {
         await page.goto(url);
       } catch (error) {
         console.error(error);
-        this.context = null;
         await page.close();
-        await this.getBrowser();
         return;
       }
 
@@ -157,8 +149,6 @@ export class KongProductService {
         } catch (error) {
           console.error(error);
           await page.close();
-          this.context = null;
-          await this.getBrowser();
           return;
         }
       }
@@ -183,7 +173,6 @@ export class KongProductService {
     } catch (error) {
       console.error(error);
       await page.close();
-      this.context?.close();
       return;
     }
 
@@ -242,7 +231,6 @@ export class KongProductService {
             } catch (error) {
               console.error(error);
               await insideImagesPage.close();
-              await this.getBrowser();
               return;
             }
 
@@ -458,10 +446,9 @@ export class KongProductService {
         try {
           await coverPage.goto(coverImageUrl);
         } catch (error) {
+          console.log(error);
           await coverPage.close();
-          this.context = null;
-          await this.getBrowser();
-          return await page.close();
+          return;
         }
 
         const coverElement = await coverPage.waitForSelector("img");
@@ -715,7 +702,8 @@ export class KongProductService {
       await page.goto(url);
     } catch (error) {
       error("打开页面失败，重新打开", error);
-      context = await this.getBrowser();
+      await page.close();
+      return;
     }
 
     const priceEle = await page.waitForSelector(".now-price .now-price-text");
