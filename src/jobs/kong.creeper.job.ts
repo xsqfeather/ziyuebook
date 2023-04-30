@@ -40,7 +40,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   levelKey = PRODUCT_JOB + this.eventName + "categoryUrlIndex";
 
   agenda = new Agenda({
-    db: { address: getAgendaMongoURI(), collection: "getKongPriceJobs" },
+    db: { address: getAgendaMongoURI(), collection: "getKongCreeperJobs" },
   });
 
   @Inject(() => LevelCacheService)
