@@ -1,6 +1,7 @@
-import { getModelForClass } from "@typegoose/typegoose";
+import { getModelForClass, modelOptions } from "@typegoose/typegoose";
 import { Base } from "../lib/models";
 
+@modelOptions({ options: { allowMixed: 0 } })
 export class Trader extends Base {
   initAmount: number;
   currentAmount: number;
@@ -38,7 +39,16 @@ export class Trader extends Base {
   //买入概率下降间隔
   buyDownRateInterval: number;
 
-  //是否套牢
+  //是否套牢, 套牢后不再买入, 止损
   isLock: boolean;
+
+  //历史最高价格
+  historyMaxPrice: number;
+
+  //历史最低价格
+  historyMinPrice: number;
+
+  //交易对
+  symbol: string;
 }
 export const TraderModel = getModelForClass(Trader);

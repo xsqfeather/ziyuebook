@@ -1,6 +1,7 @@
 import { Trader, TraderModel } from "../models/trader.model";
+import { BaseService } from "./base.service";
 
-export class TraderService {
+export class TraderService extends BaseService<Trader> {
   async create(trader: Trader) {
     const newTrader = new Trader();
     newTrader.id = trader.id;
@@ -17,5 +18,9 @@ export class TraderService {
 
   async buyAll() {
     return "buyAll";
+  }
+
+  async decideToBuy(price: number) {
+    return "decideToBuy";
   }
 }

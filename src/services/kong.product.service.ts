@@ -140,6 +140,8 @@ export class KongProductService {
             await this.getProductFromDetail(detailUrl);
           } catch (error) {
             console.error("获取书目页面出错", error);
+            this.context = null;
+            await this.getBrowser();
             continue;
           }
         }
