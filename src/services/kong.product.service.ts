@@ -116,7 +116,7 @@ export class KongProductService {
       try {
         await page.goto(url);
       } catch (error) {
-        console.error(error);
+        console.error("去分类页面出错", error);
         await page.close();
         return;
       }
@@ -139,26 +139,24 @@ export class KongProductService {
           try {
             await this.getProductFromDetail(detailUrl);
           } catch (error) {
-            console.error(error);
+            console.error("获取书目页面出错", error);
+            continue;
           }
         }
         try {
           await page.goto(`${url}/v1w${pageIndex}`);
         } catch (error) {
-          console.error(error);
+          console.error("获取下一页出错", error);
           await page.close();
-          return;
+          continue;
         }
       }
       await page.close();
     } catch (error) {
-      console.error(error);
-      this.context = null;
-      await this.getBrowser();
+      console.error("获取分类页面出错", error);
+      this.context?.close();
+      return;
     }
-    const text = await this.getBrowser();
-    text.close();
-    this.context = null;
   }
 
   async getProductFromDetail(url: string) {
@@ -173,14 +171,19 @@ export class KongProductService {
       await page.close();
       return;
     }
-
-    const priceArea = await page.waitForSelector("#priceOrder");
-    await priceArea.click();
-    const sortArea = await page.waitForSelector(
-      "#priceOrder .price-select-box a:first-child"
-    );
-    await sortArea.click();
-    await page.waitForLoadState();
+    try {
+      const priceArea = await page.waitForSelector("#priceOrder");
+      await priceArea.click();
+      const sortArea = await page.waitForSelector(
+        "#priceOrder .price-select-box a:first-child"
+      );
+      await sortArea.click();
+      await page.waitForLoadState();
+    } catch (error) {
+      console.error(error);
+      await page.close();
+      return;
+    }
     try {
       const product = new ProductModel();
       const images: string[] = [];
