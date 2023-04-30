@@ -140,8 +140,6 @@ export class KongProductService {
             await this.getProductFromDetail(detailUrl);
           } catch (error) {
             console.error(error);
-            this.context = null;
-            await this.getBrowser();
           }
         }
         try {
@@ -182,7 +180,7 @@ export class KongProductService {
       "#priceOrder .price-select-box a:first-child"
     );
     await sortArea.click();
-    await page.waitForTimeout((Math.random() + 1) * 2000);
+    await page.waitForLoadState();
     try {
       const product = new ProductModel();
       const images: string[] = [];
@@ -208,185 +206,198 @@ export class KongProductService {
         categoryId: "",
       };
       //开始获取出版社等其他信息
-      const bookInfoItems = await page.$$(".detail-con-right-top .item");
-      for (let index = 0; index < bookInfoItems.length; index++) {
-        const bookInfoItem = bookInfoItems[index];
-        const bookInfoText = await bookInfoItem?.innerText();
-        if (bookInfoText.includes("ISBN")) {
-          const isbn = bookInfoText.replace("ISBN:", "").replace(" ", "");
-          bookData.isbn = isbn;
-        }
-        if (bookInfoText.includes("插图图片")) {
-          //插图方式
-          const imagesEle = await bookInfoItem.$("a");
-          const context = await this.getBrowser();
-          const insideImagesPage = await context.newPage();
-          try {
-            const href =
-              "https://item.kongfz.com" +
-              (await imagesEle.getAttribute("href"));
-            // console.log("开始获取图片", href);
+      try {
+        const bookInfoItems = await page.$$(".detail-con-right-top .item");
+        for (let index = 0; index < bookInfoItems.length; index++) {
+          const bookInfoItem = bookInfoItems[index];
+          const bookInfoText = await bookInfoItem?.innerText();
+          if (bookInfoText.includes("ISBN")) {
+            const isbn = bookInfoText.replace("ISBN:", "").replace(" ", "");
+            bookData.isbn = isbn;
+          }
+          if (bookInfoText.includes("插图图片")) {
+            //插图方式
+            const imagesEle = await bookInfoItem.$("a");
+            const context = await this.getBrowser();
+            const insideImagesPage = await context.newPage();
             try {
-              await insideImagesPage.goto(href);
+              const href =
+                "https://item.kongfz.com" +
+                (await imagesEle.getAttribute("href"));
+              // console.log("开始获取图片", href);
+              try {
+                await insideImagesPage.goto(href);
+              } catch (error) {
+                console.error(error);
+                await insideImagesPage.close();
+                return;
+              }
+
+              await insideImagesPage.waitForLoadState();
+              for (let index = 0; index < 20; index++) {
+                await insideImagesPage.waitForTimeout(500);
+                await insideImagesPage.mouse.wheel(0, 500);
+              }
+              const imageEles = await insideImagesPage.$$("a img");
+              for (let index = 0; index < imageEles.length; index++) {
+                const element = imageEles[index];
+                let src = await element.getAttribute("src");
+                if (src.includes("_water")) {
+                  src = src.replace("_water", "");
+                  insideImages.push(src);
+                }
+              }
+              await insideImagesPage.close();
             } catch (error) {
               console.error(error);
+              await this.getBrowser();
               await insideImagesPage.close();
-              return;
             }
-
-            await insideImagesPage.waitForLoadState();
-            for (let index = 0; index < 20; index++) {
-              await insideImagesPage.waitForTimeout(500);
-              await insideImagesPage.mouse.wheel(0, 500);
-            }
-            const imageEles = await insideImagesPage.$$("a img");
-            for (let index = 0; index < imageEles.length; index++) {
-              const element = imageEles[index];
-              let src = await element.getAttribute("src");
-              if (src.includes("_water")) {
-                src = src.replace("_water", "");
-                insideImages.push(src);
-              }
-            }
-            await insideImagesPage.close();
-          } catch (error) {
-            console.error(error);
-            await this.getBrowser();
-            await insideImagesPage.close();
           }
-        }
-        if (bookInfoText.includes("出版社")) {
-          const publisher = bookInfoText
-            .replace("出版社:", "")
-            .replace(" ", "");
-          const bookPublish = await BookPublisherModel.findOne({
-            name: publisher,
-          });
-          bookData.publisher = publisher;
-          bookData.publisherId = bookPublish?.id;
-          if (!bookPublish) {
-            const newPublish = new BookPublisherModel();
-            newPublish.name = publisher;
-            newPublish.cover = generator.generateRandomAvatar();
-            newPublish.description = publisher;
-            await newPublish.save();
-            bookData.publisherId = newPublish.id;
-          }
-        }
-        if (bookInfoText.includes("出版时间")) {
-          const publishTime = bookInfoText.replace("出版时间:", "");
-          try {
-            bookData.publishTime = moment(
-              publishTime.length > 4
-                ? publishTime + "-10 00:00:00"
-                : publishTime + "01-10 00:00:00"
-            ).toDate();
-          } catch (error) {
-            console.error(error);
-            await this.getBrowser();
-            bookData.publishTime = new Date();
-          }
-        }
-        if (bookInfoText.includes("版次")) {
-          const publishVersion = bookInfoText.replace("版次:", "");
-          bookData.publishVersion = +publishVersion;
-        }
-
-        if (bookInfoText.includes("页数")) {
-          const pages = bookInfoText.replace("页数:", "").replace("页", "");
-          bookData.pageAmount = +pages;
-        }
-        if (bookInfoText.includes("分类")) {
-          const category = bookInfoText.replace("分类:", "").replace(" ", "");
-          const categories = category.split(">");
-          const bookCate =
-            await this.productCategoryService.getOrCreateBookCategory();
-          let lastCate = bookCate;
-          for (let index = 0; index < categories.length; index++) {
-            const cate = categories[index];
-            const cateRecord = await ProductCategoryModel.findOne({
-              name: cate,
-              superCategoryName: bookCate.name,
-              superCategoryId: bookCate.id,
+          if (bookInfoText.includes("出版社")) {
+            const publisher = bookInfoText
+              .replace("出版社:", "")
+              .replace(" ", "");
+            const bookPublish = await BookPublisherModel.findOne({
+              name: publisher,
             });
-            if (!cateRecord) {
-              const newCate = new ProductCategoryModel();
-              newCate.name = cate;
-              newCate.superCategoryName = lastCate.name;
-              newCate.superCategoryId = lastCate.id;
-              await newCate.save();
-              if (index === categories.length - 1) {
-                bookData.categoryId = newCate.id;
-                product.categoryId = newCate.id;
-              }
-              lastCate = newCate;
-            } else {
-              lastCate = cateRecord;
-            }
-            if (cateRecord && index === categories.length - 1) {
-              bookData.categoryId = cateRecord.id;
-              product.categoryId = cateRecord.id;
+            bookData.publisher = publisher;
+            bookData.publisherId = bookPublish?.id;
+            if (!bookPublish) {
+              const newPublish = new BookPublisherModel();
+              newPublish.name = publisher;
+              newPublish.cover = generator.generateRandomAvatar();
+              newPublish.description = publisher;
+              await newPublish.save();
+              bookData.publisherId = newPublish.id;
             }
           }
-          bookData.category = categories[categories.length - 1];
-          product.category = categories[categories.length - 1];
-        }
-        if (bookInfoText.includes("装帧")) {
-          const binding = bookInfoText.replace("装帧:", "").replace(" ", "");
-          bookData.binding = binding;
-        }
-        if (bookInfoText.includes("开本")) {
-          const format = bookInfoText.replace("开本:", "").replace(" ", "");
-          bookData.format = format;
-        }
-        if (bookInfoText.includes("纸张")) {
-          const paper = bookInfoText.replace("纸张:", "").replace(" ", "");
-          bookData.paper = paper;
-        }
-        if (bookInfoText.includes("人买过")) {
-          const buyAmount = bookInfoText.replace("人买过", "").replace(" ", "");
-          bookData.buyAmount = +buyAmount;
-        }
-        if (bookInfoText.includes("定价")) {
-          const bookPrice = bookInfoText.replace("定价:", "").replace(" ", "");
-          bookData.bookPrice = Number(bookPrice) * 100;
-        }
-        if (bookInfoText.includes("丛书")) {
-          const series = bookInfoText.replace("丛书:", "").replace(" ", "");
-          const seriesRecord = await BookSeriesModel.findOne({ name: series });
+          if (bookInfoText.includes("出版时间")) {
+            const publishTime = bookInfoText.replace("出版时间:", "");
+            try {
+              bookData.publishTime = moment(
+                publishTime.length > 4
+                  ? publishTime + "-10 00:00:00"
+                  : publishTime + "01-10 00:00:00"
+              ).toDate();
+            } catch (error) {
+              console.error(error);
+              await this.getBrowser();
+              bookData.publishTime = new Date();
+            }
+          }
+          if (bookInfoText.includes("版次")) {
+            const publishVersion = bookInfoText.replace("版次:", "");
+            bookData.publishVersion = +publishVersion;
+          }
 
-          bookData.series = series;
-          bookData.seriesId = seriesRecord?.id;
-          if (!seriesRecord) {
-            const newSeries = new BookSeriesModel();
-            newSeries.name = series;
-            newSeries.cover = generator.generateRandomAvatar();
-            newSeries.description = series;
-            await newSeries.save();
-            bookData.seriesId = newSeries.id;
+          if (bookInfoText.includes("页数")) {
+            const pages = bookInfoText.replace("页数:", "").replace("页", "");
+            bookData.pageAmount = +pages;
           }
+          if (bookInfoText.includes("分类")) {
+            const category = bookInfoText.replace("分类:", "").replace(" ", "");
+            const categories = category.split(">");
+            const bookCate =
+              await this.productCategoryService.getOrCreateBookCategory();
+            let lastCate = bookCate;
+            for (let index = 0; index < categories.length; index++) {
+              const cate = categories[index];
+              const cateRecord = await ProductCategoryModel.findOne({
+                name: cate,
+                superCategoryName: bookCate.name,
+                superCategoryId: bookCate.id,
+              });
+              if (!cateRecord) {
+                const newCate = new ProductCategoryModel();
+                newCate.name = cate;
+                newCate.superCategoryName = lastCate.name;
+                newCate.superCategoryId = lastCate.id;
+                await newCate.save();
+                if (index === categories.length - 1) {
+                  bookData.categoryId = newCate.id;
+                  product.categoryId = newCate.id;
+                }
+                lastCate = newCate;
+              } else {
+                lastCate = cateRecord;
+              }
+              if (cateRecord && index === categories.length - 1) {
+                bookData.categoryId = cateRecord.id;
+                product.categoryId = cateRecord.id;
+              }
+            }
+            bookData.category = categories[categories.length - 1];
+            product.category = categories[categories.length - 1];
+          }
+          if (bookInfoText.includes("装帧")) {
+            const binding = bookInfoText.replace("装帧:", "").replace(" ", "");
+            bookData.binding = binding;
+          }
+          if (bookInfoText.includes("开本")) {
+            const format = bookInfoText.replace("开本:", "").replace(" ", "");
+            bookData.format = format;
+          }
+          if (bookInfoText.includes("纸张")) {
+            const paper = bookInfoText.replace("纸张:", "").replace(" ", "");
+            bookData.paper = paper;
+          }
+          if (bookInfoText.includes("人买过")) {
+            const buyAmount = bookInfoText
+              .replace("人买过", "")
+              .replace(" ", "");
+            bookData.buyAmount = +buyAmount;
+          }
+          if (bookInfoText.includes("定价")) {
+            const bookPrice = bookInfoText
+              .replace("定价:", "")
+              .replace(" ", "");
+            bookData.bookPrice = Number(bookPrice) * 100;
+          }
+          if (bookInfoText.includes("丛书")) {
+            const series = bookInfoText.replace("丛书:", "").replace(" ", "");
+            const seriesRecord = await BookSeriesModel.findOne({
+              name: series,
+            });
+
+            bookData.series = series;
+            bookData.seriesId = seriesRecord?.id;
+            if (!seriesRecord) {
+              const newSeries = new BookSeriesModel();
+              newSeries.name = series;
+              newSeries.cover = generator.generateRandomAvatar();
+              newSeries.description = series;
+              await newSeries.save();
+              bookData.seriesId = newSeries.id;
+            }
+          }
+          if (bookInfoText.includes("原版书名")) {
+            const originalName = bookInfoText
+              .replace("原版书名:", "")
+              .replace(" ", "");
+            bookData.originalName = originalName;
+          }
+          if (bookInfoText.includes("正文语种")) {
+            const printVersion = bookInfoText
+              .replace("正文语种:", "")
+              .replace(" ", "");
+            bookData.contentLang = printVersion;
+          }
+          if (bookInfoText.includes("字数")) {
+            const wordAmount = bookInfoText
+              .replace("字数:", "")
+              .replace("千字", "")
+              .replace(" ", "");
+            bookData.wordAmount = +wordAmount;
+          }
+          // console.log({ bookInfoText });
         }
-        if (bookInfoText.includes("原版书名")) {
-          const originalName = bookInfoText
-            .replace("原版书名:", "")
-            .replace(" ", "");
-          bookData.originalName = originalName;
-        }
-        if (bookInfoText.includes("正文语种")) {
-          const printVersion = bookInfoText
-            .replace("正文语种:", "")
-            .replace(" ", "");
-          bookData.contentLang = printVersion;
-        }
-        if (bookInfoText.includes("字数")) {
-          const wordAmount = bookInfoText
-            .replace("字数:", "")
-            .replace("千字", "")
-            .replace(" ", "");
-          bookData.wordAmount = +wordAmount;
-        }
-        // console.log({ bookInfoText });
+      } catch (error) {
+        console.error(error);
+        await this.getBrowser();
+        return;
       }
+
       const titleEle = await page.waitForSelector(".detail-title");
       const title = await titleEle?.innerText();
 
