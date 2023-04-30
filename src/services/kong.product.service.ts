@@ -533,6 +533,9 @@ export class KongProductService {
     } else {
       return await page.close();
     }
+    if (!itemDetail) {
+      return await page.close();
+    }
     const { itemImages, nowPrice, shipPrice, quality = "" } = itemDetail;
     product.images = [...images, ...(itemImages || []), ...insideImages];
     console.log({ quality, shipPrice, nowPrice });
