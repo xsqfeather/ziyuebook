@@ -700,7 +700,7 @@ export class KongProductService {
     try {
       await page.goto(url);
     } catch (error) {
-      error("打开页面失败，重新打开", error);
+      console.error("打开页面失败，重新打开", error);
       await page.close();
       return;
     }
