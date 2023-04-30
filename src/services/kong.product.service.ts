@@ -157,6 +157,7 @@ export class KongProductService {
       this.context?.close();
       return;
     }
+    this.context?.close();
   }
 
   async getProductFromDetail(url: string) {
