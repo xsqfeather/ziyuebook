@@ -528,8 +528,6 @@ export class KongProductService {
           bookData.isbn
         );
       } catch (error) {
-        this.context = null;
-        await this.getBrowser();
         console.error({ error });
       }
     } else {
@@ -670,6 +668,7 @@ export class KongProductService {
       product.bookData.newPrice = newPrice;
       product.bookData.price = newPrice;
       product.price = newPrice * 1.5;
+      product.createdAt = new Date();
 
       product.type = "book";
       try {
@@ -742,29 +741,34 @@ export class KongProductService {
         await page.waitForTimeout(500);
         await page.mouse.wheel(0, 500);
       }
+      try {
+        const imageEles = await page.$$("ul li a img");
 
-      const imageEles = await page.$$("ul li a img");
-
-      for (let index = 0; index < imageEles.length; index++) {
-        const imageEle = imageEles[index];
-        const imageUrl = await imageEle.getAttribute("src");
-        if (!imageUrl.includes("_b")) {
-          continue;
+        for (let index = 0; index < imageEles.length; index++) {
+          const imageEle = imageEles[index];
+          const imageUrl = await imageEle.getAttribute("src");
+          if (!imageUrl.includes("_b")) {
+            continue;
+          }
+          try {
+            const response = await axios.get(imageUrl.replace("_b", ""), {
+              responseType: "arraybuffer",
+            });
+            const buffer = Buffer.from(response.data, "utf-8");
+            const uploadRlt = await this.uploadService.uploadTTImage(
+              buffer,
+              productId + index + ".png"
+            );
+            itemImages.push("https://" + uploadRlt);
+          } catch (error) {
+            console.log(error);
+            itemImages.push(imageUrl.replace("_b", ""));
+            await page.close();
+          }
         }
-        try {
-          const response = await axios.get(imageUrl.replace("_b", ""), {
-            responseType: "arraybuffer",
-          });
-          const buffer = Buffer.from(response.data, "utf-8");
-          const uploadRlt = await this.uploadService.uploadTTImage(
-            buffer,
-            productId + index + ".png"
-          );
-          itemImages.push("https://" + uploadRlt);
-        } catch (error) {
-          console.log(error);
-          itemImages.push(imageUrl.replace("_b", ""));
-        }
+      } catch (error) {
+        console.error({ error });
+        await page.close();
       }
     }
 

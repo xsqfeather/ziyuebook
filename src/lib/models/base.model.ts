@@ -8,7 +8,7 @@ class BaseClass {
   public id!: string;
 
   @Required()
-  @prop({ required: true, default: () => new Date(), type: Date })
+  @prop({ required: true, default: new Date(), type: Date })
   public createdAt!: Date;
 
   @Required()
