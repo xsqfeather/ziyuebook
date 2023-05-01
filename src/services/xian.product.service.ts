@@ -124,9 +124,13 @@ export class XianProductService {
     );
     console.log("==========更新了", rlt.modifiedCount, "条数据==========");
     if (!exitsProduct) {
-      this.kongProductService.getProductDetailFromISBN(
-        productDetail.book_data?.isbn
-      );
+      try {
+        await this.kongProductService.getProductDetailFromISBN(
+          productDetail.book_data?.isbn
+        );
+      } catch (error) {
+        console.log("==========获取kong产品详情失败==========", error);
+      }
     }
 
     return productDetail;
