@@ -137,7 +137,7 @@ export class KongProductService {
           const itemHtml = await item.$(".title a");
           const detailUrl = await itemHtml.getAttribute("href");
           try {
-            await this.getProductFromDetail(detailUrl);
+            await this.getProductFromDetail(detailUrl, context);
           } catch (error) {
             console.error("获取书目页面出错", error);
             this.context = null;
@@ -162,12 +162,12 @@ export class KongProductService {
     this.context?.close();
   }
 
-  async getProductFromDetail(url: string) {
+  async getProductFromDetail(url: string, context?: BrowserContext) {
     console.log("开始在", url, "获取数据");
     beginTime = new Date();
-    this.context = null;
-    const context = await this.getBrowser();
-    const page = await context.newPage();
+    this.context = context;
+    context = context || (await this.getBrowser());
+    const page = await context?.newPage();
     try {
       await page.goto(url);
     } catch (error) {
