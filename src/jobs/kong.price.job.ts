@@ -47,6 +47,8 @@ export class KongPriceJob {
         product.bookData.isbn
       );
     }
-    await this.start();
+    setTimeout(async () => {
+      await this.start();
+    }, 5000);
   };
 }

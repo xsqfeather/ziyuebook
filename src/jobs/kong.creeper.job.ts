@@ -78,7 +78,9 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
     );
     if (!this.started) {
       await this.kongProductService.toCategoryPage(categoryUrl);
-      await this.start();
+      setTimeout(async () => {
+        await this.start();
+      }, 1000 * 60);
     }
   };
 }
