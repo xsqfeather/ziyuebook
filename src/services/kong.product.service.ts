@@ -176,10 +176,7 @@ export class KongProductService {
       timeout: 0,
     });
     try {
-      const listItem = await homePage.waitForSelector(".item-info .title a", {
-        timeout: 0,
-      });
-
+      const listItem = await homePage.waitForSelector(".item-info .title a");
       const detailUrl = await listItem.getAttribute("href");
       await homePage.close();
       return this.getProductFromDetail(detailUrl, context);
