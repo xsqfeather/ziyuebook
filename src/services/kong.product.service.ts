@@ -165,12 +165,13 @@ export class KongProductService {
   async getProductFromDetail(url: string) {
     console.log("开始在", url, "获取数据");
     beginTime = new Date();
+    this.context = null;
     const context = await this.getBrowser();
     const page = await context.newPage();
     try {
       await page.goto(url);
     } catch (error) {
-      console.error(error);
+      console.error("获取书籍目录数据出错", error);
       await page.close();
       return;
     }
@@ -183,7 +184,7 @@ export class KongProductService {
       await sortArea.click();
       await page.waitForLoadState();
     } catch (error) {
-      console.error(error);
+      console.error("价格排序出错", error);
       await page.close();
       return;
     }
