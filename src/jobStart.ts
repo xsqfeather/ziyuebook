@@ -7,5 +7,5 @@ import { BrowserContextService } from "./services/browser.context.service";
 
 (async function () {
   await Container.get(BrowserContextService).getBrowser();
-  await startJobs([KongCreeperJob, KongPriceJob]);
+  await startJobs([KongCreeperJob, KongPriceJob, ProductsGetFromXianJob]);
 })();

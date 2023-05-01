@@ -7,6 +7,7 @@ import moment from "moment";
 
 import { Inject, Service } from "typedi";
 import { XianProductCreateDto, XianProductEditDto } from "../dtos";
+import { KongProductService } from "./kong.product.service";
 
 const XIANGUANJIA_APP_KEY = "395975399510085";
 
@@ -16,6 +17,9 @@ const XIANGUANJIA_APP_SECRET = "7eHkPauNq4AslcmKKjaOzUrkYLaHA8Zs";
 export class XianProductService {
   @Inject(() => LevelCacheService)
   levelCacheService: LevelCacheService;
+
+  @Inject(() => KongProductService)
+  kongProductService: KongProductService;
 
   sign(appKey: string, appSecret: string, timestamp: number, body: any) {
     const bodyMd5 = MD5(JSON.stringify(body)).toString();
@@ -32,6 +36,7 @@ export class XianProductService {
     const data = {
       start_modified,
       page_no: page,
+      page_size: 5,
     };
 
     const timestamp = Math.floor(new Date().getTime() / 1000);
@@ -118,6 +123,11 @@ export class XianProductService {
       }
     );
     console.log("==========更新了", rlt.modifiedCount, "条数据==========");
+    if (!exitsProduct) {
+      this.kongProductService.getProductDetailFromISBN(
+        productDetail.book_data?.isbn
+      );
+    }
 
     return productDetail;
   }

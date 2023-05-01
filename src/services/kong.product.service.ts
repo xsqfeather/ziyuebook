@@ -163,6 +163,33 @@ export class KongProductService {
     }
   }
 
+  async getProductDetailFromISBN(isbn: string) {
+    let context = await this.browserContextService.getBrowser();
+    const homePage = await context.newPage();
+    await homePage.goto(
+      "https://search.kongfz.com/item_result/?status=0&key=" + isbn,
+      {
+        timeout: 0,
+      }
+    );
+    await homePage.waitForLoadState("networkidle", {
+      timeout: 0,
+    });
+    try {
+      const listItem = await homePage.waitForSelector(".item-info .title a", {
+        timeout: 0,
+      });
+
+      const detailUrl = await listItem.getAttribute("href");
+      await homePage.close();
+      return this.getProductFromDetail(detailUrl, context);
+    } catch (error) {
+      console.error("获取书籍详情出错ISBN", error);
+      await homePage.close();
+      return;
+    }
+  }
+
   async getProductFromDetail(url: string, context?: BrowserContext) {
     console.log("开始在", url, "获取数据");
     beginTime = new Date();

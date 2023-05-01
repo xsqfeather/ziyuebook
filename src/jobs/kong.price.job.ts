@@ -43,7 +43,9 @@ export class KongPriceJob {
         product.originUrl
       );
 
-      await this.kongProductService.getProductFromDetail(product.originUrl);
+      await this.kongProductService.getProductDetailFromISBN(
+        product.bookData.isbn
+      );
     }
     await this.start();
   };
