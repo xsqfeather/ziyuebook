@@ -1,12 +1,9 @@
-import Agenda, { Job } from "agenda";
-import { AgendaService } from "../lib";
-import { getAgendaMongoURI } from "../lib/config";
 import { PRODUCT_JOB } from "./namespaces";
 import { Inject, Service } from "typedi";
 import { LevelCacheService } from "../lib/services";
 import { KongProductService } from "../services/kong.product.service";
 import { Product, ProductModel } from "../models";
-import { BrowserContextService } from "services/browser.context.service";
+import { BrowserContextService } from "../services/browser.context.service";
 
 @Service()
 export class KongPriceJob {
@@ -15,10 +12,6 @@ export class KongPriceJob {
   started = false;
 
   levelKey = PRODUCT_JOB + this.eventName + "categoryUrlIndex";
-
-  agenda = new Agenda({
-    db: { address: getAgendaMongoURI(), collection: "getKongPriceJobs" },
-  });
 
   @Inject(() => LevelCacheService)
   levelCacheService: LevelCacheService;
