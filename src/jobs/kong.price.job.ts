@@ -6,9 +6,10 @@ import { Inject, Service } from "typedi";
 import { LevelCacheService } from "../lib/services";
 import { KongProductService } from "../services/kong.product.service";
 import { Product, ProductModel } from "../models";
+import { BrowserContextService } from "services/browser.context.service";
 
 @Service()
-export class KongPriceJob implements AgendaService<Product> {
+export class KongPriceJob {
   eventName = "KongPriceJob";
 
   started = false;
@@ -25,43 +26,9 @@ export class KongPriceJob implements AgendaService<Product> {
   @Inject(() => KongProductService)
   kongProductService: KongProductService;
 
-  constructor() {
-    this.agenda.define(this.eventName, this.handle);
-  }
-  handle = async (job: Job<Product>, done?: () => void) => {
-    try {
-      const product = job.attrs.data;
-      console.log(
-        "开始检查======",
-        product.title,
-        "是否有新价格",
-        product.originUrl
-      );
-      await ProductModel.updateOne(
-        { id: product.id },
-        { lastCheckTime: new Date() }
-      );
-      if (product) {
-        await this.kongProductService.getProductFromDetail(product.originUrl);
-      }
-
-      await this.start();
-      done?.();
-    } catch (error) {
-      console.error(error);
-      await this.agenda.stop();
-      this.started = false;
-      await this.start();
-
-      done?.();
-    }
-  };
-
+  @Inject(() => BrowserContextService)
+  browserContextService: BrowserContextService;
   start = async () => {
-    if (!this.started) {
-      await this.agenda.start();
-      this.started = true;
-    }
     const product = await ProductModel.findOne({
       originUrl: {
         $exists: true,
@@ -71,7 +38,20 @@ export class KongPriceJob implements AgendaService<Product> {
       lastCheckTime: 1,
       updatedAt: 1,
     });
+    await ProductModel.updateOne(
+      { id: product.id },
+      { lastCheckTime: new Date() }
+    );
+    if (product) {
+      console.log(
+        "开始检查======",
+        product.title,
+        "是否有新价格",
+        product.originUrl
+      );
 
-    await this.agenda.schedule("in 2 minutes", this.eventName, product);
+      await this.kongProductService.getProductFromDetail(product.originUrl);
+    }
+    await this.start();
   };
 }

@@ -1,6 +1,5 @@
 import { Inject, Service } from "typedi";
-import { BrowserContext, Page, chromium } from "playwright";
-import path from "path";
+import { BrowserContext, Page } from "playwright";
 import { Book, Product, ProductCategoryModel, ProductModel } from "../models";
 import { BookAuthorModel } from "../models/book.author.model";
 
@@ -17,6 +16,7 @@ import {
   IObjectWithTypegooseFunction,
 } from "@typegoose/typegoose/lib/types";
 import trimAll from "../utils/trimAll";
+import { BrowserContextService } from "./browser.context.service";
 
 const generator = new AvatarGenerator();
 
@@ -34,14 +34,24 @@ export class KongProductService {
   @Inject(() => UploadService)
   uploadService: UploadService;
 
+  @Inject(() => BrowserContextService)
+  browserContextService: BrowserContextService;
+
   checkToLogin = async () => {
-    let context = await this.getBrowser();
-    let homePage = await context.newPage();
+    let context = await this.browserContextService.getBrowser();
+    const [homePage] = context.pages();
     try {
-      await homePage.goto("https://shop.kongfz.com/");
+      await homePage.goto("https://shop.kongfz.com/", {
+        timeout: 0,
+      });
+      await homePage.waitForLoadState("networkidle", {
+        timeout: 0,
+      });
     } catch (error) {
-      console.error(error);
-      await homePage.close();
+      await homePage?.close();
+      await context?.close();
+      this.context = null;
+      await this.browserContextService.getBrowser();
       return;
     }
 
@@ -52,7 +62,7 @@ export class KongProductService {
       await homePage.close();
       return;
     }
-    context = await this.getBrowser();
+    context = await this.browserContextService.getBrowser();
     let page = await context.newPage();
     try {
       await page.goto(
@@ -78,46 +88,37 @@ export class KongProductService {
 
       const loginBtn = await page.waitForSelector(".login_submit");
       await loginBtn.click();
-      await page.waitForLoadState();
-      await page.waitForTimeout(3000);
+      await page.waitForLoadState("networkidle", {
+        timeout: 0,
+      });
       await page.close();
       await homePage.close();
     } catch (error) {
       console.error(error);
       await page.close();
       await homePage.close();
-      await this.getBrowser();
+      await this.browserContextService.getBrowser();
     }
-  };
-
-  getBrowser = async () => {
-    if (!this.context) {
-      this.context = await chromium.launchPersistentContext(
-        path.resolve("userData"),
-        {
-          headless: true,
-          // proxy: {
-          //   server: "http://geo.iproyal.com:12321",
-          //   username: "simon123",
-          //   password: "lyp82ndlf",
-          // },
-        }
-      );
-    }
-
-    return this.context;
   };
 
   async toCategoryPage(url: string) {
     try {
       await this.checkToLogin();
-      const context = await this.getBrowser();
-      let page = await context.newPage();
+      const context = await this.browserContextService.getBrowser();
+      let page = await context?.newPage();
       try {
-        await page.goto(url);
+        console.log("正在跳转分类页面.....", url);
+        await page?.goto(url, {
+          timeout: 0,
+        });
+        await page?.waitForLoadState("networkidle", {
+          timeout: 0,
+        });
+        console.log("跳转到了分类页面");
       } catch (error) {
         console.error("去分类页面出错", error);
         await page.close();
+        page = await context.newPage();
         return;
       }
 
@@ -125,23 +126,23 @@ export class KongProductService {
       await listEle.click();
       const sellEle = page.getByText("销量");
       await sellEle.click();
-      const lastPageEle = await page.$$(".item-page");
+      console.log("按照销量排序完成...........");
 
-      const pageText = await lastPageEle[lastPageEle.length - 1]?.innerText();
-
-      for (let pageIndex = 2; pageIndex <= +pageText; pageIndex++) {
+      for (let pageIndex = 2; pageIndex <= 100; pageIndex++) {
         const listItems = await page.$$("#listBox .item");
         for (let index = 0; index < listItems.length; index++) {
           beginTime = new Date();
           const item = listItems[index];
-          const itemHtml = await item.$(".title a");
+          const itemHtml = await item.waitForSelector(".title a", {
+            timeout: 0,
+          });
           const detailUrl = await itemHtml.getAttribute("href");
           try {
             await this.getProductFromDetail(detailUrl, context);
           } catch (error) {
             console.error("获取书目页面出错", error);
             this.context = null;
-            await this.getBrowser();
+            await this.browserContextService.getBrowser();
             continue;
           }
         }
@@ -156,23 +157,25 @@ export class KongProductService {
       await page.close();
     } catch (error) {
       console.error("获取分类页面出错", error);
-      this.context?.close();
-      return;
+      await this.context?.close();
+      this.context = null;
+      this.browserContextService.getBrowser();
     }
-    this.context?.close();
   }
 
   async getProductFromDetail(url: string, context?: BrowserContext) {
     console.log("开始在", url, "获取数据");
     beginTime = new Date();
     this.context = context;
-    context = context || (await this.getBrowser());
+    context = context || (await this.browserContextService.getBrowser());
     const page = await context?.newPage();
     try {
-      await page.goto(url);
+      await page.goto(url, {
+        timeout: 0,
+      });
     } catch (error) {
       console.error("获取书籍目录数据出错", error);
-      await page.close();
+      await page?.close();
       return;
     }
     try {
@@ -182,7 +185,9 @@ export class KongProductService {
         "#priceOrder .price-select-box a:first-child"
       );
       await sortArea.click();
-      await page.waitForLoadState();
+      await page.waitForLoadState("networkidle", {
+        timeout: 0,
+      });
     } catch (error) {
       console.error("价格排序出错", error);
       await page.close();
@@ -225,7 +230,7 @@ export class KongProductService {
           if (bookInfoText.includes("插图图片")) {
             //插图方式
             const imagesEle = await bookInfoItem.$("a");
-            const context = await this.getBrowser();
+            const context = await this.browserContextService.getBrowser();
             const insideImagesPage = await context.newPage();
             try {
               const href =
@@ -257,7 +262,7 @@ export class KongProductService {
               await insideImagesPage.close();
             } catch (error) {
               console.error(error);
-              await this.getBrowser();
+              await this.browserContextService.getBrowser();
               await insideImagesPage.close();
             }
           }
@@ -289,7 +294,7 @@ export class KongProductService {
               ).toDate();
             } catch (error) {
               console.error(error);
-              await this.getBrowser();
+              await this.browserContextService.getBrowser();
               bookData.publishTime = new Date();
             }
           }
@@ -401,7 +406,7 @@ export class KongProductService {
         }
       } catch (error) {
         console.error(error);
-        await this.getBrowser();
+        await this.browserContextService.getBrowser();
         return;
       }
 
@@ -458,7 +463,7 @@ export class KongProductService {
       //获取封面
       const coverImage = await page.$(".detail-con-left .detail-img a");
       const coverImageUrl = await coverImage.getAttribute("href");
-      const context = await this.getBrowser();
+      const context = await this.browserContextService.getBrowser();
       const coverPage = await context.newPage();
       try {
         try {
@@ -487,8 +492,7 @@ export class KongProductService {
         await coverPage.close();
       } catch (error) {
         console.log(error);
-        this.context = null;
-        await this.getBrowser();
+
         await coverPage.close();
         return await page.close();
       }
@@ -503,7 +507,7 @@ export class KongProductService {
       );
     } catch (error) {
       this.context = null;
-      await this.getBrowser();
+      await this.browserContextService.getBrowser();
       console.error(error);
       await page.close();
     }
@@ -618,7 +622,7 @@ export class KongProductService {
         } catch (error) {
           console.error("更新价格失败", error);
           this.context = null;
-          await this.getBrowser();
+          await this.browserContextService.getBrowser();
         }
         endTime = new Date();
         console.log(
@@ -658,7 +662,7 @@ export class KongProductService {
           );
         } catch (error) {
           this.context = null;
-          await this.getBrowser();
+          await this.browserContextService.getBrowser();
           console.log(error);
         }
       }
@@ -699,7 +703,7 @@ export class KongProductService {
         await product.save();
       } catch (error) {
         this.context = null;
-        await this.getBrowser();
+        await this.browserContextService.getBrowser();
         console.log(error);
       }
       endTime = new Date();
@@ -716,7 +720,7 @@ export class KongProductService {
 
   async getItemDetailByUrl(url: string, productId: string, isbn: string) {
     console.log("开始获取价格详情=======", url);
-    let context = await this.getBrowser();
+    let context = await this.browserContextService.getBrowser();
     let page = await context.newPage();
     try {
       await page.goto(url);

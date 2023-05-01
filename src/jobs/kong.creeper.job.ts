@@ -1,15 +1,15 @@
 const KongCategoryUrls = [
-  "https://item.kongfz.com/Ckexue/",
-  "https://item.kongfz.com/Cyiyao/",
+  // "https://item.kongfz.com/Ckexue/",
+  // "https://item.kongfz.com/Cyiyao/",
   "https://item.kongfz.com/Cjiaocai/",
   "https://item.kongfz.com/Cguoxue/",
-  "https://item.kongfz.com/Cscyjs/",
+  // "https://item.kongfz.com/Cscyjs/",
   "https://item.kongfz.com/Cxiaoshuo/",
   "https://item.kongfz.com/Cwenxue/",
   "https://item.kongfz.com/Cyuyan/",
   "https://item.kongfz.com/Clishi/",
   "https://item.kongfz.com/Cdili/",
-  "https://item.kongfz.com/Cyishu/",
+  // "https://item.kongfz.com/Cyishu/",
   "https://item.kongfz.com/Czhengzhi/",
   "https://item.kongfz.com/Cfalv/",
   "https://item.kongfz.com/Cjunshi/",
@@ -55,7 +55,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   handle = async (job: Job<{ categoryUrl: string }>, done?: () => void) => {
     try {
       const { categoryUrl } = job.attrs.data;
-      console.log({ categoryUrl });
+
       await this.kongProductService.toCategoryPage(categoryUrl);
       done?.();
     } catch (error) {
@@ -64,7 +64,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       this.started = false;
       done?.();
     }
-    await this.start();
+    // await this.start();
     done?.();
   };
 
@@ -77,15 +77,8 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
       categoryUrl ? Number(currentIndex || "0") + 1 : 0
     );
     if (!this.started) {
-      await this.agenda.start();
-      this.started = true;
-      await this.agenda.now(this.eventName, {
-        categoryUrl: categoryUrl || KongCategoryUrls[0],
-      });
-    } else {
-      await this.agenda.schedule("in 75 minutes", this.eventName, {
-        categoryUrl: categoryUrl || KongCategoryUrls[0],
-      });
+      await this.kongProductService.toCategoryPage(categoryUrl);
+      await this.start();
     }
   };
 }
