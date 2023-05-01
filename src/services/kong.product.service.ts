@@ -179,10 +179,15 @@ export class KongProductService {
       return;
     }
     try {
-      const priceArea = await page.waitForSelector("#priceOrder");
+      const priceArea = await page.waitForSelector("#priceOrder", {
+        timeout: 0,
+      });
       await priceArea.click();
       const sortArea = await page.waitForSelector(
-        "#priceOrder .price-select-box a:first-child"
+        "#priceOrder .price-select-box a:first-child",
+        {
+          timeout: 0,
+        }
       );
       await sortArea.click();
       await page.waitForLoadState("networkidle", {
