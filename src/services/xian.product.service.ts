@@ -100,7 +100,7 @@ export class XianProductService {
       return;
     }
 
-    const exitsProduct = await ProductModel.findOne({
+    let exitsProduct = await ProductModel.findOne({
       "bookData.isbn": productDetail.book_data?.isbn,
     });
     const profitRate =
@@ -109,9 +109,15 @@ export class XianProductService {
 
     if (!exitsProduct) {
       try {
+        exitsProduct = await ProductModel.findOne({
+          "bookData.isbn": productDetail.book_data?.isbn,
+        });
         await this.kongProductService.getProductDetailFromISBN(
           productDetail.book_data?.isbn
         );
+        const profitRate =
+          (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
+          productDetail.price;
         const rlt = await ProductModel.updateOne(
           {
             "bookData.isbn": productDetail.book_data?.isbn,
@@ -121,8 +127,8 @@ export class XianProductService {
               onXian: true,
               xian: productDetail,
               price: productDetail.price,
-              profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
               xianProductId: productDetail.product_id,
+              profitRate,
               stock: productDetail.stock,
             },
           }
