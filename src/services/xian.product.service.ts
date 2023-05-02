@@ -109,12 +109,12 @@ export class XianProductService {
 
     if (!exitsProduct) {
       try {
-        exitsProduct = await ProductModel.findOne({
-          "bookData.isbn": productDetail.book_data?.isbn,
-        });
         await this.kongProductService.getProductDetailFromISBN(
           productDetail.book_data?.isbn
         );
+        exitsProduct = await ProductModel.findOne({
+          "bookData.isbn": productDetail.book_data?.isbn,
+        });
         const profitRate =
           (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
           productDetail.price;
