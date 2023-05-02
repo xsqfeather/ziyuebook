@@ -107,30 +107,47 @@ export class XianProductService {
       (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
       productDetail.price;
 
-    const rlt = await ProductModel.updateOne(
-      {
-        "bookData.isbn": productDetail.book_data?.isbn,
-      },
-      {
-        $set: {
-          onXian: true,
-          xian: productDetail,
-          price: productDetail.price,
-          profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
-          xianProductId: productDetail.product_id,
-          stock: productDetail.stock,
-        },
-      }
-    );
-    console.log("==========更新了", rlt.modifiedCount, "条数据==========");
     if (!exitsProduct) {
       try {
         await this.kongProductService.getProductDetailFromISBN(
           productDetail.book_data?.isbn
         );
+        const rlt = await ProductModel.updateOne(
+          {
+            "bookData.isbn": productDetail.book_data?.isbn,
+          },
+          {
+            $set: {
+              onXian: true,
+              xian: productDetail,
+              price: productDetail.price,
+              profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
+              xianProductId: productDetail.product_id,
+              stock: productDetail.stock,
+            },
+          }
+        );
+        console.log("==========新建了", rlt.modifiedCount, "条数据==========");
       } catch (error) {
         console.log("==========获取kong产品详情失败==========", error);
       }
+    } else {
+      const rlt = await ProductModel.updateOne(
+        {
+          "bookData.isbn": productDetail.book_data?.isbn,
+        },
+        {
+          $set: {
+            onXian: true,
+            xian: productDetail,
+            price: productDetail.price,
+            profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
+            xianProductId: productDetail.product_id,
+            stock: productDetail.stock,
+          },
+        }
+      );
+      console.log("==========更新了", rlt.modifiedCount, "条数据==========");
     }
 
     return productDetail;
