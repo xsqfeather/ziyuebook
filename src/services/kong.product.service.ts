@@ -118,7 +118,6 @@ export class KongProductService {
       } catch (error) {
         console.error("去分类页面出错", error);
         await page.close();
-        page = await context.newPage();
         return;
       }
 
