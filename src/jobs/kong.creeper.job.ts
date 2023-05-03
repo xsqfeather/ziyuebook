@@ -1,5 +1,5 @@
 const KongCategoryUrls = [
-  // "https://item.kongfz.com/Ckexue/",
+  "https://item.kongfz.com/Ckexue/",
   "https://item.kongfz.com/Cyiyao/",
   "https://item.kongfz.com/Cjiaocai/",
   // "https://item.kongfz.com/Cguoxue/",

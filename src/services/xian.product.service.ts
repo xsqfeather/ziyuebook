@@ -104,8 +104,8 @@ export class XianProductService {
       "bookData.isbn": productDetail.book_data?.isbn,
     });
     const profitRate =
-      (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
-      exitsProduct?.bookData?.newPrice;
+      (+productDetail.price - (exitsProduct?.bookData?.price || 0)) /
+      exitsProduct?.bookData?.price;
 
     if (!exitsProduct) {
       try {
@@ -116,8 +116,8 @@ export class XianProductService {
           "bookData.isbn": productDetail.book_data?.isbn,
         });
         const profitRate =
-          (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
-          exitsProduct?.bookData?.newPrice;
+          (+productDetail.price - (exitsProduct?.bookData?.price || 0)) /
+          exitsProduct?.bookData?.price;
         const rlt = await ProductModel.updateOne(
           {
             "bookData.isbn": productDetail.book_data?.isbn,
@@ -128,7 +128,7 @@ export class XianProductService {
               xian: productDetail,
               price: productDetail.price,
               xianProductId: productDetail.product_id,
-              profitRate,
+              profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
               stock: productDetail.stock,
             },
           }
