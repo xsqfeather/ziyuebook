@@ -9,7 +9,7 @@ import {
   XianProductPublishDto,
 } from "../dtos";
 import { XianProductService } from "./xian.product.service";
-import trimAll from "utils/trimAll";
+import trimAll from "../utils/trimAll";
 
 @Service()
 export class ProductService extends BaseService<Product> {
