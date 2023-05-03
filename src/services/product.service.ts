@@ -9,6 +9,7 @@ import {
   XianProductPublishDto,
 } from "../dtos";
 import { XianProductService } from "./xian.product.service";
+import trimAll from "utils/trimAll";
 
 @Service()
 export class ProductService extends BaseService<Product> {
@@ -87,7 +88,10 @@ export class ProductService extends BaseService<Product> {
       (product.bookData?.authors[0] || "") +
       "出版社" +
       product.bookData?.publisher;
-    updateXianProductInput.title = updateXianProductInput.title.slice(0, 29);
+    updateXianProductInput.title = trimAll(updateXianProductInput.title).slice(
+      0,
+      30
+    );
     updateXianProductInput.price = xianInfo.price || product.price;
     updateXianProductInput.stock = product.stock || 99;
     updateXianProductInput.channel_cat_id = xianInfo.channel_cat_id;
