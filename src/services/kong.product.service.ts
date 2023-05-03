@@ -25,7 +25,6 @@ let endTime = new Date();
 
 @Service()
 export class KongProductService {
-  context: BrowserContext = null;
   isLogin: boolean = false;
 
   @Inject(() => ProductCategoryService)
@@ -49,9 +48,6 @@ export class KongProductService {
       });
     } catch (error) {
       await homePage?.close();
-      await context?.close();
-      this.context = null;
-      await this.browserContextService.getBrowser();
       return;
     }
 
@@ -97,7 +93,7 @@ export class KongProductService {
       console.error(error);
       await page.close();
       await homePage.close();
-      await this.browserContextService.getBrowser();
+      return;
     }
   };
 
@@ -140,8 +136,6 @@ export class KongProductService {
             await this.getProductFromDetail(detailUrl, context);
           } catch (error) {
             console.error("获取书目页面出错", error);
-            this.context = null;
-            await this.browserContextService.getBrowser();
             continue;
           }
         }
@@ -188,7 +182,6 @@ export class KongProductService {
   async getProductFromDetail(url: string, context?: BrowserContext) {
     console.log("开始在", url, "获取数据");
     beginTime = new Date();
-    this.context = context;
     context = context || (await this.browserContextService.getBrowser());
     const page = await context?.newPage();
     try {
@@ -289,7 +282,6 @@ export class KongProductService {
               await insideImagesPage.close();
             } catch (error) {
               console.error(error);
-              await this.browserContextService.getBrowser();
               await insideImagesPage.close();
             }
           }
@@ -321,7 +313,6 @@ export class KongProductService {
               ).toDate();
             } catch (error) {
               console.error(error);
-              await this.browserContextService.getBrowser();
               bookData.publishTime = new Date();
             }
           }
@@ -433,7 +424,6 @@ export class KongProductService {
         }
       } catch (error) {
         console.error(error);
-        await this.browserContextService.getBrowser();
         return;
       }
 
@@ -533,8 +523,6 @@ export class KongProductService {
         insideImages
       );
     } catch (error) {
-      this.context = null;
-      await this.browserContextService.getBrowser();
       console.error(error);
       await page.close();
     }
@@ -648,8 +636,6 @@ export class KongProductService {
           );
         } catch (error) {
           console.error("更新价格失败", error);
-          this.context = null;
-          await this.browserContextService.getBrowser();
         }
         endTime = new Date();
         console.log(
@@ -688,8 +674,6 @@ export class KongProductService {
             }
           );
         } catch (error) {
-          this.context = null;
-          await this.browserContextService.getBrowser();
           console.log(error);
         }
       }
@@ -729,8 +713,6 @@ export class KongProductService {
         product.profitRate = !Number.isNaN(profitRate) ? profitRate : 0;
         await product.save();
       } catch (error) {
-        this.context = null;
-        await this.browserContextService.getBrowser();
         console.log(error);
       }
       endTime = new Date();
