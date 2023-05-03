@@ -137,7 +137,7 @@ export class XianProductService {
       } catch (error) {
         console.log("==========获取kong产品详情失败==========", error);
       }
-    } else if (!exitsProduct?.onXian) {
+    } else {
       const rlt = await ProductModel.updateOne(
         {
           "bookData.isbn": productDetail.book_data?.isbn,
