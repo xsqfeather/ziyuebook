@@ -81,11 +81,12 @@ export class ProductService extends BaseService<Product> {
     const updateXianProductInput = new XianProductEditDto();
     updateXianProductInput.product_id = xianProductId;
     updateXianProductInput.title =
-      xianInfo.title ||
       "【正版二手】" +
-        product.title +
-        (product.bookData?.authors[0] || "") +
-        product.bookData?.publisher;
+      product.title +
+      "作者" +
+      (product.bookData?.authors[0] || "") +
+      "出版社" +
+      product.bookData?.publisher;
     updateXianProductInput.title = updateXianProductInput.title.slice(0, 29);
     updateXianProductInput.price = xianInfo.price || product.price;
     updateXianProductInput.stock = product.stock || 99;
@@ -121,11 +122,12 @@ export class ProductService extends BaseService<Product> {
   ) {
     const createXianProductInput = new XianProductCreateDto();
     createXianProductInput.title =
-      xianInfo.title ||
       "【正版二手】" +
-        product.title +
-        (product.bookData?.authors[0] || "") +
-        product.bookData?.publisher;
+      product.title +
+      "作者" +
+      (product.bookData?.authors[0] || "") +
+      "出版社";
+    product.bookData?.publisher;
     createXianProductInput.title = createXianProductInput.title.slice(0, 29);
     createXianProductInput.price =
       +xianInfo.price.toFixed(0) || +product.price.toFixed(0);
