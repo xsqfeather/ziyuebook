@@ -81,11 +81,17 @@ export class ProductService extends BaseService<Product> {
     const updateXianProductInput = new XianProductEditDto();
     updateXianProductInput.product_id = xianProductId;
     updateXianProductInput.title =
-      xianInfo.title || "【正版二手】" + product.title;
+      xianInfo.title ||
+      "【正版二手】" +
+        product.title +
+        (product.bookData?.authors[0] || "") +
+        product.bookData?.publisher;
+    updateXianProductInput.title = updateXianProductInput.title.slice(0, 29);
     updateXianProductInput.price = xianInfo.price || product.price;
     updateXianProductInput.stock = product.stock || 99;
     updateXianProductInput.channel_cat_id = xianInfo.channel_cat_id;
     updateXianProductInput.district_id = 510116;
+    updateXianProductInput.outer_id = product.bookData?.isbn;
     updateXianProductInput.images = [
       ...xianInfo.images,
       "https://img2.sosotec.com/product/20230317/121901-3893ckjk.jpg",
@@ -148,7 +154,6 @@ export class ProductService extends BaseService<Product> {
     createXianProductInput.express_fee = 0;
     createXianProductInput.item_biz_type = 2;
     createXianProductInput.sp_biz_type = 24;
-    createXianProductInput.outer_id = "9787802013919";
 
     const createRlt = await this.xianProductService.createNewProduct(
       createXianProductInput
