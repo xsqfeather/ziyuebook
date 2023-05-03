@@ -102,10 +102,10 @@ export class KongProductService {
   };
 
   async toCategoryPage(url: string) {
+    const context = await this.browserContextService.getBrowser();
+    let page = await context?.newPage();
     try {
       await this.checkToLogin();
-      const context = await this.browserContextService.getBrowser();
-      let page = await context?.newPage();
       try {
         console.log("正在跳转分类页面.....", url);
         await page?.goto(url, {
@@ -157,9 +157,8 @@ export class KongProductService {
       await page.close();
     } catch (error) {
       console.error("获取分类页面出错", error);
-      await this.context?.close();
-      this.context = null;
-      this.browserContextService.getBrowser();
+      await page.close();
+      return;
     }
   }
 
