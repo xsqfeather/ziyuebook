@@ -614,7 +614,7 @@ export class KongProductService {
         try {
           const profitRate =
             (productToPut.price - newSellPrice - newShipPrice) /
-            productToPut.price;
+            (newSellPrice + newShipPrice);
           await page.close();
           await ProductModel.updateOne(
             { id: productToPut.id },
@@ -651,7 +651,7 @@ export class KongProductService {
         try {
           const profitRate =
             (productToPut.price - newSellPrice - newShipPrice) /
-            productToPut.price;
+            (newSellPrice + newShipPrice);
           await ProductModel.updateOne(
             { id: productToPut.id },
             {

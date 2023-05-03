@@ -115,12 +115,18 @@ export class ProductService extends BaseService<Product> {
   ) {
     const createXianProductInput = new XianProductCreateDto();
     createXianProductInput.title =
-      xianInfo.title || "【正版二手】" + product.title;
+      xianInfo.title ||
+      "【正版二手】" +
+        product.title +
+        (product.bookData?.authors[0] || "") +
+        product.bookData?.publisher;
+    createXianProductInput.title = createXianProductInput.title.slice(0, 29);
     createXianProductInput.price =
       +xianInfo.price.toFixed(0) || +product.price.toFixed(0);
     createXianProductInput.stock = product.stock || 99;
     createXianProductInput.channel_cat_id = xianInfo.channel_cat_id;
     createXianProductInput.district_id = 510116;
+    createXianProductInput.outer_id = product.bookData?.isbn;
     createXianProductInput.images = [
       ...xianInfo.images,
       "https://img2.sosotec.com/product/20230317/121901-3893ckjk.jpg",

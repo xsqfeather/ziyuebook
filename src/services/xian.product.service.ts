@@ -105,7 +105,7 @@ export class XianProductService {
     });
     const profitRate =
       (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
-      productDetail.price;
+      exitsProduct?.bookData?.newPrice;
 
     if (!exitsProduct) {
       try {
@@ -117,7 +117,7 @@ export class XianProductService {
         });
         const profitRate =
           (productDetail.price - (exitsProduct?.bookData?.newPrice || 0)) /
-          productDetail.price;
+          exitsProduct?.bookData?.newPrice;
         const rlt = await ProductModel.updateOne(
           {
             "bookData.isbn": productDetail.book_data?.isbn,
