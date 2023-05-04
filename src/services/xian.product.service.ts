@@ -36,7 +36,7 @@ export class XianProductService {
     const data = {
       start_modified,
       page_no: page,
-      page_size: 90,
+      page_size: 99,
     };
 
     const timestamp = Math.floor(new Date().getTime() / 1000);
