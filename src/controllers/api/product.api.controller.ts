@@ -29,6 +29,19 @@ export class ProductApiController extends MController {
   async list(req: Request): Promise<ListData<Product>> {
     const query = req.query as ListQueryDto;
     let listQuery = this.parseListQuery<Product>(query);
+    if ((listQuery.filter as any).xian_product_status) {
+      listQuery = {
+        ...listQuery,
+        filter: {
+          ...listQuery.filter,
+          "xian.product_status": +(listQuery.filter as any).xian_product_status,
+          xian_product_status: undefined,
+        } as any,
+      };
+    }
+
+    listQuery = JSON.parse(JSON.stringify(listQuery));
+
     if (listQuery.filter?.categoryId && listQuery.filter.categoryId !== "") {
       const childCateIds = await ProductCategoryModel.find({
         superCategoryId: listQuery.filter.categoryId,
@@ -68,6 +81,7 @@ export class ProductApiController extends MController {
   })
   async updateToXian(req: Request): Promise<any> {
     const input = req.payload as XianProductPublishDto;
+
     return this.productService.putXianProduct(input);
   }
 
