@@ -156,6 +156,7 @@ export class XianProductService {
             profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
             xianProductId: productDetail.product_id,
             stock: productDetail.stock,
+            updatedAt: new Date(),
           },
         }
       );
