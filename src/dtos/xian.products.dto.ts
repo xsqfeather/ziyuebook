@@ -2,6 +2,7 @@ import Joi from "joi";
 import {
   ClassDescription,
   CustomSchema,
+  Optional,
   Required,
   getSchema,
   getSchemaDescription,
@@ -29,6 +30,21 @@ export class XianProductPublishDto {
   };
 }
 export const XianProductPublishDtoSchema = getSchema(XianProductPublishDto);
+
+export class XianProductPublishManyDto {
+  @Required()
+  productIds: string[];
+
+  @Optional()
+  rate: number;
+
+  @Optional()
+  addPrice: number;
+}
+
+export const XianProductPublishManyDtoSchema = getSchema(
+  XianProductPublishManyDto
+);
 
 export class XianProductCreateDto {
   /**

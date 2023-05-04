@@ -9,7 +9,12 @@ import { Inject, Service } from "typedi";
 import { Request } from "@hapi/hapi";
 import { Product, ProductCategoryModel } from "../../models";
 import { ProductService } from "../../services";
-import { XianProductPublishDto, XianProductPublishDtoSchema } from "../../dtos";
+import {
+  XianProductPublishDto,
+  XianProductPublishDtoSchema,
+  XianProductPublishManyDto,
+  XianProductPublishManyDtoSchema,
+} from "../../dtos";
 import Joi from "joi";
 
 @Service()
@@ -83,6 +88,20 @@ export class ProductApiController extends MController {
     const input = req.payload as XianProductPublishDto;
 
     return this.productService.putXianProduct(input);
+  }
+
+  @put("/publish_many_price_to_xian")
+  @options({
+    tags: ["api", "商品"],
+    description: "批量调整价格到闲管家",
+    notes: "返回闲管家商品ID数组",
+    validate: {
+      payload: XianProductPublishManyDtoSchema,
+    },
+  })
+  async updateManyPriceToXian(req: Request): Promise<any> {
+    const input = req.payload as XianProductPublishManyDto;
+    return this.productService.adjustPricesProduct(input);
   }
 
   @get("/{id}")

@@ -7,6 +7,7 @@ import {
   XianProductCreateDto,
   XianProductEditDto,
   XianProductPublishDto,
+  XianProductPublishManyDto,
 } from "../dtos";
 import { XianProductService } from "./xian.product.service";
 import trimAll from "../utils/trimAll";
@@ -46,6 +47,39 @@ export class ProductService extends BaseService<Product> {
     await ProductModel.deleteMany({ id });
     await this.xianProductService.deleteXianProduct(product.xianProductId);
     return product;
+  }
+
+  public async adjustPricesProduct(input: XianProductPublishManyDto) {
+    const xianProductIdList = [];
+    for (let index = 0; index < input.productIds.length; index++) {
+      const productId = input.productIds[index];
+      const product = await ProductModel.findOne({ id: productId });
+      if (!product) {
+        throw Boom.notFound("商品不存在");
+      }
+      if (!product.onXian) {
+        continue;
+      }
+      const price = product.bookData?.price * input.rate + input.addPrice;
+      console.log({ price });
+      try {
+        const updateRlt = await this.xianProductService.adjustProductPrice({
+          xianProductId: product.xianProductId,
+          price: +price.toFixed(0),
+        });
+        console.log({ updateRlt });
+
+        await this.xianProductService.getProductDetail(
+          updateRlt.data.product_id
+        );
+
+        xianProductIdList.push(product.xianProductId);
+      } catch (error) {
+        console.error({ error });
+        throw Boom.badGateway("调价失败");
+      }
+    }
+    return xianProductIdList;
   }
 
   public async putXianProduct(input: XianProductPublishDto) {

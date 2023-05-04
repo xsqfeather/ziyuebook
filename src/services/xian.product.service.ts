@@ -103,9 +103,15 @@ export class XianProductService {
     let exitsProduct = await ProductModel.findOne({
       "bookData.isbn": productDetail.book_data?.isbn,
     });
+
     const profitRate =
-      (+productDetail.price - (exitsProduct?.bookData?.price || 0)) /
-      exitsProduct?.bookData?.price;
+      (+productDetail.price -
+        (exitsProduct?.bookData?.price ||
+          exitsProduct?.bookData?.newPrice ||
+          0)) /
+      (exitsProduct?.bookData?.price || exitsProduct?.bookData?.newPrice);
+
+    console.log("profitRate", { profitRate });
 
     if (!exitsProduct) {
       try {
@@ -182,6 +188,13 @@ export class XianProductService {
 
     const { data: createRlt } = await axios(config);
     return createRlt;
+  }
+
+  async adjustProductPrice(input: { xianProductId: string; price: number }) {
+    return this.editXianProduct({
+      price: input.price,
+      product_id: input.xianProductId,
+    });
   }
 
   async editXianProduct(input: XianProductEditDto) {
