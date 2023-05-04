@@ -61,13 +61,11 @@ export class ProductService extends BaseService<Product> {
         continue;
       }
       const price = product.bookData?.price * input.rate + input.addPrice;
-      console.log({ price });
       try {
         const updateRlt = await this.xianProductService.adjustProductPrice({
           xianProductId: product.xianProductId,
           price: +price.toFixed(0),
         });
-        console.log({ updateRlt });
 
         await this.xianProductService.getProductDetail(
           updateRlt.data.product_id
@@ -76,7 +74,7 @@ export class ProductService extends BaseService<Product> {
         xianProductIdList.push(product.xianProductId);
       } catch (error) {
         console.error({ error });
-        throw Boom.badGateway("调价失败");
+        continue;
       }
     }
     return xianProductIdList;
@@ -142,8 +140,12 @@ export class ProductService extends BaseService<Product> {
       updateXianProductInput
     );
     if (updateRlt.status === 200) {
-      product.xianProductId = updateRlt.data.product_id;
-      await this.xianProductService.getProductDetail(updateRlt.data.product_id);
+      product.xianProductId = updateRlt.data?.product_id;
+      if (updateRlt.data?.product_id) {
+        await this.xianProductService.getProductDetail(
+          updateRlt.data.product_id
+        );
+      }
     }
     return updateRlt;
   }
