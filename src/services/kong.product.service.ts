@@ -573,14 +573,18 @@ export class KongProductService {
     if (!itemDetail) {
       return await page.close();
     }
-    const { itemImages, nowPrice, shipPrice, quality = "" } = itemDetail;
+    const {
+      itemImages,
+      nowPrice,
+      shipPrice,
+      quality = "",
+      buyUrlOnKong,
+    } = itemDetail;
     product.images = [...images, ...(itemImages || []), ...insideImages];
     console.log({ quality, shipPrice, nowPrice });
     if (!nowPrice) {
       return await page.close();
     }
-
-    product.buyUrlOnKong = page.url();
 
     let productToPut = await ProductModel.findOne({
       "bookData.isbn": bookData.isbn,
@@ -623,6 +627,7 @@ export class KongProductService {
                 needToAdjustLatestPrice: true,
                 lastCheckTime: new Date(),
                 images: product.images,
+                buyUrlOnKong,
                 bookData: {
                   ...productToPut.bookData,
                   newShipPrice: newShipPrice,
@@ -661,6 +666,7 @@ export class KongProductService {
                 bookData: {
                   ...productToPut.bookData,
                   sellPrice: newSellPrice,
+                  buyUrlOnKong,
                   shipPrice: newShipPrice,
                   newPrice: newSellPrice + newShipPrice,
                   price: newSellPrice + newShipPrice,
@@ -703,6 +709,7 @@ export class KongProductService {
       product.bookData.newSellPrice = newSellPrice;
       product.bookData.newPrice = newPrice;
       product.bookData.price = newPrice;
+      product.buyUrlOnKong = buyUrlOnKong;
       product.price = newPrice * 1.5;
       product.createdAt = new Date();
 
