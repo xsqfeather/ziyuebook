@@ -738,7 +738,6 @@ export class KongProductService {
     console.log("开始获取价格详情=======", url);
     let context = await this.browserContextService.getBrowser();
     let page = await context.newPage();
-    const buyUrlOnKong = page.url();
     try {
       await page.goto(url);
     } catch (error) {
@@ -746,6 +745,7 @@ export class KongProductService {
       await page.close();
       return;
     }
+    const buyUrlOnKong = page.url();
 
     const priceEle = await page.waitForSelector(".now-price .now-price-text");
     const nowPrice = await priceEle?.innerText();
