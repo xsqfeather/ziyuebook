@@ -42,10 +42,13 @@ export class KongPriceJob {
         "是否有新价格",
         product.originUrl
       );
-
-      await this.kongProductService.getProductDetailFromISBN(
-        product.bookData.isbn
-      );
+      try {
+        await this.kongProductService.getProductDetailFromISBN(
+          product.bookData.isbn
+        );
+      } catch (error: any) {
+        console.error(error);
+      }
     }
     setTimeout(async () => {
       await this.start();

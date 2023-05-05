@@ -67,6 +67,8 @@ export class ProductService extends BaseService<Product> {
           price: +price.toFixed(0),
         });
 
+        console.log({ updateRlt });
+
         if (updateRlt.status === 200) {
           await this.xianProductService.getProductDetail(
             updateRlt.data.product_id

@@ -731,6 +731,7 @@ export class KongProductService {
     console.log("开始获取价格详情=======", url);
     let context = await this.browserContextService.getBrowser();
     let page = await context.newPage();
+    const buyUrlOnKong = page.url();
     try {
       await page.goto(url);
     } catch (error) {
@@ -812,6 +813,7 @@ export class KongProductService {
       shipPrice: shipPrice.split(" ")[0],
       itemImages,
       quality,
+      buyUrlOnKong,
     };
   }
 }
