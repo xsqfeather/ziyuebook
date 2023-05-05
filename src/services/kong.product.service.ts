@@ -676,6 +676,7 @@ export class KongProductService {
                 profitRate:
                   !Number.isNaN(profitRate) && profitRate > 0 ? profitRate : 0,
                 needToAdjustLatestPrice: false,
+                buyUrlOnKong,
               },
             }
           );
