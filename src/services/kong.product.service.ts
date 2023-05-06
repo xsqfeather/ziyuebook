@@ -566,6 +566,7 @@ export class KongProductService {
         );
       } catch (error) {
         console.error({ error });
+        return await page.close();
       }
     } else {
       return await page.close();
@@ -748,7 +749,9 @@ export class KongProductService {
     }
     const buyUrlOnKong = page.url();
 
-    const priceEle = await page.waitForSelector(".now-price .now-price-text");
+    const priceEle = await page.waitForSelector(".now-price .now-price-text", {
+      timeout: 0,
+    });
     const nowPrice = await priceEle?.innerText();
     const shipPriceEle = await page.waitForSelector(
       ".carry-cont .express-wrapper"
