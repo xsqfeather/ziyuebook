@@ -1,6 +1,6 @@
 import { Optional, Required, getSchema } from "joi-typescript-validator";
 
-export class CreateArticleDto {
+export class CreateUserAvActorLikeDto {
   @Required()
   public title!: string;
 
@@ -17,5 +17,6 @@ export class CreateArticleDto {
   public tags?: string[];
 }
 
-export const CreateArticleSchema =
-  getSchema(CreateArticleDto).label("CreateArticleDto");
+export const CreateUserAvActorLikeSchema = getSchema(
+  CreateUserAvActorLikeDto
+).label("CreateUserAvActorLikeDto");

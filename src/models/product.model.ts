@@ -102,10 +102,13 @@ export class XianProduct {
 }
 @modelOptions({ options: { allowMixed: 0 } })
 @index({
-  title: "text",
-  "bookData.title": "text",
+  title: 1,
+  "bookData.title": 1,
+  "bookData.author": 1,
   needToAdjustLatestPrice: 1,
-  originUrl: 1,
+  categoryId: 1,
+  category: 1,
+  "bookData.isbn": 1,
 })
 export class Product extends Base {
   @prop({

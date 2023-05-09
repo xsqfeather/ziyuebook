@@ -2,17 +2,20 @@ import { controller, get, options, post } from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
-import { Article } from "../../models";
-import { ArticleService } from "../../services";
+import { UserAvActorLike } from "../../models";
+import { UserAvActorLikeService } from "../../services";
 import { Request } from "@hapi/hapi";
-import { CreateArticleDto, CreateArticleSchema } from "../../dtos";
+import {
+  CreateUserAvActorLikeDto,
+  CreateUserAvActorLikeSchema,
+} from "../../dtos";
 import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
 
 @Service()
 @controller("/api/articles")
-export class ArticleApiController extends MController {
-  @Inject(() => ArticleService)
-  articleService!: ArticleService;
+export class UserAvActorLikeApiController extends MController {
+  @Inject(() => UserAvActorLikeService)
+  articleService!: UserAvActorLikeService;
 
   @get("/")
   @options({
@@ -23,10 +26,10 @@ export class ArticleApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<Article>> {
+  async list(req: Request): Promise<ListData<UserAvActorLike>> {
     const query = req.query as ListQueryDto;
-    const listQuery = this.parseListQuery<Article>(query);
-    return this.articleService.getArticleList(listQuery);
+    const listQuery = this.parseListQuery<UserAvActorLike>(query);
+    return this.articleService.getUserAvActorLikeList(listQuery);
   }
 
   @post("/")
@@ -40,11 +43,11 @@ export class ArticleApiController extends MController {
     },
 
     validate: {
-      payload: CreateArticleSchema,
+      payload: CreateUserAvActorLikeSchema,
     },
   })
-  async create(req: Request): Promise<Article> {
-    const input = req.payload as CreateArticleDto;
-    return this.articleService.createArticle(input);
+  async create(req: Request): Promise<UserAvActorLike> {
+    const input = req.payload as CreateUserAvActorLikeDto;
+    return this.articleService.createUserAvActorLike(input);
   }
 }

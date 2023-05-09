@@ -30,6 +30,7 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "file-type": "^18.3.0",
+    "gun": "^0.2020.1239",
     "handlebars": "^4.7.7",
     "hapi-auth-jwt2": "^10.4.0",
     "hapi-decorators": "^2.0.0",

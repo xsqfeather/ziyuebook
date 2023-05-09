@@ -4,3 +4,6 @@ export * from "./user.api.controller";
 export * from "./product.api.controller";
 export * from "./product.category.api.controller";
 export * from "./upload.api.controller";
+export * from "./av.post.api.controller";
+export * from "./av.actors.api.controller";
+export * from "./user.av.post.like.api.controller";

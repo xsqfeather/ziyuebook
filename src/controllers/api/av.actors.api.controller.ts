@@ -2,17 +2,17 @@ import { controller, get, options, post } from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
-import { Article } from "../../models";
-import { ArticleService } from "../../services";
+import { AvActor } from "../../models";
+import { AvActorService } from "../../services";
 import { Request } from "@hapi/hapi";
-import { CreateArticleDto, CreateArticleSchema } from "../../dtos";
+import { CreateAvActorDto, CreateAvActorSchema } from "../../dtos";
 import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
 
 @Service()
-@controller("/api/articles")
-export class ArticleApiController extends MController {
-  @Inject(() => ArticleService)
-  articleService!: ArticleService;
+@controller("/api/av_actors")
+export class AvActorApiController extends MController {
+  @Inject(() => AvActorService)
+  articleService!: AvActorService;
 
   @get("/")
   @options({
@@ -23,10 +23,10 @@ export class ArticleApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<Article>> {
+  async list(req: Request): Promise<ListData<AvActor>> {
     const query = req.query as ListQueryDto;
-    const listQuery = this.parseListQuery<Article>(query);
-    return this.articleService.getArticleList(listQuery);
+    const listQuery = this.parseListQuery<AvActor>(query);
+    return this.articleService.getAvActorList(listQuery);
   }
 
   @post("/")
@@ -40,11 +40,11 @@ export class ArticleApiController extends MController {
     },
 
     validate: {
-      payload: CreateArticleSchema,
+      payload: CreateAvActorSchema,
     },
   })
-  async create(req: Request): Promise<Article> {
-    const input = req.payload as CreateArticleDto;
-    return this.articleService.createArticle(input);
+  async create(req: Request): Promise<AvActor> {
+    const input = req.payload as CreateAvActorDto;
+    return this.articleService.createAvActor(input);
   }
 }

@@ -3,3 +3,7 @@ export * from "./article.service";
 export * from "./user.service";
 export * from "./product.service";
 export * from "./product.category.service";
+export * from "./av.post.service";
+export * from "./av.actor.service";
+export * from "./user.av.actor.like.service";
+export * from "./user.av.post.like.service";

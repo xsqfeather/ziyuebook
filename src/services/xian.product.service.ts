@@ -53,23 +53,26 @@ export class XianProductService {
       url: `https://api.goofish.pro/sop/product/list?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
       data: data,
     };
+    try {
+      const { data: productListData } = await axios(config);
+      if (productListData.status === 1012) {
+        const levelKey = PRODUCT_JOB + "FromXianList" + "currentPage";
+        await this.levelCacheService.put(levelKey, 1);
+        console.log("没有更多数据了");
+        return;
+      }
+      for (let index = 0; index < productListData?.data.length; index++) {
+        const xianProduct = productListData?.data[index];
 
-    const { data: productListData } = await axios(config);
-    if (productListData.status === 1012) {
-      const levelKey = PRODUCT_JOB + "FromXianList" + "currentPage";
-      await this.levelCacheService.put(levelKey, 1);
-      console.log("没有更多数据了");
-      return;
-    }
-    for (let index = 0; index < productListData?.data.length; index++) {
-      const xianProduct = productListData?.data[index];
-
-      await this.getProductDetail(xianProduct.product_id);
-    }
-    if (!productListData?.data && productListData?.data?.length === 0) {
-      const levelKey = PRODUCT_JOB + "FromXianList" + "currentPage";
-      await this.levelCacheService.put(levelKey, 1);
-      console.log("没有更多数据了");
+        await this.getProductDetail(xianProduct.product_id);
+      }
+      if (!productListData?.data && productListData?.data?.length === 0) {
+        const levelKey = PRODUCT_JOB + "FromXianList" + "currentPage";
+        await this.levelCacheService.put(levelKey, 1);
+        console.log("没有更多数据了");
+      }
+    } catch (error) {
+      console.error({ error });
     }
   }
 
