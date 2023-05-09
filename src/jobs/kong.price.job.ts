@@ -2,7 +2,7 @@ import { PRODUCT_JOB } from "./namespaces";
 import { Inject, Service } from "typedi";
 import { LevelCacheService } from "../lib/services";
 import { KongProductService } from "../services/kong.product.service";
-import { Product, ProductModel } from "../models";
+import { ProductModel } from "../models";
 import { BrowserContextService } from "../services/browser.context.service";
 
 @Service()

@@ -325,40 +325,24 @@ export class KongProductService {
             const pages = bookInfoText.replace("页数:", "").replace("页", "");
             bookData.pageAmount = +pages;
           }
-          if (bookInfoText.includes("分类")) {
-            const category = bookInfoText.replace("分类:", "").replace(" ", "");
-            const categories = category.split(">");
-            const bookCate =
-              await this.productCategoryService.getOrCreateBookCategory();
-            let lastCate = bookCate;
-            for (let index = 0; index < categories.length; index++) {
-              const cate = categories[index];
-              const cateRecord = await ProductCategoryModel.findOne({
-                name: cate,
-                superCategoryName: bookCate.name,
-                superCategoryId: bookCate.id,
-              });
-              if (!cateRecord) {
-                const newCate = new ProductCategoryModel();
-                newCate.name = cate;
-                newCate.superCategoryName = lastCate.name;
-                newCate.superCategoryId = lastCate.id;
-                await newCate.save();
-                if (index === categories.length - 1) {
-                  bookData.categoryId = newCate.id;
-                  product.categoryId = newCate.id;
-                }
-                lastCate = newCate;
-              } else {
-                lastCate = cateRecord;
-              }
-              if (cateRecord && index === categories.length - 1) {
-                bookData.categoryId = cateRecord.id;
-                product.categoryId = cateRecord.id;
-              }
-            }
-            bookData.category = categories[categories.length - 1];
-            product.category = categories[categories.length - 1];
+          const bookCate =
+            await this.productCategoryService.getOrCreateBookCategory();
+          const cateRecord = await ProductCategoryModel.findOne({
+            name: "教育教材",
+            superCategoryName: bookCate.name,
+            superCategoryId: bookCate.id,
+          });
+          if (!cateRecord) {
+            const newCate = new ProductCategoryModel();
+            newCate.name = "教育教材";
+            newCate.superCategoryName = bookCate.name;
+            newCate.superCategoryId = bookCate.id;
+            await newCate.save();
+            product.categoryId = newCate.id;
+            product.category = newCate.name;
+          } else {
+            product.categoryId = cateRecord.id;
+            product.category = cateRecord.name;
           }
           if (bookInfoText.includes("装帧")) {
             const binding = bookInfoText.replace("装帧:", "").replace(" ", "");
@@ -636,6 +620,8 @@ export class KongProductService {
                   newPrice: newSellPrice + newShipPrice,
                 },
                 profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
+                category: product.category,
+                categoryId: product.categoryId,
                 updatedAt: new Date(),
               },
             }
@@ -672,6 +658,8 @@ export class KongProductService {
                   newPrice: newSellPrice + newShipPrice,
                   price: newSellPrice + newShipPrice,
                   newShipPrice: newShipPrice,
+                  category: product.category,
+                  categoryId: product.categoryId,
                   newSellPrice: newSellPrice,
                 },
                 profitRate:
