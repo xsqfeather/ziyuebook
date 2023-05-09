@@ -40,4 +40,8 @@ export class ProductCategoryService extends BaseService<ProductCategory> {
       return newBookCategory;
     }
   }
+
+  public async deleteById(id: string) {
+    return ProductCategoryModel.findOneAndRemove({ id });
+  }
 }

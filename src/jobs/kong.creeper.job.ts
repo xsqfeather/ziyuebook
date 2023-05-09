@@ -1,28 +1,28 @@
 const KongCategoryUrls = [
-  // "https://item.kongfz.com/Cxiaoshuo/",
-  // "https://item.kongfz.com/Cwenxue/",
-  // "https://item.kongfz.com/Cyuyan/",
-  // "https://item.kongfz.com/Clishi/",
-  // "https://item.kongfz.com/Cdili/",
-  // "https://item.kongfz.com/Cyishu/",
-  // "https://item.kongfz.com/Czhengzhi/",
-  // "https://item.kongfz.com/Cfalv/",
-  // "https://item.kongfz.com/Cjunshi/",
-  // "https://item.kongfz.com/Czhexue/",
-  // "https://item.kongfz.com/Czongjiao/",
-  // "https://item.kongfz.com/Cjingji/",
-  // "https://item.kongfz.com/Cshwh/",
-  // "https://item.kongfz.com/Czonghe/",
-  // "https://item.kongfz.com/Cshaoer/",
-  // "https://item.kongfz.com/Cshenghuo/",
-  // "https://item.kongfz.com/Ctiyu/",
-  // "https://item.kongfz.com/Cjishu/",
-  // "https://item.kongfz.com/Cjisuanji/",
-  // "https://item.kongfz.com/Ckexue/",
-  // "https://item.kongfz.com/Cyiyao/",
+  "https://item.kongfz.com/Cxiaoshuo/",
+  "https://item.kongfz.com/Cwenxue/",
+  "https://item.kongfz.com/Cyuyan/",
+  "https://item.kongfz.com/Clishi/",
+  "https://item.kongfz.com/Cdili/",
+  "https://item.kongfz.com/Cyishu/",
+  "https://item.kongfz.com/Czhengzhi/",
+  "https://item.kongfz.com/Cfalv/",
+  "https://item.kongfz.com/Cjunshi/",
+  "https://item.kongfz.com/Czhexue/",
+  "https://item.kongfz.com/Czongjiao/",
+  "https://item.kongfz.com/Cjingji/",
+  "https://item.kongfz.com/Cshwh/",
+  "https://item.kongfz.com/Czonghe/",
+  "https://item.kongfz.com/Cshaoer/",
+  "https://item.kongfz.com/Cshenghuo/",
+  "https://item.kongfz.com/Ctiyu/",
+  "https://item.kongfz.com/Cjishu/",
+  "https://item.kongfz.com/Cjisuanji/",
+  "https://item.kongfz.com/Ckexue/",
+  "https://item.kongfz.com/Cyiyao/",
   "https://item.kongfz.com/Cjiaocai/",
-  // "https://item.kongfz.com/Cguoxue/",
-  // "https://item.kongfz.com/Cscyjs/",
+  "https://item.kongfz.com/Cguoxue/",
+  "https://item.kongfz.com/Cscyjs/",
 ];
 import Agenda, { Job } from "agenda";
 import { AgendaService } from "../lib";
@@ -56,7 +56,11 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
     try {
       const { categoryUrl } = job.attrs.data;
 
-      await this.kongProductService.toCategoryPage(categoryUrl);
+      const cateIndex = KongCategoryUrls.findIndex(
+        (url) => url === categoryUrl
+      );
+
+      await this.kongProductService.toCategoryPage(categoryUrl, cateIndex);
       done?.();
     } catch (error) {
       console.error(error);
@@ -69,15 +73,18 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   };
 
   start = async () => {
-    const currentIndex = await this.levelCacheService.get(this.levelKey);
-    console.log({ currentIndex });
+    // const currentIndex = await this.levelCacheService.get(this.levelKey);
+    const currentIndex = "21";
     const categoryUrl = KongCategoryUrls[Number(currentIndex || "0")];
     await this.levelCacheService.put(
       this.levelKey,
       categoryUrl ? Number(currentIndex || "0") + 1 : 0
     );
     if (!this.started) {
-      await this.kongProductService.toCategoryPage(categoryUrl);
+      await this.kongProductService.toCategoryPage(
+        categoryUrl,
+        Number(currentIndex || "0")
+      );
       setTimeout(async () => {
         await this.start();
       }, 1000 * 60);

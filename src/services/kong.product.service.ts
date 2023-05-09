@@ -23,6 +23,33 @@ const generator = new AvatarGenerator();
 let beginTime = new Date();
 let endTime = new Date();
 
+const CateNames = [
+  "小说",
+  "文学",
+  "语言",
+  "历史",
+  "地理",
+  "艺术",
+  "政治",
+  "法律",
+  "军事",
+  "哲学心理",
+  "宗教",
+  "经济",
+  "社会文化",
+  "综合性图书",
+  "童书",
+  "生活",
+  "体育",
+  "工程技术",
+  "计算机与互联网",
+  "自然科学",
+  "医药卫生",
+  "教育教材",
+  "国学古籍",
+  "收藏与鉴赏",
+];
+
 @Service()
 export class KongProductService {
   isLogin: boolean = false;
@@ -97,7 +124,7 @@ export class KongProductService {
     }
   };
 
-  async toCategoryPage(url: string) {
+  async toCategoryPage(url: string, cateIndex: number) {
     const context = await this.browserContextService.getBrowser();
     let page = await context?.newPage();
     try {
@@ -133,7 +160,11 @@ export class KongProductService {
           });
           const detailUrl = await itemHtml.getAttribute("href");
           try {
-            await this.getProductFromDetail(detailUrl, context);
+            await this.getProductFromDetail(
+              detailUrl,
+              CateNames[cateIndex],
+              context
+            );
           } catch (error) {
             console.error("获取书目页面出错", error);
             continue;
@@ -171,7 +202,7 @@ export class KongProductService {
       const listItem = await homePage.waitForSelector(".item-info .title a");
       const detailUrl = await listItem.getAttribute("href");
       await homePage.close();
-      return this.getProductFromDetail(detailUrl, context);
+      return this.getProductFromDetail(detailUrl, null, context);
     } catch (error) {
       console.error("获取书籍详情出错ISBN", error);
       await homePage.close();
@@ -179,8 +210,12 @@ export class KongProductService {
     }
   }
 
-  async getProductFromDetail(url: string, context?: BrowserContext) {
-    console.log("开始在", url, "获取数据");
+  async getProductFromDetail(
+    url: string,
+    cateName?: string,
+    context?: BrowserContext
+  ) {
+    console.log("开始在" + cateName, url, "获取数据");
     beginTime = new Date();
     context = context || (await this.browserContextService.getBrowser());
     const page = await context?.newPage();
@@ -205,7 +240,7 @@ export class KongProductService {
         }
       );
       await sortArea.click();
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState();
     } catch (error) {
       console.error("价格排序出错", error);
       await page.close();
@@ -323,25 +358,7 @@ export class KongProductService {
             const pages = bookInfoText.replace("页数:", "").replace("页", "");
             bookData.pageAmount = +pages;
           }
-          const bookCate =
-            await this.productCategoryService.getOrCreateBookCategory();
-          const cateRecord = await ProductCategoryModel.findOne({
-            name: "教育教材",
-            superCategoryName: bookCate.name,
-            superCategoryId: bookCate.id,
-          });
-          if (!cateRecord) {
-            const newCate = new ProductCategoryModel();
-            newCate.name = "教育教材";
-            newCate.superCategoryName = bookCate.name;
-            newCate.superCategoryId = bookCate.id;
-            await newCate.save();
-            product.categoryId = newCate.id;
-            product.category = newCate.name;
-          } else {
-            product.categoryId = cateRecord.id;
-            product.category = cateRecord.name;
-          }
+
           if (bookInfoText.includes("装帧")) {
             const binding = bookInfoText.replace("装帧:", "").replace(" ", "");
             bookData.binding = binding;
@@ -414,6 +431,37 @@ export class KongProductService {
 
       product.title = title;
       bookData.title = title;
+
+      const bookCate =
+        await this.productCategoryService.getOrCreateBookCategory();
+      const productExist = await ProductModel.findOne({
+        "bookData.isbn": bookData.isbn,
+      });
+
+      console.log({ cateName });
+
+      if (cateName) {
+        const cateRecord = await ProductCategoryModel.findOne({
+          name: cateName,
+          superCategoryName: bookCate.name,
+          superCategoryId: bookCate.id,
+        });
+        if (!cateRecord) {
+          const newCate = new ProductCategoryModel();
+          newCate.name = cateName;
+          newCate.superCategoryName = bookCate.name;
+          newCate.superCategoryId = bookCate.id;
+          await newCate.save();
+          product.categoryId = newCate.id;
+          product.category = newCate.name;
+        } else {
+          product.categoryId = cateRecord.id;
+          product.category = cateRecord.name;
+        }
+      } else {
+        product.categoryId = productExist.categoryId;
+        product.category = productExist.category;
+      }
 
       const introductionEles = await page.$$(".jianjie");
       let contentIntro = "";
@@ -703,7 +751,8 @@ export class KongProductService {
 
       product.type = "book";
       try {
-        const profitRate = (product.price - newPrice) / product.price;
+        const profitRate =
+          (product.price - newPrice) / (newSellPrice + newShipPrice);
         console.log("新产品的利润率", { profitRate });
         product.profitRate = !Number.isNaN(profitRate) ? profitRate : 0;
         await product.save();

@@ -1,4 +1,4 @@
-import { controller, get, options } from "hapi-decorators";
+import { controller, get, options, route } from "hapi-decorators";
 import {
   MController,
   ListData,
@@ -39,11 +39,14 @@ export class ProductCategoryApiController extends MController {
   })
   async addToXian(req: Request): Promise<any> {}
 
-  @get("/update_to_xian")
+  @route("delete", "/{id}")
   @options({
     tags: ["api", "商品"],
-    description: "添加到闲管家",
-    notes: "返回闲管家",
+    description: "删除商品",
+    notes: "测试",
   })
-  async updateToXian(req: Request): Promise<any> {}
+  async delete(req: Request): Promise<any> {
+    const id = req.params.id;
+    return this.productCategoryService.deleteById(id);
+  }
 }
