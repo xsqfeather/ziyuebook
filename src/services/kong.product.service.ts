@@ -205,9 +205,7 @@ export class KongProductService {
         }
       );
       await sortArea.click();
-      await page.waitForLoadState("networkidle", {
-        timeout: 0,
-      });
+      await page.waitForLoadState("networkidle");
     } catch (error) {
       console.error("价格排序出错", error);
       await page.close();
