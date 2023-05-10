@@ -242,9 +242,7 @@ export class KongProductService {
       await sortArea.click();
       await page.waitForLoadState();
     } catch (error) {
-      console.error("价格排序出错", error);
-      await page.close();
-      return;
+      throw error;
     }
     try {
       const product = new ProductModel();
