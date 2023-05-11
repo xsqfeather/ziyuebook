@@ -7,3 +7,4 @@ export * from "./upload.api.controller";
 export * from "./av.post.api.controller";
 export * from "./av.actors.api.controller";
 export * from "./user.av.post.like.api.controller";
+export * from "./products.on_xian.on_sale.api.controller";

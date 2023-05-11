@@ -50,6 +50,7 @@ export class ProductService extends BaseService<Product> {
   }
 
   public async adjustPricesProduct(input: XianProductPublishManyDto) {
+    console.log({ input });
     const xianProductIdList = [];
     for (let index = 0; index < input.productIds.length; index++) {
       const productId = input.productIds[index];
@@ -66,8 +67,6 @@ export class ProductService extends BaseService<Product> {
           xianProductId: product.xianProductId,
           price: +price.toFixed(0),
         });
-
-        console.log({ updateRlt });
 
         if (updateRlt.status === 200) {
           await this.xianProductService.getProductDetail(

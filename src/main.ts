@@ -13,6 +13,7 @@ import {
   UploadApiController,
   AvPostApiController,
   AvActorApiController,
+  ProductOnXianOnSaleApiController,
 } from "./controllers";
 
 startApp({
@@ -26,6 +27,7 @@ startApp({
     UploadApiController,
     AvPostApiController,
     AvActorApiController,
+    ProductOnXianOnSaleApiController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,

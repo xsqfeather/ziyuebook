@@ -17,6 +17,7 @@ import {
 } from "@typegoose/typegoose/lib/types";
 import trimAll from "../utils/trimAll";
 import { BrowserContextService } from "./browser.context.service";
+import { ProductService } from "./product.service";
 
 const generator = new AvatarGenerator();
 
@@ -56,6 +57,9 @@ export class KongProductService {
 
   @Inject(() => ProductCategoryService)
   productCategoryService: ProductCategoryService;
+
+  @Inject(() => ProductService)
+  productService: ProductService;
 
   @Inject(() => UploadService)
   uploadService: UploadService;
@@ -649,6 +653,7 @@ export class KongProductService {
             (productToPut.price - newSellPrice - newShipPrice) /
             (newSellPrice + newShipPrice);
           await page.close();
+
           await ProductModel.updateOne(
             { id: productToPut.id },
             {
@@ -670,6 +675,20 @@ export class KongProductService {
               },
             }
           );
+          if (
+            Number.isNaN(profitRate) ||
+            profitRate === Infinity ||
+            profitRate === -Infinity ||
+            profitRate <= 0.1
+          ) {
+            console.log("利润率不合格，需要更新======================");
+
+            await this.productService.adjustPricesProduct({
+              productIds: [productToPut.id],
+              rate: 1.5,
+              addPrice: 0,
+            });
+          }
         } catch (error) {
           console.error("更新价格失败", error);
         }
@@ -776,9 +795,7 @@ export class KongProductService {
     try {
       await page.goto(url);
     } catch (error) {
-      console.error("打开页面失败，重新打开", error);
-      await page.close();
-      return;
+      throw error;
     }
     const buyUrlOnKong = page.url();
 

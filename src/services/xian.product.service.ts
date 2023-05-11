@@ -109,10 +109,10 @@ export class XianProductService {
 
     const profitRate =
       (+productDetail.price -
-        (exitsProduct?.bookData?.price ||
-          exitsProduct?.bookData?.newPrice ||
+        (exitsProduct?.bookData?.newPrice ||
+          exitsProduct?.bookData?.price ||
           0)) /
-      (exitsProduct?.bookData?.price || exitsProduct?.bookData?.newPrice);
+      (exitsProduct?.bookData?.newPrice || exitsProduct?.bookData?.price);
 
     console.log("profitRate", { profitRate });
 
@@ -241,6 +241,30 @@ export class XianProductService {
     var config = {
       method: "post",
       url: `https://api.goofish.pro/sop/product/delete?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
+
+      data: data,
+    };
+
+    const { data: deleteRlt } = await axios(config);
+    return deleteRlt;
+  }
+
+  async downShelf(productId: string) {
+    const data = {
+      product_id: productId,
+    };
+
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+    const sign = this.sign(
+      XIANGUANJIA_APP_KEY,
+      XIANGUANJIA_APP_SECRET,
+      timestamp,
+      data
+    );
+
+    var config = {
+      method: "post",
+      url: `https://api.goofish.pro/sop/product/downShelf?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
 
       data: data,
     };
