@@ -1,11 +1,10 @@
 import { XianProductService } from "../services/xian.product.service";
 import { Inject, Service } from "typedi";
 import { ProductModel, BookPublisherModel } from "../models";
-const Emittery = require("emittery").default;
-
+import EventEmitter from "events";
 @Service()
 export class InsertFromXianExcelRecord {
-  private emitter = new Emittery();
+  private emitter = new EventEmitter();
 
   public productXianIdJobs: string[] = [];
 
