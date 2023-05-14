@@ -1,10 +1,12 @@
 import { XianProductService } from "../services/xian.product.service";
 import { Inject, Service } from "typedi";
 import { ProductModel, BookPublisherModel } from "../models";
-import EventEmitter from "events";
+import { EventEmitter } from "node:events";
+
+class MyEmitter extends EventEmitter {}
 @Service()
 export class InsertFromXianExcelRecord {
-  private emitter = new EventEmitter();
+  private emitter = new MyEmitter();
 
   public productXianIdJobs: string[] = [];
 
@@ -14,6 +16,7 @@ export class InsertFromXianExcelRecord {
   xianService: XianProductService;
 
   constructor() {
+    console.log("事件名字", InsertFromXianExcelRecord.name);
     this.emitter.on(InsertFromXianExcelRecord.name, this.handle);
   }
 

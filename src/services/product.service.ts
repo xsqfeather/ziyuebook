@@ -91,8 +91,8 @@ export class ProductService extends BaseService<Product> {
   }
 
   public async importFromXianExcel(input: ImportXianExcelDto) {
-    const { fileTypeFromBuffer } = require("file-type");
     try {
+      const { fileTypeFromBuffer } = require("file-type");
       const fileType = await fileTypeFromBuffer(input.file._data);
       console.log({ fileType });
       if (fileType.ext !== "xlsx") {

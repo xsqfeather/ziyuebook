@@ -111,6 +111,7 @@ export class ProductApiController extends MController {
   async addFromXianExcel(req: Request): Promise<any> {
     try {
       const input = req.payload as ImportXianExcelDto;
+      console.log({ input });
 
       return this.productService.importFromXianExcel(input);
     } catch (error) {
