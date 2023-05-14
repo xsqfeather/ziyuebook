@@ -92,24 +92,39 @@ export class ProductService extends BaseService<Product> {
 
   public async importFromXianExcel(input: ImportXianExcelDto) {
     const { fileTypeFromBuffer } = require("file-type");
-    const fileType = await fileTypeFromBuffer(input.file._data);
-    if (fileType.ext !== "xlsx") {
+    try {
+      const fileType = await fileTypeFromBuffer(input.file._data);
+      console.log({ fileType });
+      if (fileType.ext !== "xlsx") {
+        throw Boom.badRequest("文件格式错误");
+      }
+    } catch (error) {
+      console.error({ error });
+    }
+    try {
+      const workSheetsFromBuffer = xlsx.parse(input.file._data);
+
+      for (
+        let index = 0;
+        index < workSheetsFromBuffer[0].data.length;
+        index++
+      ) {
+        try {
+          const record = workSheetsFromBuffer[0].data[index];
+          const price = record[1];
+          const xianProductId = record[2];
+          console.log({ price, xianProductId });
+          this.insertFromXianExcelRecordEvent.trigger({ xianProductId, price });
+        } catch (error) {
+          console.error({ error });
+          continue;
+        }
+      }
+      return workSheetsFromBuffer;
+    } catch (error) {
+      console.error({ error });
       throw Boom.badRequest("文件格式错误");
     }
-    const workSheetsFromBuffer = xlsx.parse(input.file._data);
-
-    for (let index = 0; index < workSheetsFromBuffer[0].data.length; index++) {
-      try {
-        const record = workSheetsFromBuffer[0].data[index];
-        const price = record[1];
-        const xianProductId = record[2];
-        this.insertFromXianExcelRecordEvent.trigger({ xianProductId, price });
-      } catch (error) {
-        console.error({ error });
-        continue;
-      }
-    }
-    return workSheetsFromBuffer;
   }
 
   public async putXianProduct(input: XianProductPublishDto) {
