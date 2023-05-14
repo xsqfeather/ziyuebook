@@ -99,10 +99,15 @@ export class ProductService extends BaseService<Product> {
     const workSheetsFromBuffer = xlsx.parse(input.file._data);
 
     for (let index = 0; index < workSheetsFromBuffer[0].data.length; index++) {
-      const record = workSheetsFromBuffer[0].data[index];
-      const price = record[1];
-      const xianProductId = record[2];
-      this.insertFromXianExcelRecordEvent.trigger({ xianProductId, price });
+      try {
+        const record = workSheetsFromBuffer[0].data[index];
+        const price = record[1];
+        const xianProductId = record[2];
+        this.insertFromXianExcelRecordEvent.trigger({ xianProductId, price });
+      } catch (error) {
+        console.error({ error });
+        continue;
+      }
     }
     return workSheetsFromBuffer;
   }
