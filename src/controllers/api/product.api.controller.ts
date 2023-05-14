@@ -88,6 +88,10 @@ export class ProductApiController extends MController {
     notes: "返回产品库",
     validate: {
       payload: ImportXianExcelSchema,
+      failAction: async (request, h, err) => {
+        console.log(err);
+        throw err;
+      },
     },
     payload: {
       output: "stream",
