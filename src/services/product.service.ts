@@ -4,18 +4,25 @@ import { BaseService } from "./base.service";
 import { GetListQuery, ListData } from "../lib";
 import Boom from "@hapi/boom";
 import {
+  ImportXianExcelDto,
   XianProductCreateDto,
   XianProductEditDto,
   XianProductPublishDto,
   XianProductPublishManyDto,
 } from "../dtos";
 import { XianProductService } from "./xian.product.service";
+import xlsx from "node-xlsx";
 import trimAll from "../utils/trimAll";
+import { InsertFromXianExcelRecord } from "events/InsertFromXianExcelRecord";
+import { waitTimeout } from "../utils";
 
 @Service()
 export class ProductService extends BaseService<Product> {
   @Inject(() => XianProductService)
   xianProductService: XianProductService;
+
+  @Inject(() => InsertFromXianExcelRecord)
+  insertFromXianExcelRecordEvent: InsertFromXianExcelRecord;
 
   public async getProductList(
     input: GetListQuery<Product>
@@ -61,7 +68,9 @@ export class ProductService extends BaseService<Product> {
       if (!product.onXian) {
         continue;
       }
-      const price = product.bookData?.price * input.rate + input.addPrice;
+      const price =
+        (product.bookData?.newPrice || product.bookData?.price) * input.rate +
+        input.addPrice;
       try {
         const updateRlt = await this.xianProductService.adjustProductPrice({
           xianProductId: product.xianProductId,
@@ -69,7 +78,7 @@ export class ProductService extends BaseService<Product> {
         });
 
         if (updateRlt.status === 200) {
-          await this.xianProductService.getProductDetail(
+          await this.xianProductService.getProductDetailAndCheckUpdate(
             updateRlt.data.product_id
           );
         }
@@ -80,6 +89,23 @@ export class ProductService extends BaseService<Product> {
       }
     }
     return xianProductIdList;
+  }
+
+  public async importFromXianExcel(input: ImportXianExcelDto) {
+    const { fileTypeFromBuffer } = require("file-type");
+    const fileType = await fileTypeFromBuffer(input.file._data);
+    if (fileType.ext !== "xlsx") {
+      throw Boom.badRequest("文件格式错误");
+    }
+    const workSheetsFromBuffer = xlsx.parse(input.file._data);
+
+    for (let index = 0; index < workSheetsFromBuffer[0].data.length; index++) {
+      const record = workSheetsFromBuffer[0].data[index];
+      const price = record[1];
+      const xianProductId = record[2];
+      this.insertFromXianExcelRecordEvent.trigger({ xianProductId, price });
+    }
+    return workSheetsFromBuffer;
   }
 
   public async putXianProduct(input: XianProductPublishDto) {
@@ -119,7 +145,7 @@ export class ProductService extends BaseService<Product> {
       "【正版二手】" +
       product.title +
       "作者" +
-      (product.bookData?.authors[0] || "") +
+      ((product.bookData?.authors && product.bookData?.authors[0]) || "") +
       "出版社" +
       product.bookData?.publisher;
     updateXianProductInput.title = trimAll(updateXianProductInput.title).slice(
@@ -144,7 +170,7 @@ export class ProductService extends BaseService<Product> {
     if (updateRlt.status === 200) {
       product.xianProductId = updateRlt.data?.product_id;
       if (updateRlt.data?.product_id) {
-        await this.xianProductService.getProductDetail(
+        await this.xianProductService.getProductDetailAndCheckUpdate(
           updateRlt.data.product_id
         );
       }
@@ -204,8 +230,16 @@ export class ProductService extends BaseService<Product> {
     );
     if (createRlt.status === 200) {
       product.xianProductId = createRlt.data.product_id;
-      await this.xianProductService.getProductDetail(createRlt.data.product_id);
+      await this.xianProductService.getProductDetailAndCheckUpdate(
+        createRlt.data.product_id
+      );
     }
     return createRlt;
+  }
+
+  async importFromXianFile(file: Buffer) {
+    const { fileTypeFromBuffer } = require("file-type");
+    const fileType = await fileTypeFromBuffer(file);
+    console.log({ fileType });
   }
 }

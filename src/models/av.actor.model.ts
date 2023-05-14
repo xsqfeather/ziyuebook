@@ -2,7 +2,6 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { getSchema } from "joi-typescript-validator";
 import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
-import { SchemaTypes } from "mongoose";
 
 @modelOptions({ options: { allowMixed: 0 } })
 export class AvActor extends Base {
@@ -18,28 +17,14 @@ export class AvActor extends Base {
     type: String,
     required: true,
   })
-  public content!: string;
+  public introduction!: string;
 
   @Required()
   @prop({
     type: String,
     required: true,
   })
-  public cover!: string;
-
-  @Required()
-  @prop({
-    type: String,
-    required: true,
-  })
-  public description!: string;
-
-  @Required()
-  @prop({
-    type: SchemaTypes.Array,
-    required: true,
-  })
-  public tags!: string[];
+  public avatar!: string;
 
   @Required()
   @prop({

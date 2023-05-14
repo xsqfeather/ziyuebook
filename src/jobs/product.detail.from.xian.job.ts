@@ -26,7 +26,9 @@ export class ProductDetailFromXianJob implements AgendaService<Product> {
       if (!product) {
         return await this.start();
       }
-      await this.xianProductService.getProductDetail(product.xianProductId);
+      await this.xianProductService.getProductDetailAndCheckUpdate(
+        product.xianProductId
+      );
       await this.start();
       done();
     } catch (error) {

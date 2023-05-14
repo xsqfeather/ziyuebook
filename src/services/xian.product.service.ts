@@ -76,29 +76,8 @@ export class XianProductService {
     }
   }
 
-  async getProductDetail(productId: string) {
-    const data = {
-      product_id: productId,
-    };
-    const timestamp = Math.floor(new Date().getTime() / 1000);
-    const sign = this.sign(
-      XIANGUANJIA_APP_KEY,
-      XIANGUANJIA_APP_SECRET,
-      timestamp,
-      data
-    );
-
-    const config = {
-      method: "post",
-      url: `https://api.goofish.pro/sop/product/query?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: data,
-    };
-
-    const { data: detail } = await axios(config);
-    const { data: productDetail } = detail;
+  async getProductDetailAndCheckUpdate(productId: string) {
+    const productDetail = await this.getProductDetail(productId);
     if (!productDetail.book_data?.isbn || productDetail.book_data?.isbn == "") {
       return;
     }
@@ -165,6 +144,31 @@ export class XianProductService {
       );
       console.log("==========更新了", rlt.modifiedCount, "条数据==========");
     }
+  }
+
+  async getProductDetail(productId: string) {
+    const data = {
+      product_id: productId,
+    };
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+    const sign = this.sign(
+      XIANGUANJIA_APP_KEY,
+      XIANGUANJIA_APP_SECRET,
+      timestamp,
+      data
+    );
+
+    const config = {
+      method: "post",
+      url: `https://api.goofish.pro/sop/product/query?appid=${XIANGUANJIA_APP_KEY}&timestamp=${timestamp}&sign=${sign}`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const { data: detail } = await axios(config);
+    const { data: productDetail } = detail;
 
     return productDetail;
   }

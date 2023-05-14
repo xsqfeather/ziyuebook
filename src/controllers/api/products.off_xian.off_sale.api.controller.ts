@@ -1,4 +1,4 @@
-import { controller, get, options, route, put, post } from "hapi-decorators";
+import { controller, get, options, route, put } from "hapi-decorators";
 import {
   MController,
   ListData,
@@ -10,7 +10,6 @@ import { Request } from "@hapi/hapi";
 import { Product, ProductCategoryModel } from "../../models";
 import { ProductService } from "../../services";
 import {
-  ImportXianExcelSchema,
   XianProductPublishDto,
   XianProductPublishDtoSchema,
   XianProductPublishManyDto,
@@ -19,8 +18,8 @@ import {
 import Joi from "joi";
 
 @Service()
-@controller("/api/products_on_xian_on_sale")
-export class ProductOffXianOffSaleApiController extends MController {
+@controller("/api/products_off_xian_off_sale")
+export class ProductOnXianOnSaleApiController extends MController {
   @Inject(() => ProductService)
   productService: ProductService;
   @get("/")
@@ -39,8 +38,7 @@ export class ProductOffXianOffSaleApiController extends MController {
       ...listQuery,
       filter: {
         ...listQuery.filter,
-        onXian: true,
-        "xian.product_status": 22,
+        onXian: false,
       } as any,
     };
 
@@ -128,37 +126,5 @@ export class ProductOffXianOffSaleApiController extends MController {
   async delete(req: Request): Promise<any> {
     const id = req.params.id;
     return this.productService.deleteProductById(id);
-  }
-
-  @post("/import_from_xian")
-  @options({
-    tags: ["api", "商品"],
-    description: "从闲管家导入商品",
-    notes: "测试",
-    auth: {
-      strategy: "jwt",
-      scope: ["admin"],
-    },
-    payload: {
-      output: "stream",
-      parse: true,
-      maxBytes: 1024 * 1024 * 100, //100m
-      allow: "multipart/form-data",
-      multipart: {
-        output: "stream",
-      },
-    },
-    plugins: {
-      "hapi-swagger": {
-        payloadType: "form",
-      },
-    },
-    validate: {
-      payload: ImportXianExcelSchema,
-    },
-  })
-  async importFromXian(req: Request): Promise<any> {
-    const file = (req.payload as any)["file"];
-    return this.productService.importFromXianFile(file._data);
   }
 }

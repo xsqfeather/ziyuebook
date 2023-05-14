@@ -1,4 +1,4 @@
-import { controller, get, options, route, put } from "hapi-decorators";
+import { controller, get, options, route, put, post } from "hapi-decorators";
 import {
   MController,
   ListData,
@@ -10,6 +10,8 @@ import { Request } from "@hapi/hapi";
 import { Product, ProductCategoryModel } from "../../models";
 import { ProductService } from "../../services";
 import {
+  ImportXianExcelDto,
+  ImportXianExcelSchema,
   XianProductPublishDto,
   XianProductPublishDtoSchema,
   XianProductPublishManyDto,
@@ -73,6 +75,39 @@ export class ProductApiController extends MController {
       };
     }
     return this.productService.getProductList(listQuery);
+  }
+
+  @post("/add_from_xian_excel")
+  @options({
+    auth: {
+      strategy: "jwt",
+      scope: ["admin"],
+    },
+    tags: ["api", "商品"],
+    description: "上传xlsx文件添加到产品库",
+    notes: "返回产品库",
+    validate: {
+      payload: ImportXianExcelSchema,
+    },
+    payload: {
+      output: "stream",
+      parse: true,
+      maxBytes: 1024 * 1024 * 100, //100m
+      allow: "multipart/form-data",
+      multipart: {
+        output: "stream",
+      },
+    },
+    plugins: {
+      "hapi-swagger": {
+        payloadType: "form",
+      },
+    },
+  })
+  async addFromXianExcel(req: Request): Promise<any> {
+    const input = req.payload as ImportXianExcelDto;
+
+    return this.productService.importFromXianExcel(input);
   }
 
   @put("/publish_to_xian")

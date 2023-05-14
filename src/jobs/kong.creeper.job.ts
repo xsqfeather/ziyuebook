@@ -73,8 +73,8 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   };
 
   start = async () => {
-    // const currentIndex = await this.levelCacheService.get(this.levelKey);
-    const currentIndex = "21";
+    const currentIndex = await this.levelCacheService.get(this.levelKey);
+    // const currentIndex = "21";
     const categoryUrl = KongCategoryUrls[Number(currentIndex || "0")];
     await this.levelCacheService.put(
       this.levelKey,
@@ -85,9 +85,7 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
         categoryUrl,
         Number(currentIndex || "0")
       );
-      setTimeout(async () => {
-        await this.start();
-      }, 1000 * 60);
+      await this.start();
     }
   };
 }

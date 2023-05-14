@@ -526,16 +526,20 @@ export class KongProductService {
         const coverElement = await coverPage.waitForSelector("img");
         let coverUrl = await coverElement.getAttribute("src");
         coverUrl = coverUrl.replace("_water", "");
-        const response = await axios.get(coverUrl, {
-          responseType: "arraybuffer",
-        });
-        const buffer = Buffer.from(response.data, "utf-8");
-        const uploadRlt = await this.uploadService.uploadTTImage(
-          buffer,
-          product.id + ".png"
-        );
-        // console.log(uploadRlt);
-        bookData.cover = "https://" + uploadRlt;
+        try {
+          const response = await axios.get(coverUrl, {
+            responseType: "arraybuffer",
+          });
+          const buffer = Buffer.from(response.data, "utf-8");
+          const uploadRlt = await this.uploadService.uploadTTImage(
+            buffer,
+            product.id + ".png"
+          );
+          // console.log(uploadRlt);
+          bookData.cover = "https://" + uploadRlt;
+        } catch (error) {
+          console.error("获取白底封面失败", error);
+        }
         images.push(bookData.cover);
         product.cover = bookData.cover;
         await coverPage.close();
@@ -614,6 +618,10 @@ export class KongProductService {
       buyUrlOnKong,
     } = itemDetail;
     product.images = [...images, ...(itemImages || []), ...insideImages];
+    if (!product.cover) {
+      product.cover = product.images[0];
+      bookData.cover = product.images[0];
+    }
     console.log({ quality, shipPrice, nowPrice });
     if (!nowPrice) {
       return await page.close();
@@ -671,6 +679,7 @@ export class KongProductService {
                 profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
                 category: product.category,
                 categoryId: product.categoryId,
+                originUrl: product.originUrl,
                 updatedAt: new Date(),
               },
             }
@@ -724,6 +733,7 @@ export class KongProductService {
                   category: product.category,
                   categoryId: product.categoryId,
                   newSellPrice: newSellPrice,
+                  originUrl: product.originUrl,
                 },
                 profitRate:
                   !Number.isNaN(profitRate) && profitRate > 0 ? profitRate : 0,
@@ -764,6 +774,7 @@ export class KongProductService {
       product.bookData.price = newPrice;
       product.buyUrlOnKong = buyUrlOnKong;
       product.price = newPrice * 1.5;
+      product.lastCheckTime = new Date();
       product.createdAt = new Date();
 
       product.type = "book";

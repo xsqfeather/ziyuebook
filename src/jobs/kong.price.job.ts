@@ -4,6 +4,7 @@ import { LevelCacheService } from "../lib/services";
 import { KongProductService } from "../services/kong.product.service";
 import { ProductModel } from "../models";
 import { BrowserContextService } from "../services/browser.context.service";
+import { waitTimeout } from "../utils";
 
 @Service()
 export class KongPriceJob {
@@ -22,19 +23,19 @@ export class KongPriceJob {
   @Inject(() => BrowserContextService)
   browserContextService: BrowserContextService;
   start = async () => {
-    const product = await ProductModel.findOne({
-      originUrl: {
-        $exists: true,
-        $ne: "",
+    const product = await ProductModel.findOneAndUpdate(
+      {
+        "xian.product_status": 22,
       },
-    }).sort({
+      {
+        $set: {
+          lastCheckTime: new Date(),
+        },
+      }
+    ).sort({
       lastCheckTime: 1,
-      updatedAt: 1,
     });
-    await ProductModel.updateOne(
-      { id: product.id },
-      { lastCheckTime: new Date() }
-    );
+
     if (product) {
       console.log(
         "开始检查======",
@@ -50,8 +51,7 @@ export class KongPriceJob {
         console.error(error);
       }
     }
-    setTimeout(async () => {
-      await this.start();
-    }, 5000);
+    await waitTimeout(550);
+    await this.start();
   };
 }

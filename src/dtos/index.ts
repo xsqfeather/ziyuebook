@@ -6,3 +6,4 @@ export * from "./av.posts.dto";
 export * from "./av.actors.dto";
 export * from "./user.av.actors.likes.dto";
 export * from "./user.av.posts.likes.dto";
+export * from "./products.dto";
