@@ -105,9 +105,14 @@ export class ProductApiController extends MController {
     },
   })
   async addFromXianExcel(req: Request): Promise<any> {
-    const input = req.payload as ImportXianExcelDto;
+    try {
+      const input = req.payload as ImportXianExcelDto;
 
-    return this.productService.importFromXianExcel(input);
+      return this.productService.importFromXianExcel(input);
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
 
   @put("/publish_to_xian")
