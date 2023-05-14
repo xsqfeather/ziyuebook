@@ -109,8 +109,8 @@ export class InsertFromXianExcelRecord {
     price: number;
   }) => {
     try {
-      console.log({ xianProductId, price });
-      // this.addJob(xianProductId);
+      // console.log({ xianProductId, price });
+      await this.addJob(xianProductId);
     } catch (error) {
       error.message = `插入闲鱼商品失败，${error.message}`;
       console.log({ error });
