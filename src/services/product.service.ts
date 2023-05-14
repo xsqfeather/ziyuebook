@@ -13,8 +13,7 @@ import {
 import { XianProductService } from "./xian.product.service";
 import xlsx from "node-xlsx";
 import trimAll from "../utils/trimAll";
-import { InsertFromXianExcelRecord } from "events/InsertFromXianExcelRecord";
-import { waitTimeout } from "../utils";
+import { InsertFromXianExcelRecord } from "../events/InsertFromXianExcelRecord";
 
 @Service()
 export class ProductService extends BaseService<Product> {
