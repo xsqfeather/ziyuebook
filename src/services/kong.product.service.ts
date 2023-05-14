@@ -71,12 +71,8 @@ export class KongProductService {
     let context = await this.browserContextService.getBrowser();
     const [homePage] = context.pages();
     try {
-      await homePage.goto("https://shop.kongfz.com/", {
-        timeout: 0,
-      });
-      await homePage.waitForLoadState("networkidle", {
-        timeout: 0,
-      });
+      await homePage.goto("https://shop.kongfz.com/");
+      await homePage.waitForLoadState("networkidle");
     } catch (error) {
       await homePage?.close();
       return;
@@ -115,9 +111,7 @@ export class KongProductService {
 
       const loginBtn = await page.waitForSelector(".login_submit");
       await loginBtn.click();
-      await page.waitForLoadState("networkidle", {
-        timeout: 0,
-      });
+      await page.waitForLoadState();
       await page.close();
       await homePage.close();
     } catch (error) {
@@ -135,12 +129,8 @@ export class KongProductService {
       await this.checkToLogin();
       try {
         console.log("正在跳转分类页面.....", url);
-        await page?.goto(url, {
-          timeout: 0,
-        });
-        await page?.waitForLoadState("networkidle", {
-          timeout: 0,
-        });
+        await page?.goto(url);
+        await page?.waitForLoadState();
         console.log("跳转到了分类页面");
       } catch (error) {
         console.error("去分类页面出错", error);
@@ -159,9 +149,7 @@ export class KongProductService {
         for (let index = 0; index < listItems.length; index++) {
           beginTime = new Date();
           const item = listItems[index];
-          const itemHtml = await item.waitForSelector(".title a", {
-            timeout: 0,
-          });
+          const itemHtml = await item.waitForSelector(".title a");
           const detailUrl = await itemHtml.getAttribute("href");
           try {
             await this.getProductFromDetail(
@@ -194,14 +182,9 @@ export class KongProductService {
     let context = await this.browserContextService.getBrowser();
     const homePage = await context.newPage();
     await homePage.goto(
-      "https://search.kongfz.com/item_result/?status=0&key=" + isbn,
-      {
-        timeout: 0,
-      }
+      "https://search.kongfz.com/item_result/?status=0&key=" + isbn
     );
-    await homePage.waitForLoadState("networkidle", {
-      timeout: 0,
-    });
+    await homePage.waitForLoadState();
     try {
       const listItem = await homePage.waitForSelector(".item-info .title a");
       const detailUrl = await listItem.getAttribute("href");
@@ -224,24 +207,17 @@ export class KongProductService {
     context = context || (await this.browserContextService.getBrowser());
     const page = await context?.newPage();
     try {
-      await page.goto(url, {
-        timeout: 0,
-      });
+      await page.goto(url);
     } catch (error) {
       console.error("获取书籍目录数据出错", error);
       await page?.close();
       return;
     }
     try {
-      const priceArea = await page.waitForSelector("#priceOrder", {
-        timeout: 0,
-      });
+      const priceArea = await page.waitForSelector("#priceOrder");
       await priceArea.click();
       const sortArea = await page.waitForSelector(
-        "#priceOrder .price-select-box a:first-child",
-        {
-          timeout: 0,
-        }
+        "#priceOrder .price-select-box a:first-child"
       );
       await sortArea.click();
       await page.waitForLoadState();
@@ -810,9 +786,7 @@ export class KongProductService {
     }
     const buyUrlOnKong = page.url();
 
-    const priceEle = await page.waitForSelector(".now-price .now-price-text", {
-      timeout: 0,
-    });
+    const priceEle = await page.waitForSelector(".now-price .now-price-text");
     const nowPrice = await priceEle?.innerText();
     const shipPriceEle = await page.waitForSelector(
       ".carry-cont .express-wrapper"
