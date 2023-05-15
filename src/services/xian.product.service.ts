@@ -64,7 +64,7 @@ export class XianProductService {
       for (let index = 0; index < productListData?.data.length; index++) {
         const xianProduct = productListData?.data[index];
 
-        await this.getProductDetail(xianProduct.product_id);
+        await this.getProductDetailAndCheckUpdate(xianProduct.product_id);
       }
       if (!productListData?.data && productListData?.data?.length === 0) {
         const levelKey = PRODUCT_JOB + "FromXianList" + "currentPage";
