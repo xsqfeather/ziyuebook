@@ -14,6 +14,7 @@ import { XianProductService } from "./xian.product.service";
 import xlsx from "node-xlsx";
 import trimAll from "../utils/trimAll";
 import { InsertFromXianExcelRecord } from "../events/InsertFromXianExcelRecord";
+import { PublishToXianEvent } from "../events";
 
 @Service()
 export class ProductService extends BaseService<Product> {
@@ -22,6 +23,9 @@ export class ProductService extends BaseService<Product> {
 
   @Inject(() => InsertFromXianExcelRecord)
   insertFromXianExcelRecordEvent: InsertFromXianExcelRecord;
+
+  @Inject(() => PublishToXianEvent)
+  publishToXianEvent: PublishToXianEvent;
 
   public async getProductList(
     input: GetListQuery<Product>
@@ -64,7 +68,7 @@ export class ProductService extends BaseService<Product> {
       if (!product) {
         throw Boom.notFound("商品不存在");
       }
-      if (!product.onXian) {
+      if (!product.xianProductId) {
         continue;
       }
       const price =
@@ -94,7 +98,6 @@ export class ProductService extends BaseService<Product> {
     try {
       const { fileTypeFromBuffer } = require("file-type");
       const fileType = await fileTypeFromBuffer(input.file._data);
-      console.log({ fileType });
       if (fileType.ext !== "xlsx") {
         throw Boom.badRequest("文件格式错误");
       }
@@ -145,6 +148,13 @@ export class ProductService extends BaseService<Product> {
     }
 
     return rlt;
+  }
+
+  public putXianProducts(input: { productIds: string[] }) {
+    return input.productIds.map((productId) => {
+      this.publishToXianEvent.trigger({ productId });
+      return productId;
+    });
   }
 
   public async updateXianProduct(
@@ -223,7 +233,7 @@ export class ProductService extends BaseService<Product> {
     createXianProductInput.district_id = 510116;
     createXianProductInput.outer_id = product.bookData?.isbn;
     createXianProductInput.images = [
-      ...xianInfo.images,
+      ...product.images,
       "https://img2.sosotec.com/product/20230317/121901-3893ckjk.jpg",
     ];
     createXianProductInput.desc =

@@ -664,13 +664,13 @@ export class KongProductService {
             Number.isNaN(profitRate) ||
             profitRate === Infinity ||
             profitRate === -Infinity ||
-            profitRate <= 0.1
+            profitRate <= 0.15
           ) {
             console.log("利润率不合格，需要更新======================");
 
             await this.productService.adjustPricesProduct({
               productIds: [productToPut.id],
-              rate: 1.5,
+              rate: 1.3,
               addPrice: 0,
             });
           }

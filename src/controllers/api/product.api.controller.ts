@@ -131,8 +131,31 @@ export class ProductApiController extends MController {
   })
   async updateToXian(req: Request): Promise<any> {
     const input = req.payload as XianProductPublishDto;
+    console.log({ input });
 
     return this.productService.putXianProduct(input);
+  }
+
+  @post("/publish_many_to_xian")
+  @options({
+    tags: ["api", "商品"],
+    description: "批量添加商品添加到闲管家",
+    notes: "返回productIds",
+    validate: {
+      payload: Joi.object({
+        productIds: Joi.array()
+          .items(Joi.string())
+          .description("商品Id数组")
+          .default([]),
+      }),
+    },
+  })
+  async publishManyToXian(req: Request): Promise<any> {
+    const input = req.payload as {
+      productIds: string[];
+    };
+
+    return this.productService.putXianProducts(input);
   }
 
   @put("/publish_many_price_to_xian")

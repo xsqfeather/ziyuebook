@@ -16,7 +16,6 @@ export class InsertFromXianExcelRecord {
   xianService: XianProductService;
 
   constructor() {
-    console.log("事件名字", InsertFromXianExcelRecord.name);
     this.emitter.on(InsertFromXianExcelRecord.name, this.handle);
   }
 
