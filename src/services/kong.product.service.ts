@@ -437,8 +437,8 @@ export class KongProductService {
           product.category = cateRecord.name;
         }
       } else {
-        product.categoryId = productExist.categoryId;
-        product.category = productExist.category;
+        product.categoryId = productExist?.categoryId;
+        product.category = productExist?.category;
       }
 
       const introductionEles = await page.$$(".jianjie");
