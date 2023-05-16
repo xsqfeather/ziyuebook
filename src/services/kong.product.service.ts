@@ -186,12 +186,14 @@ export class KongProductService {
     );
     await homePage.waitForLoadState();
     try {
-      const listItem = await homePage.waitForSelector(".item-info .title a");
+      const listItem = await homePage.waitForSelector(".item-info .title a", {
+        timeout: 100000,
+      });
       const detailUrl = await listItem.getAttribute("href");
       await homePage.close();
       return this.getProductFromDetail(detailUrl, null, context);
     } catch (error) {
-      console.error("获取书籍详情出错ISBN", error);
+      console.error("获取书籍详情出错ISBN" + isbn, error);
       await homePage.close();
       return;
     }
@@ -278,7 +280,7 @@ export class KongProductService {
 
               await insideImagesPage.waitForLoadState();
               for (let index = 0; index < 20; index++) {
-                await insideImagesPage.waitForTimeout(500);
+                await insideImagesPage.waitForTimeout(1000);
                 await insideImagesPage.mouse.wheel(0, 500);
               }
               const imageEles = await insideImagesPage.$$("a img");

@@ -34,6 +34,7 @@ export class KongPriceJob {
       }
     ).sort({
       lastCheckTime: 1,
+      buyUrlOnKong: 1,
     });
 
     if (product) {

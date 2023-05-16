@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 import { startJobs } from "./lib/startJobs";
-import { KongCreeperJob, KongPriceJob, ProductsGetFromXianJob } from "./jobs";
+import { KongCreeperJob, KongPriceJob } from "./jobs";
 import Container from "typedi";
 import { BrowserContextService } from "./services/browser.context.service";
 
