@@ -158,12 +158,11 @@ export class ProductService extends BaseService<Product> {
       {
         bannedOnXian: true,
         updatedAt: new Date(),
+      },
+      {
+        upsert: true,
       }
     );
-    console.log({ productToBanned });
-    if (!productToBanned) {
-      throw Boom.notFound("此ISBN没有入库");
-    }
     return productToBanned;
   }
 
