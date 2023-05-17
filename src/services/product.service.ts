@@ -150,6 +150,23 @@ export class ProductService extends BaseService<Product> {
     return rlt;
   }
 
+  public async banProductOnXianByISBN(isbn: string) {
+    const productToBanned = await ProductModel.findOneAndUpdate(
+      {
+        "bookData.isbn": isbn,
+      },
+      {
+        bannedOnXian: true,
+        updatedAt: new Date(),
+      }
+    );
+    console.log({ productToBanned });
+    if (!productToBanned) {
+      throw Boom.notFound("此ISBN没有入库");
+    }
+    return productToBanned;
+  }
+
   public putXianProducts(input: { productIds: string[] }) {
     return input.productIds.map((productId) => {
       this.publishToXianEvent.trigger({ productId });

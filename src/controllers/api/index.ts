@@ -9,3 +9,4 @@ export * from "./av.actors.api.controller";
 export * from "./user.av.post.like.api.controller";
 export * from "./products.on_xian.on_sale.api.controller";
 export * from "./products.off_xian.off_sale.api.controller";
+export * from "./products.on_xian_banned.api.controller";

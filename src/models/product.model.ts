@@ -209,6 +209,9 @@ export class Product extends Base {
 
   @prop({ type: String, default: "" })
   buyUrlOnKong: string;
+
+  @prop({ type: Boolean, default: false })
+  bannedOnXian: boolean;
 }
 
 export const ProductModel = getModelForClass(Product);

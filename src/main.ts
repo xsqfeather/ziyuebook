@@ -15,6 +15,7 @@ import {
   AvActorApiController,
   ProductOnXianOnSaleApiController,
   ProductOffXianOffSaleApiController,
+  ProductOnXianBannedApiController,
 } from "./controllers";
 
 startApp({
@@ -30,6 +31,7 @@ startApp({
     AvActorApiController,
     ProductOnXianOnSaleApiController,
     ProductOffXianOffSaleApiController,
+    ProductOnXianBannedApiController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,

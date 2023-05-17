@@ -1,4 +1,4 @@
-import { controller, get, options, route, put } from "hapi-decorators";
+import { controller, get, options, route, put, post } from "hapi-decorators";
 import {
   MController,
   ListData,
@@ -18,14 +18,14 @@ import {
 import Joi from "joi";
 
 @Service()
-@controller("/api/products_off_xian_off_sale")
-export class ProductOnXianOnSaleApiController extends MController {
+@controller("/api/products_on_xian_banned")
+export class ProductOnXianBannedApiController extends MController {
   @Inject(() => ProductService)
   productService: ProductService;
   @get("/")
   @options({
     tags: ["api", "商品"],
-    description: "查询商品列表",
+    description: "违禁商品列表",
     notes: "测试",
     validate: {
       query: ListQuerySchema,
@@ -38,17 +38,10 @@ export class ProductOnXianOnSaleApiController extends MController {
       ...listQuery,
       filter: {
         ...listQuery.filter,
-        onXian: false,
-        $or: [
-          {
-            bannedOnXian: false,
-          },
-          {
-            bannedOnXian: {
-              $exists: false,
-            },
-          },
-        ],
+        bannedOnXian: {
+          $exists: true,
+          $eq: true,
+        },
       } as any,
     };
 
@@ -82,19 +75,21 @@ export class ProductOnXianOnSaleApiController extends MController {
     return this.productService.getProductList(listQuery);
   }
 
-  @put("/publish_to_xian")
+  @post("/")
   @options({
     tags: ["api", "商品"],
-    description: "添加到闲管家",
+    description: "添加违禁ISBN",
     notes: "返回闲管家",
     validate: {
-      payload: XianProductPublishDtoSchema,
+      payload: Joi.object({
+        isbn: Joi.string().required().description("ISBN"),
+      }),
     },
   })
-  async updateToXian(req: Request): Promise<any> {
-    const input = req.payload as XianProductPublishDto;
-
-    return this.productService.putXianProduct(input);
+  async bannedToXian(req: Request): Promise<any> {
+    const input = req.payload as any;
+    console.log({ input });
+    return this.productService.banProductOnXianByISBN(input.isbn);
   }
 
   @put("/publish_many_price_to_xian")
