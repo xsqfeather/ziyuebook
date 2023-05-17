@@ -136,6 +136,9 @@ export class ProductService extends BaseService<Product> {
     if (!product) {
       throw Boom.notFound("商品不存在");
     }
+    if (product.bannedOnXian) {
+      throw Boom.forbidden("商品闲鱼违禁");
+    }
     let rlt = null;
     if (product.xianProductId && product.xianProductId !== "") {
       rlt = await this.updateXianProduct(

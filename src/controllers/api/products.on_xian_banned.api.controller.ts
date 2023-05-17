@@ -7,11 +7,9 @@ import {
 } from "../../lib";
 import { Inject, Service } from "typedi";
 import { Request } from "@hapi/hapi";
-import { Product, ProductCategoryModel } from "../../models";
+import { Product, ProductCategoryModel, ProductModel } from "../../models";
 import { ProductService } from "../../services";
 import {
-  XianProductPublishDto,
-  XianProductPublishDtoSchema,
   XianProductPublishManyDto,
   XianProductPublishManyDtoSchema,
 } from "../../dtos";
@@ -90,6 +88,34 @@ export class ProductOnXianBannedApiController extends MController {
     const input = req.payload as any;
     console.log({ input });
     return this.productService.banProductOnXianByISBN(input.isbn);
+  }
+
+  @post("/many")
+  @options({
+    tags: ["api", "商品"],
+    description: "添加违禁ISBN",
+    notes: "返回闲管家",
+    validate: {
+      payload: Joi.object({
+        productIds: Joi.array().items(Joi.string()).description("ISBN"),
+      }),
+    },
+  })
+  async bannedToXians(req: Request): Promise<any> {
+    const products = await ProductModel.find({
+      id: {
+        $in: (req.payload as any).productIds,
+      },
+    });
+
+    const isbns = products.map((p) => p.bookData.isbn);
+
+    for (let index = 0; index < isbns.length; index++) {
+      const isbn = isbns[index];
+      await this.productService.banProductOnXianByISBN(isbn);
+    }
+
+    return isbns;
   }
 
   @put("/publish_many_price_to_xian")
