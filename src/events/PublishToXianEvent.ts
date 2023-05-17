@@ -34,7 +34,7 @@ export class PublishToXianEvent {
 
     if (productId) {
       try {
-        const product = await ProductModel.findOne({ productId });
+        const product = await ProductModel.findOne({ id: productId });
 
         const xianInfo = {
           channel_cat_id: "ab78823bfd3c7134b108d382c4e6ea42",
