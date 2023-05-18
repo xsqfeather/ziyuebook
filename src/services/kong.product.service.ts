@@ -144,7 +144,8 @@ export class KongProductService {
       await sellEle.click();
       console.log("按照销量排序完成...........");
 
-      for (let pageIndex = 2; pageIndex <= 100; pageIndex++) {
+      // for (let pageIndex = 2; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 100; pageIndex >= 2; pageIndex--) {
         const listItems = await page.$$("#listBox .item");
         for (let index = 0; index < listItems.length; index++) {
           beginTime = new Date();
