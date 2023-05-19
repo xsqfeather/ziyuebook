@@ -132,7 +132,7 @@ export class KongProductService {
         // for (let pageIndex = 100; pageIndex >= 2; pageIndex--) {
         console.log("正在获取第", pageIndex, "==================页");
         try {
-          await page.goto(`${url}/v1w${pageIndex}`);
+          await page.goto(`${url}v1w${pageIndex}`);
           await page?.waitForLoadState("networkidle", { timeout: 100000 });
           await page?.waitForTimeout(1000);
         } catch (error) {
