@@ -627,8 +627,8 @@ export class KongProductService {
         newSellPrice: newSellPrice,
       };
       if (
-        productToPut.bookData?.price.toFixed(2) !==
-        (newSellPrice + newShipPrice).toFixed(2)
+        productToPut.bookData?.price?.toFixed(2) !==
+        (newSellPrice + newShipPrice)?.toFixed(2)
       ) {
         console.log(
           "价格不一致，需要调整======================",
