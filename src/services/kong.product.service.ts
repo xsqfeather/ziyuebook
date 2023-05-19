@@ -128,7 +128,7 @@ export class KongProductService {
     try {
       await this.checkToLogin();
 
-      for (let pageIndex = 3; pageIndex <= 70; pageIndex++) {
+      for (let pageIndex = 4; pageIndex <= 70; pageIndex++) {
         // for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
         page = await context?.newPage();
         console.log(
@@ -150,6 +150,13 @@ export class KongProductService {
         const listItems = await page.$$("#listBox .item");
         // console.log({ listItems });
         for (let index = 0; index < listItems.length; index++) {
+          console.log(
+            "正在获取第",
+            pageIndex,
+            "第",
+            index,
+            "==================项"
+          );
           beginTime = new Date();
           const item = listItems[index];
           const itemHtml = await item.waitForSelector(".title a");
