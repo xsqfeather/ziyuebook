@@ -127,28 +127,13 @@ export class KongProductService {
     let page = await context?.newPage();
     try {
       await this.checkToLogin();
-      try {
-        console.log("正在跳转分类页面.....", url);
-        await page?.goto(url);
-        await page?.waitForLoadState();
-        console.log("跳转到了分类页面");
-      } catch (error) {
-        console.error("去分类页面出错", error);
-        await page.close();
-        return;
-      }
 
-      const listEle = page.getByText("图书条目");
-      await listEle.click();
-      const sellEle = page.getByText("销量");
-      await sellEle.click();
-      console.log("按照销量排序完成...........");
-
-      for (let pageIndex = 3; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 2; pageIndex <= 100; pageIndex++) {
         // for (let pageIndex = 100; pageIndex >= 2; pageIndex--) {
         console.log("正在获取第", pageIndex, "==================页");
         try {
           await page.goto(`${url}/v1w${pageIndex}`);
+          await page?.waitForLoadState();
         } catch (error) {
           console.error("获取下一页出错", error);
           // await page.close();
