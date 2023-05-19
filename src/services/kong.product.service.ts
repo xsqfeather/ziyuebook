@@ -128,8 +128,8 @@ export class KongProductService {
     try {
       await this.checkToLogin();
 
-      // for (let pageIndex = 1; pageIndex <= 100; pageIndex++) {
-      for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
+      for (let pageIndex = 3; pageIndex <= 70; pageIndex++) {
+        // for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
         page = await context?.newPage();
         console.log(
           "正在获取第",
