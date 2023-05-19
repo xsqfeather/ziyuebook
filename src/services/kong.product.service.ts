@@ -144,9 +144,16 @@ export class KongProductService {
       await sellEle.click();
       console.log("按照销量排序完成...........");
 
-      for (let pageIndex = 2; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 3; pageIndex <= 100; pageIndex++) {
         // for (let pageIndex = 100; pageIndex >= 2; pageIndex--) {
         console.log("正在获取第", pageIndex, "==================页");
+        try {
+          await page.goto(`${url}/v1w${pageIndex}`);
+        } catch (error) {
+          console.error("获取下一页出错", error);
+          // await page.close();
+          continue;
+        }
         const listItems = await page.$$("#listBox .item");
         for (let index = 0; index < listItems.length; index++) {
           beginTime = new Date();
@@ -163,13 +170,6 @@ export class KongProductService {
             console.error("获取书目页面出错", error);
             continue;
           }
-        }
-        try {
-          await page.goto(`${url}/v1w${pageIndex}`);
-        } catch (error) {
-          console.error("获取下一页出错", error);
-          await page.close();
-          continue;
         }
       }
       await page.close();
