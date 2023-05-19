@@ -124,23 +124,31 @@ export class KongProductService {
 
   async toCategoryPage(url: string, cateIndex: number) {
     const context = await this.browserContextService.getBrowser();
-    let page = await context?.newPage();
+    let page = null;
     try {
       await this.checkToLogin();
 
-      for (let pageIndex = 2; pageIndex <= 100; pageIndex++) {
-        // for (let pageIndex = 100; pageIndex >= 2; pageIndex--) {
-        console.log("正在获取第", pageIndex, "==================页");
+      // for (let pageIndex = 1; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
+        page = await context?.newPage();
+        console.log(
+          "正在获取第",
+          pageIndex,
+          "==================页",
+          `${url}v1w${pageIndex}`
+        );
         try {
           await page.goto(`${url}v1w${pageIndex}`);
-          await page?.waitForLoadState("networkidle", { timeout: 100000 });
-          await page?.waitForTimeout(1000);
+          await page?.waitForLoadState();
+          await page.waitForSelector("#listBox .item");
         } catch (error) {
           console.error("获取下一页出错", error);
           // await page.close();
           continue;
         }
+
         const listItems = await page.$$("#listBox .item");
+        // console.log({ listItems });
         for (let index = 0; index < listItems.length; index++) {
           beginTime = new Date();
           const item = listItems[index];
@@ -161,7 +169,7 @@ export class KongProductService {
       await page.close();
     } catch (error) {
       console.error("获取分类页面出错", error);
-      await page.close();
+      // await page.close();
       return;
     }
   }
