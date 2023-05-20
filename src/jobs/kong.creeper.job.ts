@@ -20,7 +20,7 @@ const KongCategoryUrls = [
   "https://item.kongfz.com/Cjisuanji/",
   "https://item.kongfz.com/Ckexue/",
   "https://item.kongfz.com/Cyiyao/",
-  "https://item.kongfz.com/Cjiaocai/tag_k33k32k30k32k35v1",
+  "https://item.kongfz.com/Cjiaocai/v1tag_k33k32k30k32k34",
   "https://item.kongfz.com/Cguoxue/",
   "https://item.kongfz.com/Cscyjs/",
 ];
