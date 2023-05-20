@@ -128,7 +128,7 @@ export class KongProductService {
     try {
       await this.checkToLogin();
 
-      for (let pageIndex = 11; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 12; pageIndex <= 100; pageIndex++) {
         // for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
         page = await context?.newPage();
         console.log(
@@ -849,7 +849,6 @@ export class KongProductService {
           } catch (error) {
             console.log(error);
             itemImages.push(imageUrl.replace("_b", ""));
-            await page.close();
           }
         }
       } catch (error) {
