@@ -637,7 +637,7 @@ export class KongProductService {
 
           console.log("新的利润率============" + profitRate, buyUrlOnKong);
 
-          const updateRlt = await ProductModel.updateOne(
+          const updateRlt = await ProductModel.findOneAndUpdate(
             { "bookData.isbn": bookData.isbn },
             {
               $set: {
