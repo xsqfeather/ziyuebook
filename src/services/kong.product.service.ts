@@ -499,9 +499,7 @@ export class KongProductService {
         try {
           await coverPage.goto(coverImageUrl);
         } catch (error) {
-          console.log(error);
-          await coverPage.close();
-          return;
+          console.log({ error });
         }
 
         const coverElement = await coverPage.waitForSelector("img");
@@ -526,9 +524,7 @@ export class KongProductService {
         await coverPage.close();
       } catch (error) {
         console.log(error);
-
         await coverPage.close();
-        return await page.close();
       }
 
       product.originUrl = page.url();
@@ -621,30 +617,28 @@ export class KongProductService {
       productToPut.images = product.images;
       const newSellPrice = Number(nowPrice) * 100 || 0;
       const newShipPrice = Number(shipPrice) * 100 || 0;
+      const newPrice = newSellPrice + newShipPrice;
       productToPut.bookData = {
         ...productToPut.bookData,
         sellPrice: newSellPrice + newShipPrice,
         newShipPrice: newShipPrice,
         newSellPrice: newSellPrice,
       };
-      if (
-        productToPut.bookData?.price?.toFixed(2) !==
-        (newSellPrice + newShipPrice)?.toFixed(2)
-      ) {
+      if (productToPut.bookData?.price?.toFixed(2) !== newPrice?.toFixed(2)) {
         console.log(
           "价格不一致，需要调整======================",
           productToPut.bookData?.price?.toFixed(2),
-          (newSellPrice + newShipPrice).toFixed(2)
+          newPrice?.toFixed(2)
         );
         productToPut.needToAdjustLatestPrice = true;
         try {
           const profitRate =
-            (productToPut.price - newSellPrice - newShipPrice) /
-            (newSellPrice + newShipPrice);
-          await page.close();
+            (productToPut.bookData?.price - newPrice) / newPrice;
 
-          await ProductModel.updateOne(
-            { id: productToPut.id },
+          console.log("新的利润率============" + profitRate, buyUrlOnKong);
+
+          const updateRlt = await ProductModel.updateOne(
+            { "bookData.isbn": bookData.isbn },
             {
               $set: {
                 needToAdjustLatestPrice: true,
@@ -655,7 +649,7 @@ export class KongProductService {
                   ...productToPut.bookData,
                   newShipPrice: newShipPrice,
                   newSellPrice: newSellPrice,
-                  newPrice: newSellPrice + newShipPrice,
+                  newPrice,
                 },
                 profitRate: !Number.isNaN(profitRate) ? profitRate : 0,
                 category: product.category,
@@ -665,6 +659,8 @@ export class KongProductService {
               },
             }
           );
+          console.log("价格不一致的更新结果========", { updateRlt });
+          await page.close();
           if (
             Number.isNaN(profitRate) ||
             profitRate === Infinity ||
@@ -814,6 +810,10 @@ export class KongProductService {
     if (shipPrice.includes("卖家")) {
       shipPrice = "0";
     }
+    console.log("bookData.isbn获取到新价格", isbn, {
+      nowPrice,
+      shipPrice,
+    });
     const productExists = await ProductModel.findOne({
       "bookData.isbn": isbn,
     });
@@ -853,10 +853,8 @@ export class KongProductService {
         }
       } catch (error) {
         console.error({ error });
-        await page.close();
       }
     }
-
     await page.close();
     return {
       nowPrice,
