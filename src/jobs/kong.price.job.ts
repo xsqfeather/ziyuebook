@@ -37,6 +37,20 @@ export class KongPriceJob {
       buyUrlOnKong: 1,
     });
 
+    const sameIsbnCount = await ProductModel.countDocuments({
+      "bookData.isbn": product.bookData.isbn,
+    });
+
+    if (sameIsbnCount > 1) {
+      //删除多余ISBN
+      await ProductModel.findOneAndRemove({
+        "bookData.isbn": product.bookData.isbn,
+      });
+      await waitTimeout(550);
+      await this.start();
+      return;
+    }
+
     if (product) {
       console.log(
         "开始检查======",
