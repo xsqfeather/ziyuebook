@@ -668,12 +668,17 @@ export class KongProductService {
             profitRate <= 0.15
           ) {
             console.log("利润率不合格，需要更新======================");
-
-            await this.productService.adjustPricesProduct({
-              productIds: [productToPut.id],
-              rate: 1.3,
-              addPrice: 0,
+            const products = await ProductModel.find({
+              "bookData.isbn": bookData.isbn,
             });
+            for (let index = 0; index < products.length; index++) {
+              const product = products[index];
+              await this.productService.adjustPricesProduct({
+                productIds: [product.id],
+                rate: 1.3,
+                addPrice: 0,
+              });
+            }
           }
         } catch (error) {
           console.error("更新价格失败", error);
