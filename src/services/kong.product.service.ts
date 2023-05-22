@@ -692,8 +692,9 @@ export class KongProductService {
         return;
       } else {
         console.log("价格一致，不需要调整======================");
-        await page.close();
+
         productToPut.needToAdjustLatestPrice = false;
+        const buyUrlOnKong = page.url();
         try {
           const profitRate =
             (productToPut.price - newSellPrice - newShipPrice) /
@@ -724,6 +725,26 @@ export class KongProductService {
               },
             }
           );
+          await page.close();
+          if (
+            Number.isNaN(profitRate) ||
+            profitRate === Infinity ||
+            profitRate === -Infinity ||
+            profitRate <= 0.15
+          ) {
+            console.log("利润率不合格，需要更新======================");
+            const products = await ProductModel.find({
+              "bookData.isbn": bookData.isbn,
+            });
+            for (let index = 0; index < products.length; index++) {
+              const product = products[index];
+              await this.productService.adjustPricesProduct({
+                productIds: [product.id],
+                rate: 1.3,
+                addPrice: 0,
+              });
+            }
+          }
         } catch (error) {
           console.log(error);
         }
