@@ -128,7 +128,7 @@ export class KongProductService {
     try {
       await this.checkToLogin();
 
-      for (let pageIndex = 8; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 33; pageIndex <= 100; pageIndex++) {
         // for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
         page = await context?.newPage();
         console.log(
