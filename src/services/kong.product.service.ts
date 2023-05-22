@@ -149,7 +149,7 @@ export class KongProductService {
 
         const listItems = await page.$$("#listBox .item");
         // console.log({ listItems });
-        for (let index = 0; index < listItems.length; index++) {
+        for (let index = 8; index < listItems.length; index++) {
           console.log(
             "正在获取第",
             pageIndex,
