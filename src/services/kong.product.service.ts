@@ -128,7 +128,7 @@ export class KongProductService {
     try {
       await this.checkToLogin();
 
-      for (let pageIndex = 1; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 8; pageIndex <= 100; pageIndex++) {
         // for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
         page = await context?.newPage();
         console.log(
@@ -149,7 +149,7 @@ export class KongProductService {
 
         const listItems = await page.$$("#listBox .item");
         // console.log({ listItems });
-        for (let index = 8; index < listItems.length; index++) {
+        for (let index = 1; index < listItems.length; index++) {
           console.log(
             "正在获取第",
             pageIndex,
@@ -699,8 +699,8 @@ export class KongProductService {
           const profitRate =
             (productToPut.price - newSellPrice - newShipPrice) /
             (newSellPrice + newShipPrice);
-          await ProductModel.updateOne(
-            { id: productToPut.id },
+          await ProductModel.updateMany(
+            { "bookData.isbn": bookData.isbn },
             {
               $set: {
                 images: product.images,
@@ -708,7 +708,6 @@ export class KongProductService {
                 bookData: {
                   ...productToPut.bookData,
                   sellPrice: newSellPrice,
-                  buyUrlOnKong,
                   shipPrice: newShipPrice,
                   newPrice: newSellPrice + newShipPrice,
                   price: newSellPrice + newShipPrice,
