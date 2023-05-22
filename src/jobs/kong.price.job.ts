@@ -33,6 +33,7 @@ export class KongPriceJob {
         },
       }
     ).sort({
+      profitRate: 1,
       lastCheckTime: 1,
       buyUrlOnKong: 1,
     });
