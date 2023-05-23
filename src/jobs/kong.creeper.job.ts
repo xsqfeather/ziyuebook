@@ -20,7 +20,7 @@ const KongCategoryUrls = [
   "https://item.kongfz.com/Cjisuanji/",
   "https://item.kongfz.com/Ckexue/",
   "https://item.kongfz.com/Cyiyao/",
-  "https://item.kongfz.com/Cjiaocai/tag_k33k32k30k31k37",
+  "https://item.kongfz.com/Cjiaocai/",
   "https://item.kongfz.com/Cguoxue/",
   "https://item.kongfz.com/Cscyjs/",
 ];
@@ -73,8 +73,8 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   };
 
   start = async () => {
-    // const currentIndex = await this.levelCacheService.get(this.levelKey);
-    const currentIndex = "21";
+    const currentIndex = await this.levelCacheService.get(this.levelKey);
+    // const currentIndex = "21";
     const categoryUrl = KongCategoryUrls[Number(currentIndex || "0")];
     await this.levelCacheService.put(
       this.levelKey,

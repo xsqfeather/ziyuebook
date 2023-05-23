@@ -128,7 +128,7 @@ export class KongProductService {
     try {
       await this.checkToLogin();
 
-      for (let pageIndex = 33; pageIndex <= 100; pageIndex++) {
+      for (let pageIndex = 1; pageIndex <= 100; pageIndex++) {
         // for (let pageIndex = 70; pageIndex >= 1; pageIndex--) {
         page = await context?.newPage();
         console.log(
@@ -138,7 +138,7 @@ export class KongProductService {
           `${url}v1w${pageIndex}`
         );
         try {
-          await page.goto(`${url}v1w${pageIndex}`);
+          await page.goto(`${url}/w${pageIndex}`);
           await page?.waitForLoadState();
           await page.waitForSelector("#listBox .item");
         } catch (error) {

@@ -34,6 +34,7 @@ export class SessionApiController extends MController {
   })
   async create(request: Request, h: ResponseToolkit) {
     const input = request.payload as CreateSessionDto;
+    console.log({ input });
     const session = await this.sessionService.create(input);
     return session;
   }
