@@ -2,9 +2,10 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { getSchema } from "joi-typescript-validator";
 import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
+import { SchemaTypes } from "mongoose";
 
 @modelOptions({ options: { allowMixed: 0 } })
-export class AvActor extends Base {
+export class AvTag extends Base {
   @Required()
   @prop({
     type: String,
@@ -12,19 +13,28 @@ export class AvActor extends Base {
   })
   public name!: string;
 
-  @Required()
   @prop({
-    type: String,
-    required: true,
+    type: Object,
   })
-  public introduction!: string;
+  langs: {
+    [locale: string]: string;
+  };
 
-  @Required()
   @prop({
     type: String,
-    required: true,
   })
-  public avatar!: string;
+  public cover!: string;
+
+  @prop({
+    type: String,
+  })
+  public description!: string;
+
+  @prop({
+    type: SchemaTypes.Array,
+    default: [],
+  })
+  public tags: string[] = [];
 
   @Required()
   @prop({
@@ -35,5 +45,5 @@ export class AvActor extends Base {
   public hot!: number;
 }
 
-export const AvActorModel = getModelForClass(AvActor);
-export const AvActorSchema = getSchema(AvActor);
+export const AvTagModel = getModelForClass(AvTag);
+export const AvTagSchema = getSchema(AvTag);

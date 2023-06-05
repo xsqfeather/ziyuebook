@@ -37,10 +37,12 @@
     "hapi-auth-jwt2": "^10.4.0",
     "hapi-decorators": "^2.0.0",
     "hapi-swagger": "^16.0.1",
-    "ipfs-http-client": "^60.0.0",
+    "it-all": "^3.0.2",
+    "it-drain": "^3.0.2",
     "joi": "^17.9.1",
     "joi-typescript-validator": "^0.2.0",
     "jsonwebtoken": "^9.0.0",
+    "kubo-rpc-client": "^3.0.1",
     "level-party": "^5.1.1",
     "moment": "^2.29.4",
     "mongoose": "^6.9.0",
@@ -50,7 +52,9 @@
     "random-avatar-generator": "^2.0.0",
     "reflect-metadata": "^0.1.13",
     "tinymce": "^6",
-    "typedi": "^0.10.0"
+    "to-readable-stream": "^4.0.0",
+    "typedi": "^0.10.0",
+    "uint8arrays": "^4.0.3"
   },
   "scripts": {
     "dev": "esno watch src/main.ts --tsconfig ./tsconfig.json",

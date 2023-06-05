@@ -54,7 +54,6 @@ export class SessionService {
 
   async validate(decoded: any, _request: Request, _h: ResponseToolkit) {
     const userSession = await SessionModel.findOne({ id: decoded.id });
-    console.log({ userSession });
 
     const idRoles =
       userSession?.roles.map((role: any) => {

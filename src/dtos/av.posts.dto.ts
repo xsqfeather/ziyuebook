@@ -4,18 +4,86 @@ export class CreateAvPostDto {
   @Required()
   public title!: string;
 
-  @Required()
-  public content!: string;
-
-  @Required()
+  @Optional()
   public cover!: string;
 
-  @Required()
+  @Optional()
+  public categoryId!: string;
+
+  @Optional()
   public description!: string;
 
   @Optional()
-  public tags?: { name: string }[];
+  public introduction!: string;
+
+  @Optional()
+  public locale!: string;
+
+  @Optional()
+  public previewVideo!: string;
+
+  @Required()
+  public videoName!: string;
+
+  @Optional()
+  public tagIds?: string[];
+
+  @Optional()
+  public images?: string[];
+
+  @Optional()
+  publishDate?: Date;
+
+  @Optional()
+  public starIds?: string[];
+
+  @Optional()
+  public designator: string;
 }
 
 export const CreateAvPostSchema =
   getSchema(CreateAvPostDto).label("CreateAvPostDto");
+
+export class UpdateAvPostDto {
+  @Required()
+  public title!: string;
+
+  @Optional()
+  public cover!: string;
+
+  @Optional()
+  public categoryId!: string;
+
+  @Optional()
+  public description!: string;
+
+  @Optional()
+  public introduction!: string;
+
+  @Optional()
+  public locale!: string;
+
+  @Optional()
+  public previewVideo!: string;
+
+  @Required()
+  public videoName!: string;
+
+  @Optional()
+  public tagIds?: string[];
+
+  @Optional()
+  publishDate?: Date;
+
+  @Optional()
+  public starIds?: string[];
+
+  @Optional()
+  public images?: string[];
+
+  @Optional()
+  public designator?: string;
+}
+
+export const UpdateAvPostDtoSchema =
+  getSchema(UpdateAvPostDto).label("UpdateAvPostDto");

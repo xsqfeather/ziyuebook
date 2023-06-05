@@ -19,8 +19,8 @@ export const serverConfig: ServerOptions = {
     isSecure: false,
     isHttpOnly: false,
     encoding: "none",
-    strictHeader: true,
-    isSameSite: "Strict",
+    strictHeader: false,
+    isSameSite: false,
   },
 };
 

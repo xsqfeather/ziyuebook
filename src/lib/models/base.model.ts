@@ -8,11 +8,11 @@ class BaseClass {
   public id!: string;
 
   @Required()
-  @prop({ required: true, default: new Date(), type: Date })
+  @prop({ required: true, default: () => Date.now(), type: Date })
   public createdAt!: Date;
 
   @Required()
-  @prop({ required: true, default: () => new Date(), type: Date })
+  @prop({ required: true, default: () => Date.now(), type: Date })
   public updatedAt!: Date;
 }
 

@@ -3,7 +3,6 @@
     "files": true
   },
   "compilerOptions": {
-    "baseUrl": "./src",
     "target": "es5",
     "lib": ["es2019", "DOM"],
     "strict": false,
@@ -17,7 +16,8 @@
     "emitDecoratorMetadata": true,
     "moduleResolution": "nodenext",
     "outDir": "./dist",
-    "removeComments": true
+    "removeComments": true,
+    "downlevelIteration": true
   },
   "include": ["src/**/*"]
 }

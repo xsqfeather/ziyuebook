@@ -3,6 +3,7 @@ import { getSchema } from "joi-typescript-validator";
 import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
 import { SchemaTypes } from "mongoose";
+import { AvCategory } from ".";
 
 @modelOptions({ options: { allowMixed: 0 } })
 export class AvPost extends Base {
@@ -13,12 +14,20 @@ export class AvPost extends Base {
   })
   public title!: string;
 
-  @Required()
   @prop({
     type: String,
-    required: true,
   })
-  public content!: string;
+  public subCategoriesStr: string;
+
+  @prop({
+    type: String,
+  })
+  public locale: string;
+
+  @prop({
+    type: String,
+  })
+  public categoryNameStr: string;
 
   @Required()
   @prop({
@@ -27,19 +36,80 @@ export class AvPost extends Base {
   })
   public cover!: string;
 
-  @Required()
   @prop({
     type: String,
-    required: true,
   })
-  public description!: string;
+  public categoryId!: string;
 
-  @Required()
   @prop({
     type: SchemaTypes.Array,
-    required: true,
+  })
+  public images!: string[];
+
+  @prop({
+    type: String,
+  })
+  public designator?: string;
+
+  @prop({
+    type: Date,
+  })
+  public publishDate!: Date;
+
+  @prop({
+    type: Object,
+  })
+  public category!: AvCategory;
+
+  @prop({
+    type: String,
+  })
+  public description?: string;
+
+  @prop({
+    type: String,
+  })
+  public introduction?: string;
+
+  @prop({
+    type: SchemaTypes.Array,
   })
   public tags!: string[];
+
+  @prop({
+    type: SchemaTypes.Array,
+  })
+  public tagIds!: string[];
+
+  @prop({
+    type: SchemaTypes.Array,
+  })
+  public stars!: string[];
+
+  @prop({
+    type: SchemaTypes.Array,
+  })
+  public starIds!: string[];
+
+  @prop({
+    type: String,
+  })
+  public previewVideo!: string;
+
+  @prop({
+    type: String,
+  })
+  public videoName!: string;
+
+  @prop({
+    type: String,
+  })
+  public tagsStr!: string;
+
+  @prop({
+    type: String,
+  })
+  public starsStr!: string;
 
   @Required()
   @prop({

@@ -42,7 +42,6 @@ export class BaseService<T> {
     const { filter, sort, skip, limit } = input;
 
     const paredFilter = this.parseFilter(filter, searchFields);
-    console.log({ paredFilter: JSON.stringify(paredFilter) });
     const data = await model
       .find(paredFilter)
       .limit(limit)

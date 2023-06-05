@@ -6,7 +6,7 @@ import Vision from "@hapi/vision";
 import hapiAuthJwt2 from "hapi-auth-jwt2";
 
 import Pack from "../../../package.json";
-import { DbSessionAuth } from "./dbSessionAuth";
+import { levelCachePlugin } from "./levelCache";
 
 const swaggerOptions: HapiSwagger.RegisterOptions = {
   info: {

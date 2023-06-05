@@ -71,7 +71,7 @@ export const levelCachePlugin = {
                 }),
                 "null"
               );
-            }, 200);
+            }, 500);
           }
         }
         return h.continue;

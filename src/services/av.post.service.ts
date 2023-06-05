@@ -1,8 +1,15 @@
-import { CreateAvPostDto } from "../dtos";
+import { CreateAvPostDto, UpdateAvPostDto } from "../dtos";
 import { GetListQuery, ListData } from "../lib/types";
-import { AvPost, AvPostModel } from "../models";
+import {
+  AvCategoryModel,
+  AvPost,
+  AvPostModel,
+  AvStarModel,
+  AvTagModel,
+} from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
+import Boom from "@hapi/boom";
 
 @Service()
 export class AvPostService extends BaseService<AvPost> {
@@ -18,12 +25,116 @@ export class AvPostService extends BaseService<AvPost> {
     };
   }
 
+  public async getOne(id: string) {
+    return AvPostModel.findOne({ id });
+  }
+
   public async createAvPost(input: CreateAvPostDto): Promise<AvPost> {
-    const article = await AvPostModel.create({
-      ...input,
-      tags: input.tags.map((tag) => tag.name.trim()),
-    });
-    return article;
+    const avPost = new AvPostModel();
+    if (input.categoryId) {
+      const category = await AvCategoryModel.findOne({ id: input.categoryId });
+      if (!category) {
+        throw Boom.notFound("该分类不存在");
+      }
+      avPost.categoryId = category.id;
+
+      avPost.category = category;
+    } else {
+      const category = await AvCategoryModel.findOne({ isDefault: true });
+      avPost.categoryId = category.id;
+      avPost.category = category;
+    }
+
+    if (input.tagIds) {
+      const tags = await AvTagModel.find({ id: { $in: input.tagIds } });
+      avPost.tags = tags.map((tag) => tag.name);
+      avPost.tagsStr = tags
+        .map((tag) => tag.name + Object.values(tag.langs).toString())
+        .toString();
+      avPost.tagIds = tags.map((tag) => tag.id);
+    }
+    if (input.starIds) {
+      const stars = await AvStarModel.find({ id: { $in: input.starIds } });
+      avPost.stars = stars.map((star) => star.name);
+      avPost.starsStr = stars
+        .map((star) => star.name + Object.values(star.langs).toString())
+        .toString();
+      avPost.starIds = stars.map((star) => star.id);
+    }
+    if (input.previewVideo) {
+      avPost.previewVideo = input.previewVideo;
+    }
+
+    avPost.videoName = input.videoName;
+    avPost.title = input.title;
+    avPost.description = input.description;
+    avPost.locale = input.locale;
+    avPost.cover = input.cover;
+    avPost.publishDate = input.publishDate;
+    avPost.images = input.images || [];
+    avPost.introduction = input.introduction;
+    avPost.designator = input.designator;
+
+    await avPost.save();
+    return avPost;
+  }
+
+  public async deleteAvPosts(checkedIds: string[]) {
+    await AvPostModel.deleteMany({ id: { $in: checkedIds } });
+    return checkedIds;
+  }
+
+  async updateAvPost(id: string, input: UpdateAvPostDto) {
+    const avPost = await AvPostModel.findOne({ id });
+    if (!avPost) {
+      throw Boom.notFound("该视频不存在");
+    }
+    if (input.categoryId) {
+      const category = await AvCategoryModel.findOne({ id: input.categoryId });
+      if (!category) {
+        throw Boom.notFound("该分类不存在");
+      }
+      avPost.categoryId = category.id;
+
+      avPost.category = category;
+    } else {
+      const category = await AvCategoryModel.findOne({ isDefault: true });
+      avPost.categoryId = category.id;
+      avPost.category = category;
+    }
+
+    if (input.tagIds) {
+      const tags = await AvTagModel.find({ id: { $in: input.tagIds } });
+      avPost.tags = tags.map((tag) => tag.name);
+      avPost.tagsStr = tags
+        .map((tag) => tag.name + Object.values(tag.langs).toString())
+        .toString();
+      avPost.tagIds = tags.map((tag) => tag.id);
+    }
+    if (input.previewVideo) {
+      avPost.previewVideo = input.previewVideo;
+    }
+    if (input.starIds) {
+      const stars = await AvStarModel.find({ id: { $in: input.starIds } });
+      avPost.stars = stars.map((star) => star.name);
+      avPost.starsStr = stars
+        .map((star) => star.name + Object.values(star.langs).toString())
+        .toString();
+      avPost.starIds = stars.map((star) => star.id);
+    }
+
+    avPost.videoName = input.videoName;
+    avPost.title = input.title;
+    avPost.description = input.description;
+    avPost.locale = input.locale;
+    avPost.cover = input.cover;
+    avPost.publishDate = input.publishDate;
+    avPost.images = input.images || [];
+    avPost.introduction = input.introduction;
+    avPost.designator = input.designator;
+
+    await avPost.save();
+    return avPost;
   }
 
   public async deleteAvPost(id: string) {

@@ -6,6 +6,7 @@ import Container from "typedi";
 import Handlebars from "handlebars";
 import { getJwtSecret, getMongoURI, serverConfig } from "./config";
 import { DbSessionAuth } from "./plugins/dbSessionAuth";
+import { AvCategoryModel } from "../models";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -16,6 +17,22 @@ export const startApp = async (startAppConfig: {
   try {
     mongoose.set("strictQuery", true);
     await mongoose.connect(getMongoURI());
+    const defaultAvCategory = await AvCategoryModel.findOne({
+      isDefault: true,
+    });
+    if (!defaultAvCategory) {
+      await AvCategoryModel.create({
+        name: "默认分类",
+        langs: {
+          zh: "默认分类",
+          en: "Default Category",
+          "zh-TW": "默認分類",
+          "zh-Hk": "默認分類",
+        },
+        description: "默认分类",
+        isDefault: true,
+      });
+    }
   } catch (error) {
     console.error(error);
     throw error;

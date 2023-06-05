@@ -12,11 +12,18 @@ import {
   UserApiController,
   UploadApiController,
   AvPostApiController,
-  AvActorApiController,
   ProductOnXianOnSaleApiController,
   ProductOffXianOffSaleApiController,
   ProductOnXianBannedApiController,
+  SettingApiController,
+  AvStarApiController,
+  AvCategoryApiController,
+  ArticleCategoryApiController,
+  AvTagApiController,
+  OssController,
+  AvPostCommentApiController,
 } from "./controllers";
+import { UserAvPostCommentsController } from "./controllers/api/users";
 
 startApp({
   apiControllers: [
@@ -28,17 +35,24 @@ startApp({
     ProductCategoryApiController,
     UploadApiController,
     AvPostApiController,
-    AvActorApiController,
+    AvStarApiController,
+    ArticleCategoryApiController,
     ProductOnXianOnSaleApiController,
     ProductOffXianOffSaleApiController,
     ProductOnXianBannedApiController,
+    SettingApiController,
+    AvCategoryApiController,
+    AvTagApiController,
+    OssController,
+    AvPostCommentApiController,
+    UserAvPostCommentsController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,
 });
 const server = require("http")
   .createServer()
-  .listen(8080, () => {
+  .listen(8084, () => {
     console.log("gun server started at port 8080");
   });
 const gun = GUN({ web: server });

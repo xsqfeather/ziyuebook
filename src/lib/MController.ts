@@ -1,7 +1,7 @@
 import { ReqRefDefaults, ServerRoute } from "@hapi/hapi";
 import { Service } from "typedi";
 import { ListQueryDto } from "./dtos/list.query.dto";
-import { GetListQuery, ListData } from "./types";
+import { GetListQuery } from "./types";
 
 @Service()
 export class MController {

@@ -7,12 +7,11 @@ import { getAgendaMongoURI } from "../lib/config";
 
 @Service()
 export class SessionLogJob implements AgendaService<Session> {
-  eventName = "logging";
   agenda = new Agenda({
     db: { address: getAgendaMongoURI(), collection: "sessionLogJobs" },
   });
   constructor() {
-    this.agenda.define(SESSION_JOB + this.eventName, this.handle);
+    this.agenda.define(SessionLogJob.name, this.handle);
   }
   async handle(job: Job<Session>) {
     const session = job.attrs.data;
@@ -20,6 +19,6 @@ export class SessionLogJob implements AgendaService<Session> {
   }
   async start(session: Session) {
     await this.agenda.start();
-    this.agenda.now(SESSION_JOB + this.eventName, session);
+    this.agenda.now(SessionLogJob.name, session);
   }
 }

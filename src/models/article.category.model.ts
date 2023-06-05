@@ -4,12 +4,12 @@ import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
 import { SchemaTypes } from "mongoose";
 
-class ProductCategoryLangs {
+class ArticleCategoryLangs {
   [locale: string]: string;
 }
 
 @modelOptions({ options: { allowMixed: 0 } })
-export class ProductCategory extends Base {
+export class ArticleCategory extends Base {
   @Required()
   @prop({
     type: String,
@@ -20,7 +20,7 @@ export class ProductCategory extends Base {
   @prop({
     type: Object,
   })
-  langs: ProductCategoryLangs;
+  langs: ArticleCategoryLangs;
 
   @prop({
     type: String,
@@ -119,5 +119,5 @@ export class ProductCategory extends Base {
   public isDefault: boolean = false;
 }
 
-export const ProductCategoryModel = getModelForClass(ProductCategory);
-export const ProductCategorySchema = getSchema(ProductCategory);
+export const ArticleCategoryModel = getModelForClass(ArticleCategory);
+export const ArticleCategorySchema = getSchema(ArticleCategory);
