@@ -46,7 +46,7 @@ export class AvStar extends Base {
   @prop({
     type: Object,
   })
-  langs: {
+  langs!: {
     [x: string]: string;
   };
 }

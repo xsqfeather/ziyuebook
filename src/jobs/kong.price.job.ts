@@ -15,13 +15,14 @@ export class KongPriceJob {
   levelKey = PRODUCT_JOB + this.eventName + "categoryUrlIndex";
 
   @Inject(() => LevelCacheService)
-  levelCacheService: LevelCacheService;
+  levelCacheService!: LevelCacheService;
 
   @Inject(() => KongProductService)
-  kongProductService: KongProductService;
+  kongProductService!: KongProductService;
 
   @Inject(() => BrowserContextService)
-  browserContextService: BrowserContextService;
+  browserContextService!: BrowserContextService;
+
   start = async () => {
     const product = await ProductModel.findOneAndUpdate(
       {
@@ -38,13 +39,13 @@ export class KongPriceJob {
     });
 
     const sameIsbnCount = await ProductModel.countDocuments({
-      "bookData.isbn": product.bookData.isbn,
+      "bookData.isbn": product?.bookData.isbn,
     });
 
     if (sameIsbnCount > 1) {
       //删除多余ISBN
       await ProductModel.findOneAndRemove({
-        "bookData.isbn": product.bookData.isbn,
+        "bookData.isbn": product?.bookData.isbn,
       });
       await waitTimeout(550);
       await this.start();

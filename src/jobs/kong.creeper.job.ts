@@ -44,10 +44,10 @@ export class KongCreeperJob implements AgendaService<{ categoryUrl: string }> {
   });
 
   @Inject(() => LevelCacheService)
-  levelCacheService: LevelCacheService;
+  levelCacheService!: LevelCacheService;
 
   @Inject(() => KongProductService)
-  kongProductService: KongProductService;
+  kongProductService!: KongProductService;
 
   constructor() {
     this.agenda.define(this.eventName, this.handle);

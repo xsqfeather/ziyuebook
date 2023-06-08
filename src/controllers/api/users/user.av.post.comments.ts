@@ -10,7 +10,7 @@ import {
 import { AvPostCommentService } from "../../../services";
 import { AvPostComment } from "../../../models";
 
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateAvPostCommentDto,
   CreateAvPostCommentSchema,
@@ -34,7 +34,7 @@ export class UserAvPostCommentsController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<AvPostComment>> {
+  async list(req: hapi.Request): Promise<ListData<AvPostComment>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<AvPostComment>(query);
     return this.avPostCommentService.getAvPostCommentList(listQuery);
@@ -49,7 +49,7 @@ export class UserAvPostCommentsController extends MController {
       query: ListQuerySchema,
     },
   })
-  async getOne(req: Request): Promise<AvPostComment> {
+  async getOne(req: hapi.Request): Promise<AvPostComment> {
     return this.avPostCommentService.getOne(req.params.id as string);
   }
 
@@ -67,7 +67,7 @@ export class UserAvPostCommentsController extends MController {
       payload: CreateAvPostCommentSchema,
     },
   })
-  async create(req: Request): Promise<AvPostComment> {
+  async create(req: hapi.Request): Promise<AvPostComment | undefined> {
     const input = req.payload as CreateAvPostCommentDto;
     const { userId, name, role } = req.auth.credentials;
     console.log({ userId, name, role });
@@ -86,7 +86,7 @@ export class UserAvPostCommentsController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteMany(req: Request): Promise<string[]> {
+  async deleteMany(req: hapi.Request): Promise<string[]> {
     const ids = req.query.checkedIds;
     return this.avPostCommentService.deleteAvPostComments(JSON.parse(ids));
   }
@@ -101,7 +101,7 @@ export class UserAvPostCommentsController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteOne(req: Request): Promise<AvPostComment> {
+  async deleteOne(req: hapi.Request): Promise<AvPostComment> {
     const id = req.params.id as string;
     return this.avPostCommentService.deleteOneAvPostComment(id);
   }
@@ -118,7 +118,7 @@ export class UserAvPostCommentsController extends MController {
       payload: UpdateAvPostCommentSchema,
     },
   })
-  async updateAvPostComment(req: Request) {
+  async updateAvPostComment(req: hapi.Request) {
     const id = req.params.id;
     return this.avPostCommentService.updateAvPostComment(
       id,

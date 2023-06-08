@@ -46,7 +46,7 @@ export class AvPostCommentService extends BaseService<AvPostComment> {
   public async createAvPostComment(
     userId: string,
     input: CreateAvPostCommentDto
-  ): Promise<AvPostComment> {
+  ): Promise<AvPostComment | undefined> {
     try {
       const AvPostComment = await AvPostCommentModel.create({
         ...input,

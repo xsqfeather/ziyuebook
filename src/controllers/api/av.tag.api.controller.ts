@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { AvTag } from "../../models";
 import { AvTagService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateAvTagDto,
   CreateAvTagSchema,
@@ -29,7 +29,7 @@ export class AvTagApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<AvTag>> {
+  async list(req: hapi.Request): Promise<ListData<AvTag>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<AvTag>(query);
     return this.AvTagService.getAvTagList(listQuery);
@@ -44,7 +44,7 @@ export class AvTagApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async getOne(req: Request): Promise<AvTag> {
+  async getOne(req: hapi.Request): Promise<AvTag> {
     return this.AvTagService.getOne(req.params.id as string);
   }
 
@@ -62,7 +62,7 @@ export class AvTagApiController extends MController {
       payload: CreateAvTagSchema,
     },
   })
-  async create(req: Request): Promise<AvTag> {
+  async create(req: hapi.Request): Promise<AvTag | undefined> {
     const input = req.payload as CreateAvTagDto;
     return this.AvTagService.createAvTag(input);
   }
@@ -77,7 +77,7 @@ export class AvTagApiController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteMany(req: Request): Promise<string[]> {
+  async deleteMany(req: hapi.Request): Promise<string[]> {
     const ids = req.query.checkedIds;
     return this.AvTagService.deleteAvTags(JSON.parse(ids));
   }
@@ -92,7 +92,7 @@ export class AvTagApiController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteOne(req: Request): Promise<AvTag> {
+  async deleteOne(req: hapi.Request): Promise<AvTag> {
     const id = req.params.id as string;
     return this.AvTagService.deleteOneAvTag(id);
   }
@@ -109,7 +109,7 @@ export class AvTagApiController extends MController {
       payload: UpdateAvTagSchema,
     },
   })
-  async updateAvTag(req: Request) {
+  async updateAvTag(req: hapi.Request) {
     const id = req.params.id;
     return this.AvTagService.updateAvTag(id, req.payload as UpdateAvTagDto);
   }

@@ -19,10 +19,10 @@ export class AvStarService extends BaseService<AvStar> {
             ...input,
             langs:
               (input.locale && (!input.langs as any)[input.locale]) ||
-              (input.langs as any)[input.locale] === ""
+              (input.langs as any)[input?.locale || "en"] === ""
                 ? {
                     ...input.langs,
-                    [input.locale]: input.name,
+                    [input.locale || "en"]: input.name,
                   }
                 : input.langs,
           },

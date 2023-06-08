@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { UserAvPostLike } from "../../models";
 import { UserAvPostLikeService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateUserAvPostLikeDto,
   CreateUserAvPostLikeSchema,
@@ -26,7 +26,7 @@ export class UserAvPostLikeApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<UserAvPostLike>> {
+  async list(req: hapi.Request): Promise<ListData<UserAvPostLike>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<UserAvPostLike>(query);
     return this.articleService.getUserAvPostLikeList(listQuery);
@@ -46,7 +46,7 @@ export class UserAvPostLikeApiController extends MController {
       payload: CreateUserAvPostLikeSchema,
     },
   })
-  async create(req: Request): Promise<UserAvPostLike> {
+  async create(req: hapi.Request): Promise<UserAvPostLike> {
     const input = req.payload as CreateUserAvPostLikeDto;
     return this.articleService.createUserAvPostLike(input);
   }

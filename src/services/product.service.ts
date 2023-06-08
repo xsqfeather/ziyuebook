@@ -19,13 +19,13 @@ import { PublishToXianEvent } from "../events";
 @Service()
 export class ProductService extends BaseService<Product> {
   @Inject(() => XianProductService)
-  xianProductService: XianProductService;
+  xianProductService!: XianProductService;
 
   @Inject(() => InsertFromXianExcelRecord)
-  insertFromXianExcelRecordEvent: InsertFromXianExcelRecord;
+  insertFromXianExcelRecordEvent!: InsertFromXianExcelRecord;
 
   @Inject(() => PublishToXianEvent)
-  publishToXianEvent: PublishToXianEvent;
+  publishToXianEvent!: PublishToXianEvent;
 
   public async getProductList(
     input: GetListQuery<Product>
@@ -46,7 +46,7 @@ export class ProductService extends BaseService<Product> {
     return product;
   }
 
-  public async getProductById(id: string): Promise<Product> {
+  public async getProductById(id: string): Promise<Product | null> {
     return ProductModel.findOne({ id });
   }
   public async deleteProductById(id: string) {
@@ -55,42 +55,48 @@ export class ProductService extends BaseService<Product> {
       throw Boom.notFound("商品不存在");
     }
     await ProductModel.deleteMany({ id });
-    await this.xianProductService.deleteXianProduct(product.xianProductId);
+    await this.xianProductService.deleteXianProduct(
+      product.xianProductId as string
+    );
     return product;
   }
 
   public async adjustPricesProduct(input: XianProductPublishManyDto) {
     console.log({ input });
     const xianProductIdList = [];
-    for (let index = 0; index < input.productIds.length; index++) {
-      const productId = input.productIds[index];
-      const product = await ProductModel.findOne({ id: productId });
-      if (!product) {
-        throw Boom.notFound("商品不存在");
-      }
-      if (!product.xianProductId) {
-        continue;
-      }
-      const price =
-        (product.bookData?.newPrice || product.bookData?.price) * input.rate +
-        input.addPrice;
-      try {
-        const updateRlt = await this.xianProductService.adjustProductPrice({
-          xianProductId: product.xianProductId,
-          price: +price.toFixed(0),
-        });
-
-        if (updateRlt.status === 200) {
-          await this.xianProductService.getProductDetailAndCheckUpdate(
-            updateRlt.data.product_id
-          );
+    if (input.productIds) {
+      for (let index = 0; index < input.productIds.length || 0; index++) {
+        const productId = input.productIds[index];
+        const product = await ProductModel.findOne({ id: productId });
+        if (!product) {
+          throw Boom.notFound("商品不存在");
         }
-        xianProductIdList.push(product.xianProductId);
-      } catch (error) {
-        console.error({ error });
-        continue;
+        if (!product.xianProductId) {
+          continue;
+        }
+        const price =
+          (product.bookData?.newPrice || product.bookData?.price || 0) *
+            (input.rate || 0) +
+          (input.addPrice || 0);
+        try {
+          const updateRlt = await this.xianProductService.adjustProductPrice({
+            xianProductId: product.xianProductId,
+            price: +price.toFixed(0),
+          });
+
+          if (updateRlt.status === 200) {
+            await this.xianProductService.getProductDetailAndCheckUpdate(
+              updateRlt.data.product_id
+            );
+          }
+          xianProductIdList.push(product.xianProductId);
+        } catch (error) {
+          console.error({ error });
+          continue;
+        }
       }
     }
+
     return xianProductIdList;
   }
 
@@ -144,10 +150,10 @@ export class ProductService extends BaseService<Product> {
       rlt = await this.updateXianProduct(
         product.xianProductId,
         product,
-        xianInfo
+        xianInfo as any
       );
     } else {
-      rlt = await this.createXianProduct(product, xianInfo);
+      rlt = await this.createXianProduct(product, xianInfo as any);
     }
 
     return rlt;
@@ -251,7 +257,7 @@ export class ProductService extends BaseService<Product> {
     createXianProductInput.district_id = 510116;
     createXianProductInput.outer_id = product.bookData?.isbn;
     createXianProductInput.images = [
-      ...product.images,
+      ...(product.images || []),
       "https://img2.sosotec.com/product/20230317/121901-3893ckjk.jpg",
     ];
     createXianProductInput.desc =

@@ -57,7 +57,7 @@ export class UserService extends BaseService<User> {
     if (userExist) {
       const isMatch = this.passwordService.checkHash(
         password,
-        userExist.password
+        userExist.password || ""
       );
       if (isMatch) {
         return userExist;

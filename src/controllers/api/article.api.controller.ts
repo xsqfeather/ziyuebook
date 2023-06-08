@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { Article } from "../../models";
 import { ArticleService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import { CreateArticleDto, CreateArticleSchema } from "../../dtos";
 import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
 
@@ -23,7 +23,7 @@ export class ArticleApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<Article>> {
+  async list(req: hapi.Request): Promise<ListData<Article>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<Article>(query);
     return this.articleService.getArticleList(listQuery);
@@ -43,7 +43,7 @@ export class ArticleApiController extends MController {
       payload: CreateArticleSchema,
     },
   })
-  async create(req: Request): Promise<Article> {
+  async create(req: hapi.Request): Promise<Article> {
     const input = req.payload as CreateArticleDto;
     return this.articleService.createArticle(input);
   }

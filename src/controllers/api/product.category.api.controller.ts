@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { ProductCategory } from "../../models";
 import { ProductCategoryService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateProductCategoryDto,
   CreateProductCategorySchema,
@@ -29,7 +29,7 @@ export class ProductCategoryApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<ProductCategory>> {
+  async list(req: hapi.Request): Promise<ListData<ProductCategory>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<ProductCategory>(query);
     return this.ProductCategoryService.getProductCategoryList(listQuery);
@@ -46,7 +46,7 @@ export class ProductCategoryApiController extends MController {
       }),
     },
   })
-  async getProductCategory(req: Request) {
+  async getProductCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ProductCategoryService.getProductCategory(id);
   }
@@ -63,7 +63,7 @@ export class ProductCategoryApiController extends MController {
       payload: CreateProductCategorySchema,
     },
   })
-  async postSubCategory(req: Request) {
+  async postSubCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ProductCategoryService.createSubProductCategory(
       id,
@@ -82,7 +82,7 @@ export class ProductCategoryApiController extends MController {
       }),
     },
   })
-  async deleteProductCategory(req: Request) {
+  async deleteProductCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ProductCategoryService.removeProductCategory(id);
   }
@@ -99,7 +99,7 @@ export class ProductCategoryApiController extends MController {
       payload: UpdateProductCategorySchema,
     },
   })
-  async updateProductCategory(req: Request) {
+  async updateProductCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ProductCategoryService.updateProductCategory(
       id,
@@ -120,7 +120,7 @@ export class ProductCategoryApiController extends MController {
       payload: CreateProductCategorySchema,
     },
   })
-  async create(req: Request): Promise<ProductCategory> {
+  async create(req: hapi.Request): Promise<ProductCategory> {
     const input = req.payload as CreateProductCategoryDto;
     return this.ProductCategoryService.createProductCategory(input);
   }

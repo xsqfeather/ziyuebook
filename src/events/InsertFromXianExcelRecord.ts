@@ -13,7 +13,7 @@ export class InsertFromXianExcelRecord {
   private timer: NodeJS.Timer | null = null;
 
   @Inject(() => XianProductService)
-  xianService: XianProductService;
+  xianService!: XianProductService;
 
   constructor() {
     this.emitter.on(InsertFromXianExcelRecord.name, this.handle);
@@ -110,7 +110,7 @@ export class InsertFromXianExcelRecord {
     try {
       // console.log({ xianProductId, price });
       await this.addJob(xianProductId);
-    } catch (error) {
+    } catch (error: any) {
       error.message = `插入闲鱼商品失败，${error.message}`;
       console.log({ error });
     }

@@ -26,7 +26,7 @@ export class CreateArticleCategoryDto {
       "zh-TW": Joi.string().optional().allow(""),
     }).optional()
   )
-  public langs: {
+  public langs?: {
     zh: string;
     en: string;
     "zh-TW": string;
@@ -60,7 +60,7 @@ export class UpdateArticleCategoryDto {
       "zh-TW": Joi.string().optional().allow(""),
     }).optional()
   )
-  public langs: {
+  public langs?: {
     zh: string;
     en: string;
     "zh-TW": string;

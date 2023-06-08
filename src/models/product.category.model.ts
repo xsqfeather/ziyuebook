@@ -20,7 +20,7 @@ export class ProductCategory extends Base {
   @prop({
     type: Object,
   })
-  langs: ProductCategoryLangs;
+  langs!: ProductCategoryLangs;
 
   @prop({
     type: String,
@@ -55,6 +55,11 @@ export class ProductCategory extends Base {
     type: String,
   })
   public superCategoryId!: string;
+
+  @prop({
+    type: String,
+  })
+  public superCategoryName!: string;
 
   @prop({
     type: String,

@@ -6,7 +6,7 @@ import {
   ListQueryDto,
 } from "../../lib";
 import { Inject, Service } from "typedi";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import { Product, ProductCategoryModel } from "../../models";
 import { ProductService } from "../../services";
 import {
@@ -22,7 +22,8 @@ import Joi from "joi";
 @controller("/api/products_on_xian_on_sale")
 export class ProductOffXianOffSaleApiController extends MController {
   @Inject(() => ProductService)
-  productService: ProductService;
+  productService!: ProductService;
+
   @get("/")
   @options({
     tags: ["api", "商品"],
@@ -32,7 +33,7 @@ export class ProductOffXianOffSaleApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<Product>> {
+  async list(req: hapi.Request): Promise<ListData<Product>> {
     const query = req.query as ListQueryDto;
     let listQuery = this.parseListQuery<Product>(query);
     listQuery = {
@@ -83,7 +84,7 @@ export class ProductOffXianOffSaleApiController extends MController {
       payload: XianProductPublishDtoSchema,
     },
   })
-  async updateToXian(req: Request): Promise<any> {
+  async updateToXian(req: hapi.Request): Promise<any> {
     const input = req.payload as XianProductPublishDto;
 
     return this.productService.putXianProduct(input);
@@ -98,7 +99,7 @@ export class ProductOffXianOffSaleApiController extends MController {
       payload: XianProductPublishManyDtoSchema,
     },
   })
-  async updateManyPriceToXian(req: Request): Promise<any> {
+  async updateManyPriceToXian(req: hapi.Request): Promise<any> {
     const input = req.payload as XianProductPublishManyDto;
     return this.productService.adjustPricesProduct(input);
   }
@@ -114,7 +115,7 @@ export class ProductOffXianOffSaleApiController extends MController {
       }),
     },
   })
-  async detail(req: Request): Promise<Product> {
+  async detail(req: hapi.Request): Promise<Product | null> {
     const id = req.params.id;
     return this.productService.getProductById(id);
   }
@@ -125,7 +126,7 @@ export class ProductOffXianOffSaleApiController extends MController {
     description: "删除商品",
     notes: "测试",
   })
-  async delete(req: Request): Promise<any> {
+  async delete(req: hapi.Request): Promise<any> {
     const id = req.params.id;
     return this.productService.deleteProductById(id);
   }
@@ -157,7 +158,7 @@ export class ProductOffXianOffSaleApiController extends MController {
       payload: ImportXianExcelSchema,
     },
   })
-  async importFromXian(req: Request): Promise<any> {
+  async importFromXian(req: hapi.Request): Promise<any> {
     const file = (req.payload as any)["file"];
     return this.productService.importFromXianFile(file._data);
   }

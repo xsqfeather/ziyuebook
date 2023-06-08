@@ -38,7 +38,7 @@ export class CreateAvPostDto {
   public starIds?: string[];
 
   @Optional()
-  public designator: string;
+  public designator?: string;
 }
 
 export const CreateAvPostSchema =

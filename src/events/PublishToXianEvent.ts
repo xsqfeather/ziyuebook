@@ -13,7 +13,7 @@ export class PublishToXianEvent {
   private timer: NodeJS.Timer | null = null;
 
   @Inject(() => ProductService)
-  productService: ProductService;
+  productService!: ProductService;
 
   constructor() {
     console.log("事件名字", PublishToXianEvent.name);
@@ -38,10 +38,10 @@ export class PublishToXianEvent {
 
         const xianInfo = {
           channel_cat_id: "ab78823bfd3c7134b108d382c4e6ea42",
-          title: product.title,
-          desc: product.bookData.contentIntro,
-          images: product.images,
-          price: product.price,
+          title: product?.title,
+          desc: product?.bookData.contentIntro,
+          images: product?.images,
+          price: product?.price,
         };
         await this.productService.putXianProduct({
           productId,
@@ -61,7 +61,7 @@ export class PublishToXianEvent {
     try {
       // console.log({ xianProductId, price });
       await this.addJob(productId);
-    } catch (error) {
+    } catch (error: any) {
       error.message = `插入闲鱼商品失败，${error.message}`;
       console.log({ error });
     }

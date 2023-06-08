@@ -19,12 +19,14 @@ export class SessionExpiredJob implements AgendaService<Session> {
     const session = job.attrs.data;
     await SessionModel.deleteOne({ id: session.id });
   };
-  start = async (session: Session) => {
+  start = async (session?: Session) => {
     await this.agenda.start();
-    this.agenda.schedule(
-      session.expiresAt,
-      SESSION_JOB + this.eventName,
-      session
-    );
+    if (session?.expiresAt) {
+      this.agenda.schedule(
+        session?.expiresAt,
+        SESSION_JOB + this.eventName,
+        session
+      );
+    }
   };
 }

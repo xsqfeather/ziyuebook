@@ -1,7 +1,7 @@
 import { controller, get, options, post } from "hapi-decorators";
 import { MController } from "../../lib";
 import { Inject, Service } from "typedi";
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import { OssService } from "../../services";
 import {
   UploadImageDto,
@@ -17,7 +17,7 @@ export class OssController extends MController {
   ossService!: OssService;
 
   @get("/images/{imageName}")
-  async showImage(request: Request, h: ResponseToolkit) {
+  async showImage(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { imageName } = request.params;
     const [cid, ext] = imageName.split(".");
     const stream = await this.ossService.showImage(cid);
@@ -45,29 +45,34 @@ export class OssController extends MController {
     },
     validate: {
       payload: UploadImageSchema,
+      failAction: async (request, h, err) => {
+        console.log(err);
+        throw err;
+      },
     },
+
     plugins: {
       "hapi-swagger": {
         payloadType: "form",
       },
     },
   })
-  async uploadImage(request: Request, h: ResponseToolkit) {
+  async uploadImage(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { image } = request.payload as UploadImageDto;
     const result = await this.ossService.addImage(image._data);
     return result;
   }
 
   @get("/files/{cid}")
-  getFile(_request: Request, h: ResponseToolkit) {
+  getFile(_request: hapi.Request, h: hapi.ResponseToolkit) {
     return h.view("index.html");
   }
 
   @get("/videos/{cid}")
-  async getVideo(request: Request, h: ResponseToolkit) {}
+  async getVideo(request: hapi.Request, h: hapi.ResponseToolkit) {}
 
   @get("/videos/{cid}/stream")
-  async getVideoPlay(request: Request, h: ResponseToolkit) {}
+  async getVideoPlay(request: hapi.Request, h: hapi.ResponseToolkit) {}
 
   @post("/videos")
   @post("/")
@@ -97,7 +102,7 @@ export class OssController extends MController {
       },
     },
   })
-  async uploadVideo(request: Request, h: ResponseToolkit) {
+  async uploadVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { video } = request.payload as UploadVideoDto;
     const result = await this.ossService.addVideo(video._data);
     return result;
@@ -131,7 +136,7 @@ export class OssController extends MController {
       },
     },
   })
-  async uploadShortVideo(request: Request, h: ResponseToolkit) {
+  async uploadShortVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { video } = request.payload as UploadVideoDto;
     const result = await this.ossService.addVideo(video._data);
     return result;

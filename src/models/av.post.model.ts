@@ -17,17 +17,17 @@ export class AvPost extends Base {
   @prop({
     type: String,
   })
-  public subCategoriesStr: string;
+  public subCategoriesStr!: string;
 
   @prop({
     type: String,
   })
-  public locale: string;
+  public locale!: string;
 
   @prop({
     type: String,
   })
-  public categoryNameStr: string;
+  public categoryNameStr!: string;
 
   @Required()
   @prop({

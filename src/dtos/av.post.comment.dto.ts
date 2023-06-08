@@ -13,13 +13,13 @@ export class CreateAvPostCommentDto {
   public avPostId!: string;
 
   @CustomSchema(Joi.string().min(1).required())
-  public comment: string;
+  public comment!: string;
 
   @Optional()
   public referUserId!: string;
 
   @Optional()
-  public referCommentId: string;
+  public referCommentId!: string;
 }
 
 export const CreateAvPostCommentSchema = getSchema(
@@ -35,14 +35,14 @@ export class UpdateAvPostCommentDto {
 
   @Required()
   @MinLength(15)
-  public comment: string;
+  public comment!: string;
 
   @Optional()
   public referUserId!: string;
 
   @Optional()
   @MaxLength(100)
-  public referComment: string;
+  public referComment!: string;
 }
 
 export const UpdateAvPostCommentSchema = getSchema(

@@ -1,7 +1,7 @@
 import { controller, get, options, post } from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import { CreateSessionDto } from "../../dtos";
 import { SessionService } from "../../services";
 
@@ -21,7 +21,7 @@ export class SessionApiController extends MController {
       scope: ["admin"],
     },
   })
-  list(request: Request, h: ResponseToolkit) {
+  list(request: hapi.Request, h: hapi.ResponseToolkit) {
     return h.response({}).code(200);
   }
 
@@ -32,7 +32,7 @@ export class SessionApiController extends MController {
     notes: "测试",
     auth: false,
   })
-  async create(request: Request, h: ResponseToolkit) {
+  async create(request: hapi.Request, h: hapi.ResponseToolkit) {
     const input = request.payload as CreateSessionDto;
     console.log({ input });
     const session = await this.sessionService.create(input);

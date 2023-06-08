@@ -20,7 +20,7 @@ export class ArticleCategory extends Base {
   @prop({
     type: Object,
   })
-  langs: ArticleCategoryLangs;
+  langs!: ArticleCategoryLangs;
 
   @prop({
     type: String,

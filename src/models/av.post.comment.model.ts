@@ -31,7 +31,7 @@ export class AvPostComment extends Base {
   @prop({
     type: String,
   })
-  public referCommentId: string;
+  public referCommentId!: string;
 
   @Required()
   @prop({
@@ -39,7 +39,7 @@ export class AvPostComment extends Base {
     required: true,
     default: 0,
   })
-  public replyCount: number;
+  public replyCount!: number;
 }
 
 export const AvPostCommentModel = getModelForClass(AvPostComment);

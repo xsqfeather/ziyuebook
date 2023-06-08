@@ -5,12 +5,12 @@ export class Block {
   @prop({
     type: Number,
   })
-  positionX: number;
+  positionX!: number;
 
   @prop({
     type: Number,
   })
-  positionY: number;
+  positionY!: number;
 
   @prop({
     type: String,
@@ -20,7 +20,7 @@ export class Block {
   @prop({
     type: Object,
   })
-  info: {
+  info!: {
     title: string;
     avatar: string;
   };

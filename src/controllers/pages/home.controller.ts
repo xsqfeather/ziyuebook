@@ -1,7 +1,7 @@
 import { controller, get, options, post } from "hapi-decorators";
 import { MController } from "../../lib";
 import { Inject, Service } from "typedi";
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import { CreateSessionDto } from "../../dtos";
 import { OssService, SessionService } from "../../services";
 import { showNoAccessPage } from "../../lib/utils/showNoAccessPage";
@@ -16,7 +16,7 @@ export class HomeController extends MController {
   ossService!: OssService;
 
   @get("/images/{imageName}")
-  async showImage(request: Request, h: ResponseToolkit) {
+  async showImage(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { imageName } = request.params;
     const [cid, ext] = imageName.split(".");
     const stream = await this.ossService.showImage(cid);
@@ -24,7 +24,7 @@ export class HomeController extends MController {
   }
 
   @get("/videos/{videoName}")
-  async showVideo(request: Request, h: ResponseToolkit) {
+  async showVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { videoName } = request.params;
     const [cid, ext] = videoName.split(".");
     const { buffer } = await this.ossService.showVideo(cid);
@@ -32,7 +32,7 @@ export class HomeController extends MController {
   }
 
   @get("/videos/{cid}/play")
-  async playVideo(request: Request, h: ResponseToolkit) {
+  async playVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { cid } = request.params;
     const range = request.headers.range;
     if (!range) {
@@ -70,22 +70,22 @@ export class HomeController extends MController {
       },
     },
   })
-  index(_request: Request, h: ResponseToolkit) {
+  index(_request: hapi.Request, h: hapi.ResponseToolkit) {
     return h.view("index.html");
   }
 
   @get("/login")
-  about(_request: Request, h: ResponseToolkit) {
+  about(_request: hapi.Request, h: hapi.ResponseToolkit) {
     return h.view("login.html");
   }
 
   @get("/download/{cid}")
-  download(_request: Request, h: ResponseToolkit) {
+  download(_request: hapi.Request, h: hapi.ResponseToolkit) {
     return h.view("download.html");
   }
 
   @post("/login")
-  async login(request: Request, h: ResponseToolkit) {
+  async login(request: hapi.Request, h: hapi.ResponseToolkit) {
     try {
       const input = request.payload as CreateSessionDto;
       const session = await this.sessionService.create(input);

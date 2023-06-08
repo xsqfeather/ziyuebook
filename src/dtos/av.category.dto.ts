@@ -28,7 +28,7 @@ export class CreateAvCategoryDto {
       "zh-HK": Joi.string().optional().allow(""),
     }).optional()
   )
-  public langs: {
+  public langs!: {
     zh: string;
     en: string;
     "zh-TW": string;
@@ -66,7 +66,7 @@ export class UpdateAvCategoryDto {
       "zh-HK": Joi.string().optional().allow(""),
     }).optional()
   )
-  public langs: {
+  public langs!: {
     zh: string;
     en: string;
     "zh-TW": string;

@@ -42,7 +42,7 @@ export class AvTagService extends BaseService<AvTag> {
     return avTag;
   }
 
-  public async createAvTag(input: CreateAvTagDto): Promise<AvTag> {
+  public async createAvTag(input: CreateAvTagDto): Promise<AvTag | undefined> {
     try {
       const AvTag = await AvTagModel.create({
         ...input,

@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { ArticleCategory } from "../../models";
 import { ArticleCategoryService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateArticleCategoryDto,
   CreateArticleCategorySchema,
@@ -29,7 +29,7 @@ export class ArticleCategoryApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<ArticleCategory>> {
+  async list(req: hapi.Request): Promise<ListData<ArticleCategory>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<ArticleCategory>(query);
     return this.ArticleCategoryService.getArticleCategoryList(listQuery);
@@ -46,7 +46,7 @@ export class ArticleCategoryApiController extends MController {
       }),
     },
   })
-  async getArticleCategory(req: Request) {
+  async getArticleCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ArticleCategoryService.getArticleCategory(id);
   }
@@ -63,7 +63,7 @@ export class ArticleCategoryApiController extends MController {
       payload: CreateArticleCategorySchema,
     },
   })
-  async postSubCategory(req: Request) {
+  async postSubCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ArticleCategoryService.createSubArticleCategory(
       id,
@@ -82,7 +82,7 @@ export class ArticleCategoryApiController extends MController {
       }),
     },
   })
-  async deleteArticleCategory(req: Request) {
+  async deleteArticleCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ArticleCategoryService.removeArticleCategory(id);
   }
@@ -99,7 +99,7 @@ export class ArticleCategoryApiController extends MController {
       payload: UpdateArticleCategorySchema,
     },
   })
-  async updateArticleCategory(req: Request) {
+  async updateArticleCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.ArticleCategoryService.updateArticleCategory(
       id,
@@ -120,7 +120,7 @@ export class ArticleCategoryApiController extends MController {
       payload: CreateArticleCategorySchema,
     },
   })
-  async create(req: Request): Promise<ArticleCategory> {
+  async create(req: hapi.Request): Promise<ArticleCategory> {
     const input = req.payload as CreateArticleCategoryDto;
     return this.ArticleCategoryService.createArticleCategory(input);
   }

@@ -1,7 +1,7 @@
 import { controller, get, options, post, put } from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import { UploadService } from "../../services/upload.service";
 
 @Service()
@@ -34,7 +34,7 @@ export class UploadApiController extends MController {
       },
     },
   })
-  async upload(req: Request) {
+  async upload(req: hapi.Request) {
     const { file } = req.payload as any;
     const result = await this.uploadService.upload(file._data);
     return result;

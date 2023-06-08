@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { AvStar } from "../../models";
 import { AvStarService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateAvStarDto,
   CreateAvStarSchema,
@@ -29,7 +29,7 @@ export class AvStarApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<AvStar>> {
+  async list(req: hapi.Request): Promise<ListData<AvStar>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<AvStar>(query);
     return this.avStarService.getAvStarList(listQuery);
@@ -53,7 +53,7 @@ export class AvStarApiController extends MController {
       },
     },
   })
-  async create(req: Request): Promise<AvStar> {
+  async create(req: hapi.Request): Promise<AvStar> {
     const input = req.payload as CreateAvStarDto;
     return this.avStarService.createAvStar(input);
   }
@@ -69,7 +69,7 @@ export class AvStarApiController extends MController {
       }),
     },
   })
-  async deleteAvCategory(req: Request) {
+  async deleteAvCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.avStarService.deleteAvStar(id);
   }
@@ -83,7 +83,7 @@ export class AvStarApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async getOne(req: Request): Promise<AvStar> {
+  async getOne(req: hapi.Request): Promise<AvStar> {
     return this.avStarService.getOne(req.params.id as string);
   }
 
@@ -97,7 +97,7 @@ export class AvStarApiController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteMany(req: Request): Promise<string[]> {
+  async deleteMany(req: hapi.Request): Promise<string[]> {
     const ids = req.query.checkedIds;
     return this.avStarService.deleteAvStars(JSON.parse(ids));
   }
@@ -114,7 +114,7 @@ export class AvStarApiController extends MController {
       payload: UpdateAvStarSchema,
     },
   })
-  async updateAvCategory(req: Request) {
+  async updateAvCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.avStarService.updateAvStar(id, req.payload as UpdateAvStarDto);
   }

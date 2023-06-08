@@ -20,12 +20,12 @@ export class AvCategory extends Base {
   @prop({
     type: Object,
   })
-  langs: AvCategoryLangs;
+  langs!: AvCategoryLangs;
 
   @prop({
     type: Object,
   })
-  descriptionLangs: AvCategoryLangs;
+  descriptionLangs!: AvCategoryLangs;
 
   @prop({
     type: String,

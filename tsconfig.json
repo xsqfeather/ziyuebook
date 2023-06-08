@@ -9,6 +9,7 @@
     "noImplicitAny": true,
     "allowJs": true,
     "checkJs": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "resolveJsonModule": true,
@@ -16,8 +17,7 @@
     "emitDecoratorMetadata": true,
     "moduleResolution": "nodenext",
     "outDir": "./dist",
-    "removeComments": true,
-    "downlevelIteration": true
+    "removeComments": true
   },
   "include": ["src/**/*"]
 }

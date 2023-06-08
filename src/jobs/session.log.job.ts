@@ -17,8 +17,8 @@ export class SessionLogJob implements AgendaService<Session> {
     const session = job.attrs.data;
     console.log("用户已经登录啦", session.id);
   }
-  async start(session: Session) {
+  async start(session?: Session) {
     await this.agenda.start();
-    this.agenda.now(SessionLogJob.name, session);
+    this.agenda.now(SessionLogJob.name, session || {});
   }
 }

@@ -16,10 +16,10 @@ const XIANGUANJIA_APP_SECRET = "7eHkPauNq4AslcmKKjaOzUrkYLaHA8Zs";
 @Service()
 export class XianProductService {
   @Inject(() => LevelCacheService)
-  levelCacheService: LevelCacheService;
+  levelCacheService!: LevelCacheService;
 
   @Inject(() => KongProductService)
-  kongProductService: KongProductService;
+  kongProductService!: KongProductService;
 
   sign(appKey: string, appSecret: string, timestamp: number, body: any) {
     const bodyMd5 = MD5(JSON.stringify(body)).toString();
@@ -91,7 +91,7 @@ export class XianProductService {
         (exitsProduct?.bookData?.newPrice ||
           exitsProduct?.bookData?.price ||
           0)) /
-      (exitsProduct?.bookData?.newPrice || exitsProduct?.bookData?.price);
+      (exitsProduct?.bookData?.newPrice || exitsProduct?.bookData?.price || 0);
 
     console.log("profitRate", { profitRate });
 
@@ -105,7 +105,7 @@ export class XianProductService {
         });
         const profitRate =
           (+productDetail.price - (exitsProduct?.bookData?.price || 0)) /
-          exitsProduct?.bookData?.price;
+          (exitsProduct?.bookData?.price || 0);
         const rlt = await ProductModel.updateOne(
           {
             "bookData.isbn": productDetail.book_data?.isbn,

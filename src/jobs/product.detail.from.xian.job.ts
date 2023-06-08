@@ -11,7 +11,7 @@ export class ProductDetailFromXianJob implements AgendaService<Product> {
   eventName = "FromXianDetail";
 
   @Inject(() => XianProductService)
-  xianProductService: XianProductService;
+  xianProductService!: XianProductService;
 
   agenda = new Agenda({
     db: { address: getAgendaMongoURI(), collection: "fromXianDetailJob" },
@@ -26,11 +26,16 @@ export class ProductDetailFromXianJob implements AgendaService<Product> {
       if (!product) {
         return await this.start();
       }
-      await this.xianProductService.getProductDetailAndCheckUpdate(
-        product.xianProductId
-      );
+      if (product.xianProductId) {
+        await this.xianProductService.getProductDetailAndCheckUpdate(
+          product.xianProductId
+        );
+      }
+
       await this.start();
-      done();
+      if (done) {
+        done();
+      }
     } catch (error) {
       console.error(error);
     }
@@ -46,6 +51,12 @@ export class ProductDetailFromXianJob implements AgendaService<Product> {
     }).sort({
       updatedAt: 1,
     });
-    this.agenda.schedule("in 1 seconds", PRODUCT_JOB + this.eventName, product);
+    if (product) {
+      this.agenda.schedule(
+        "in 1 seconds",
+        PRODUCT_JOB + this.eventName,
+        product
+      );
+    }
   };
 }

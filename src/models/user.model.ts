@@ -18,7 +18,7 @@ export class User extends Base {
     type: String,
     required: true,
   })
-  public password!: string;
+  public password?: string;
 
   @Required()
   @prop({

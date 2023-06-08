@@ -8,7 +8,7 @@ export class BookPublisher extends Base {
     type: String,
     required: true,
   })
-  name: string;
+  name!: string;
 
   @prop({
     type: String,

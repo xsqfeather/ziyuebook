@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { AvCategory } from "../../models";
 import { AvCategoryService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateAvCategoryDto,
   CreateAvCategorySchema,
@@ -29,7 +29,7 @@ export class AvCategoryApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<AvCategory>> {
+  async list(req: hapi.Request): Promise<ListData<AvCategory>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<AvCategory>(query);
     return this.AvCategoryService.getAvCategoryList(listQuery);
@@ -46,7 +46,7 @@ export class AvCategoryApiController extends MController {
       }),
     },
   })
-  async getAvCategory(req: Request) {
+  async getAvCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.AvCategoryService.getAvCategory(id);
   }
@@ -63,7 +63,7 @@ export class AvCategoryApiController extends MController {
       payload: CreateAvCategorySchema,
     },
   })
-  async postSubCategory(req: Request) {
+  async postSubCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.AvCategoryService.createSubAvCategory(
       id,
@@ -82,7 +82,7 @@ export class AvCategoryApiController extends MController {
       }),
     },
   })
-  async deleteAvCategory(req: Request) {
+  async deleteAvCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.AvCategoryService.removeAvCategory(id);
   }
@@ -99,7 +99,7 @@ export class AvCategoryApiController extends MController {
       payload: UpdateAvCategorySchema,
     },
   })
-  async updateAvCategory(req: Request) {
+  async updateAvCategory(req: hapi.Request) {
     const id = req.params.id;
     return this.AvCategoryService.updateAvCategory(
       id,
@@ -120,7 +120,7 @@ export class AvCategoryApiController extends MController {
       payload: CreateAvCategorySchema,
     },
   })
-  async create(req: Request): Promise<AvCategory> {
+  async create(req: hapi.Request): Promise<AvCategory> {
     const input = req.payload as CreateAvCategoryDto;
     return this.AvCategoryService.createAvCategory(input);
   }

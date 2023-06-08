@@ -15,7 +15,7 @@ import { AvCategoryService } from ".";
 @Service()
 export class AvPostService extends BaseService<AvPost> {
   @Inject(() => AvCategoryService)
-  private readonly avCategoryService: AvCategoryService;
+  private readonly avCategoryService!: AvCategoryService;
 
   public async getAvPostList(
     input: GetListQuery<AvPost>
@@ -79,8 +79,8 @@ export class AvPostService extends BaseService<AvPost> {
       avPost.category = category;
     } else {
       const category = await AvCategoryModel.findOne({ isDefault: true });
-      avPost.categoryId = category.id;
-      avPost.category = category;
+      avPost.categoryId = category?.id;
+      if (category) avPost.category = category;
     }
 
     if (input.tagIds) {
@@ -108,7 +108,7 @@ export class AvPostService extends BaseService<AvPost> {
     avPost.description = input.description;
     avPost.locale = input.locale;
     avPost.cover = input.cover;
-    avPost.publishDate = input.publishDate;
+    avPost.publishDate = input.publishDate || new Date();
     avPost.images = input.images || [];
     avPost.introduction = input.introduction;
     avPost.designator = input.designator;
@@ -147,8 +147,10 @@ export class AvPostService extends BaseService<AvPost> {
       avPost.category = category;
     } else {
       const category = await AvCategoryModel.findOne({ isDefault: true });
-      avPost.categoryId = category.id;
-      avPost.category = category;
+      avPost.categoryId = category?.id;
+      if (category) {
+        avPost.category = category;
+      }
     }
 
     if (input.tagIds) {
@@ -176,7 +178,7 @@ export class AvPostService extends BaseService<AvPost> {
     avPost.description = input.description;
     avPost.locale = input.locale;
     avPost.cover = input.cover;
-    avPost.publishDate = input.publishDate;
+    avPost.publishDate = input.publishDate || new Date();
     avPost.images = input.images || [];
     avPost.introduction = input.introduction;
     avPost.designator = input.designator;

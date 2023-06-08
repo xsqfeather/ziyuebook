@@ -26,7 +26,7 @@ export class CreateAvTagDto {
       "zh-TW": Joi.string().optional().allow(""),
     }).optional()
   )
-  public langs: {
+  public langs?: {
     zh: string;
     en: string;
     "zh-TW": string;
@@ -56,7 +56,7 @@ export class UpdateAvTagDto {
       "zh-TW": Joi.string().optional().allow(""),
     }).optional()
   )
-  public langs: {
+  public langs!: {
     zh: string;
     en: string;
     "zh-TW": string;

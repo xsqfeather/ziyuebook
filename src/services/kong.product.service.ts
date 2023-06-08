@@ -56,23 +56,23 @@ export class KongProductService {
   isLogin: boolean = false;
 
   @Inject(() => ProductCategoryService)
-  productCategoryService: ProductCategoryService;
+  productCategoryService!: ProductCategoryService;
 
   @Inject(() => ProductService)
-  productService: ProductService;
+  productService!: ProductService;
 
   @Inject(() => UploadService)
-  uploadService: UploadService;
+  uploadService!: UploadService;
 
   @Inject(() => BrowserContextService)
-  browserContextService: BrowserContextService;
+  browserContextService!: BrowserContextService;
 
   checkToLogin = async () => {
     let context = await this.browserContextService.getBrowser();
-    const [homePage] = context.pages();
+    const [homePage] = context?.pages() || [];
     try {
-      await homePage.goto("https://shop.kongfz.com/");
-      await homePage.waitForLoadState("networkidle");
+      await homePage?.goto("https://shop.kongfz.com/");
+      await homePage?.waitForLoadState("networkidle");
     } catch (error) {
       await homePage?.close();
       return;
@@ -86,37 +86,37 @@ export class KongProductService {
       return;
     }
     context = await this.browserContextService.getBrowser();
-    let page = await context.newPage();
+    let page = await context?.newPage();
     try {
-      await page.goto(
+      await page?.goto(
         "https://login.kongfz.com/Pc/Login/iframe?returnUrl=https://www.kongfz.com/"
       );
     } catch (error) {
       console.error(error);
-      await page.close();
+      await page?.close();
       return;
     }
 
     try {
-      const usernameInput = await page.waitForSelector("#username");
-      await usernameInput.focus();
-      await usernameInput.type("18026938187");
+      const usernameInput = await page?.waitForSelector("#username");
+      await usernameInput?.focus();
+      await usernameInput?.type("18026938187");
 
-      const passwordInput = await page.waitForSelector("#password");
-      await passwordInput.focus();
-      await passwordInput.type("lyp82ndlf");
+      const passwordInput = await page?.waitForSelector("#password");
+      await passwordInput?.focus();
+      await passwordInput?.type("lyp82ndlf");
 
-      const checkBoxInput = await page.waitForSelector(".autoLogin input");
-      await checkBoxInput.click();
+      const checkBoxInput = await page?.waitForSelector(".autoLogin input");
+      await checkBoxInput?.click();
 
-      const loginBtn = await page.waitForSelector(".login_submit");
-      await loginBtn.click();
-      await page.waitForLoadState();
-      await page.close();
+      const loginBtn = await page?.waitForSelector(".login_submit");
+      await loginBtn?.click();
+      await page?.waitForLoadState();
+      await page?.close();
       await homePage.close();
     } catch (error) {
       console.error(error);
-      await page.close();
+      await page?.close();
       await homePage.close();
       return;
     }
@@ -138,16 +138,16 @@ export class KongProductService {
           `${url}v1w${pageIndex}`
         );
         try {
-          await page.goto(`${url}/w${pageIndex}`);
+          await page?.goto(`${url}/w${pageIndex}`);
           await page?.waitForLoadState();
-          await page.waitForSelector("#listBox .item");
+          await page?.waitForSelector("#listBox .item");
         } catch (error) {
           console.error("获取下一页出错", error);
           // await page.close();
           continue;
         }
 
-        const listItems = await page.$$("#listBox .item");
+        const listItems = (await page?.$$("#listBox .item")) || [];
         // console.log({ listItems });
         for (let index = 1; index < listItems.length; index++) {
           console.log(
@@ -161,19 +161,21 @@ export class KongProductService {
           const item = listItems[index];
           const itemHtml = await item.waitForSelector(".title a");
           const detailUrl = await itemHtml.getAttribute("href");
-          try {
-            await this.getProductFromDetail(
-              detailUrl,
-              CateNames[cateIndex],
-              context
-            );
-          } catch (error) {
-            console.error("获取书目页面出错", error);
-            continue;
+          if (detailUrl && context) {
+            try {
+              await this.getProductFromDetail(
+                detailUrl,
+                CateNames[cateIndex],
+                context
+              );
+            } catch (error) {
+              console.error("获取书目页面出错", error);
+              continue;
+            }
           }
         }
       }
-      await page.close();
+      await page?.close();
     } catch (error) {
       console.error("获取分类页面出错", error);
       // await page.close();
@@ -183,21 +185,23 @@ export class KongProductService {
 
   async getProductDetailFromISBN(isbn: string) {
     let context = await this.browserContextService.getBrowser();
-    const homePage = await context.newPage();
-    await homePage.goto(
+    const homePage = await context?.newPage();
+    await homePage?.goto(
       "https://search.kongfz.com/item_result/?status=0&key=" + isbn
     );
-    await homePage.waitForLoadState();
+    await homePage?.waitForLoadState();
     try {
-      const listItem = await homePage.waitForSelector(".item-info .title a", {
+      const listItem = await homePage?.waitForSelector(".item-info .title a", {
         timeout: 100000,
       });
-      const detailUrl = await listItem.getAttribute("href");
-      await homePage.close();
-      return this.getProductFromDetail(detailUrl, null, context);
+      const detailUrl = await listItem?.getAttribute("href");
+      await homePage?.close();
+      if (detailUrl && context) {
+        return this.getProductFromDetail(detailUrl, null || undefined, context);
+      }
     } catch (error) {
       console.error("获取书籍详情出错ISBN" + isbn, error);
-      await homePage.close();
+      await homePage?.close();
       return;
     }
   }
@@ -209,23 +213,24 @@ export class KongProductService {
   ) {
     console.log("开始在" + cateName, url, "获取数据");
     beginTime = new Date();
-    context = context || (await this.browserContextService.getBrowser());
+    context =
+      context || (await this.browserContextService.getBrowser()) || undefined;
     const page = await context?.newPage();
     try {
-      await page.goto(url);
+      await page?.goto(url);
     } catch (error) {
       console.error("获取书籍目录数据出错", error);
       await page?.close();
       return;
     }
     try {
-      const priceArea = await page.waitForSelector("#priceOrder");
-      await priceArea.click();
-      const sortArea = await page.waitForSelector(
+      const priceArea = await page?.waitForSelector("#priceOrder");
+      await priceArea?.click();
+      const sortArea = await page?.waitForSelector(
         "#priceOrder .price-select-box a:first-child"
       );
-      await sortArea.click();
-      await page.waitForLoadState();
+      await sortArea?.click();
+      await page?.waitForLoadState();
     } catch (error) {
       throw error;
     }
@@ -255,7 +260,8 @@ export class KongProductService {
       };
       //开始获取出版社等其他信息
       try {
-        const bookInfoItems = await page.$$(".detail-con-right-top .item");
+        const bookInfoItems =
+          (await page?.$$(".detail-con-right-top .item")) || [];
         for (let index = 0; index < bookInfoItems.length; index++) {
           const bookInfoItem = bookInfoItems[index];
           const bookInfoText = await bookInfoItem?.innerText();
@@ -267,38 +273,38 @@ export class KongProductService {
             //插图方式
             const imagesEle = await bookInfoItem.$("a");
             const context = await this.browserContextService.getBrowser();
-            const insideImagesPage = await context.newPage();
+            const insideImagesPage = await context?.newPage();
             try {
               const href =
                 "https://item.kongfz.com" +
-                (await imagesEle.getAttribute("href"));
+                (await imagesEle?.getAttribute("href"));
               // console.log("开始获取图片", href);
               try {
-                await insideImagesPage.goto(href);
+                await insideImagesPage?.goto(href);
               } catch (error) {
                 console.error(error);
-                await insideImagesPage.close();
+                await insideImagesPage?.close();
                 return;
               }
 
-              await insideImagesPage.waitForLoadState();
+              await insideImagesPage?.waitForLoadState();
               for (let index = 0; index < 20; index++) {
-                await insideImagesPage.waitForTimeout(1000);
-                await insideImagesPage.mouse.wheel(0, 500);
+                await insideImagesPage?.waitForTimeout(1000);
+                await insideImagesPage?.mouse.wheel(0, 500);
               }
-              const imageEles = await insideImagesPage.$$("a img");
+              const imageEles = (await insideImagesPage?.$$("a img")) || [];
               for (let index = 0; index < imageEles.length; index++) {
                 const element = imageEles[index];
                 let src = await element.getAttribute("src");
-                if (src.includes("_water")) {
+                if (src && src.includes("_water")) {
                   src = src.replace("_water", "");
                   insideImages.push(src);
                 }
               }
-              await insideImagesPage.close();
+              await insideImagesPage?.close();
             } catch (error) {
               console.error(error);
-              await insideImagesPage.close();
+              await insideImagesPage?.close();
             }
           }
           if (bookInfoText.includes("出版社")) {
@@ -409,11 +415,13 @@ export class KongProductService {
         return;
       }
 
-      const titleEle = await page.waitForSelector(".detail-title");
+      const titleEle = await page?.waitForSelector(".detail-title");
       const title = await titleEle?.innerText();
 
-      product.title = title;
-      bookData.title = title;
+      if (product && bookData) {
+        product.title = title || undefined;
+        bookData.title = title || "";
+      }
 
       const bookCate =
         await this.productCategoryService.getOrCreateBookCategory();
@@ -446,7 +454,7 @@ export class KongProductService {
         product.category = productExist?.category;
       }
 
-      const introductionEles = await page.$$(".jianjie");
+      const introductionEles = (await page?.$$(".jianjie")) || [];
       let contentIntro = "";
       let authorIntro = "";
       let catalog = "";
@@ -469,7 +477,8 @@ export class KongProductService {
       bookData.catalog = catalog;
 
       // console.log("开始获取作者");
-      const authorItems = await page.$$('.zuozhe span a[itemprop="author"]');
+      const authorItems =
+        (await page?.$$('.zuozhe span a[itemprop="author"]')) || [];
 
       const authors = [];
       for (let index = 0; index < authorItems.length; index++) {
@@ -491,53 +500,57 @@ export class KongProductService {
       //获取作者完成===================================
 
       //获取封面
-      const coverImage = await page.$(".detail-con-left .detail-img a");
-      const coverImageUrl = await coverImage.getAttribute("href");
+      const coverImage = await page?.$(".detail-con-left .detail-img a");
+      const coverImageUrl = await coverImage?.getAttribute("href");
       const context = await this.browserContextService.getBrowser();
-      const coverPage = await context.newPage();
+      const coverPage = await context?.newPage();
       try {
         try {
-          await coverPage.goto(coverImageUrl);
+          if (coverImageUrl) await coverPage?.goto(coverImageUrl);
         } catch (error) {
           console.log({ error });
         }
 
-        const coverElement = await coverPage.waitForSelector("img");
-        let coverUrl = await coverElement.getAttribute("src");
-        coverUrl = coverUrl.replace("_water", "");
+        const coverElement = await coverPage?.waitForSelector("img");
+        let coverUrl = await coverElement?.getAttribute("src");
+        coverUrl = coverUrl?.replace("_water", "");
         try {
-          const response = await axios.get(coverUrl, {
-            responseType: "arraybuffer",
-          });
-          const buffer = Buffer.from(response.data, "utf-8");
-          const uploadRlt = await this.uploadService.uploadTTImage(
-            buffer,
-            product.id + ".png"
-          );
-          // console.log(uploadRlt);
-          bookData.cover = "https://" + uploadRlt;
+          if (coverUrl) {
+            const response = await axios.get(coverUrl, {
+              responseType: "arraybuffer",
+            });
+            const buffer = Buffer.from(response.data, "utf-8");
+            const uploadRlt: any = await this.uploadService.uploadTTImage(
+              buffer,
+              product.id + ".png"
+            );
+            // console.log(uploadRlt);
+            bookData.cover = "https://" + uploadRlt;
+          }
         } catch (error) {
           console.error("获取白底封面失败", error);
         }
         images.push(bookData.cover);
         product.cover = bookData.cover;
-        await coverPage.close();
+        await coverPage?.close();
       } catch (error) {
         console.log(error);
-        await coverPage.close();
+        await coverPage?.close();
       }
 
-      product.originUrl = page.url();
-      await this.getPriceByCurrentPage(
-        page,
-        bookData,
-        product,
-        images,
-        insideImages
-      );
+      product.originUrl = page?.url() || "";
+      if (page) {
+        await this.getPriceByCurrentPage(
+          page,
+          bookData,
+          product,
+          images,
+          insideImages
+        );
+      }
     } catch (error) {
       console.error(error);
-      await page.close();
+      await page?.close();
     }
   }
 
@@ -633,7 +646,7 @@ export class KongProductService {
         productToPut.needToAdjustLatestPrice = true;
         try {
           const profitRate =
-            (productToPut.bookData?.price - newPrice) / newPrice;
+            ((productToPut.bookData?.price || 0) - newPrice) / newPrice;
 
           console.log("新的利润率============" + profitRate, buyUrlOnKong);
 
@@ -804,22 +817,22 @@ export class KongProductService {
   async getItemDetailByUrl(url: string, productId: string, isbn: string) {
     console.log("开始获取价格详情=======", url);
     let context = await this.browserContextService.getBrowser();
-    let page = await context.newPage();
+    let page = await context?.newPage();
     try {
-      await page.goto(url);
+      await page?.goto(url);
     } catch (error) {
       throw error;
     }
-    const buyUrlOnKong = page.url();
+    const buyUrlOnKong = page?.url();
 
-    const priceEle = await page.waitForSelector(".now-price .now-price-text");
+    const priceEle = await page?.waitForSelector(".now-price .now-price-text");
     const nowPrice = await priceEle?.innerText();
-    const shipPriceEle = await page.waitForSelector(
+    const shipPriceEle = await page?.waitForSelector(
       ".carry-cont .express-wrapper"
     );
     let shipPriceText = await shipPriceEle?.innerText();
     let shipPrice = shipPriceText
-      .replace("￥", "")
+      ?.replace("￥", "")
       .replace(" ", "")
       .replace("快递", "")
       .replace("快递", "")
@@ -832,7 +845,7 @@ export class KongProductService {
       .replace("￥", "")
       .replace("￥", "")
       .replace(" ", "");
-    if (shipPrice.includes("卖家")) {
+    if (shipPrice?.includes("卖家")) {
       shipPrice = "0";
     }
     console.log("bookData.isbn获取到新价格", isbn, {
@@ -846,23 +859,23 @@ export class KongProductService {
     let quality = "";
 
     if (!productExists) {
-      const qualityEle = await page.$(".quality .quality-desc-common");
-      quality = await qualityEle?.innerText();
+      const qualityEle = await page?.$(".quality .quality-desc-common");
+      quality = (await qualityEle?.innerText()) || "";
       for (let index = 0; index < 20; index++) {
-        await page.waitForTimeout(500);
-        await page.mouse.wheel(0, 500);
+        await page?.waitForTimeout(500);
+        await page?.mouse.wheel(0, 500);
       }
       try {
-        const imageEles = await page.$$("ul li a img");
+        const imageEles = (await page?.$$("ul li a img")) || [];
 
         for (let index = 0; index < imageEles.length; index++) {
           const imageEle = imageEles[index];
           const imageUrl = await imageEle.getAttribute("src");
-          if (!imageUrl.includes("_b")) {
+          if (!imageUrl?.includes("_b")) {
             continue;
           }
           try {
-            const response = await axios.get(imageUrl.replace("_b", ""), {
+            const response = await axios.get(imageUrl?.replace("_b", ""), {
               responseType: "arraybuffer",
             });
             const buffer = Buffer.from(response.data, "utf-8");
@@ -873,17 +886,17 @@ export class KongProductService {
             itemImages.push("https://" + uploadRlt);
           } catch (error) {
             console.log(error);
-            itemImages.push(imageUrl.replace("_b", ""));
+            itemImages.push(imageUrl?.replace("_b", ""));
           }
         }
       } catch (error) {
         console.error({ error });
       }
     }
-    await page.close();
+    await page?.close();
     return {
       nowPrice,
-      shipPrice: shipPrice.split(" ")[0],
+      shipPrice: shipPrice?.split(" ")[0],
       itemImages,
       quality,
       buyUrlOnKong,

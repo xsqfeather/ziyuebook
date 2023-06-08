@@ -12,7 +12,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { AvPost } from "../../models";
 import { AvPostService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateAvPostDto,
   CreateAvPostSchema,
@@ -37,7 +37,7 @@ export class AvPostApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<AvPost>> {
+  async list(req: hapi.Request): Promise<ListData<AvPost>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<AvPost>(query);
     return this.avPostService.getAvPostList(listQuery);
@@ -52,7 +52,7 @@ export class AvPostApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async getOne(req: Request): Promise<AvPost> {
+  async getOne(req: hapi.Request): Promise<AvPost | null> {
     return this.avPostService.getOne(req.params.id as string);
   }
 
@@ -70,7 +70,7 @@ export class AvPostApiController extends MController {
       payload: CreateAvPostSchema,
     },
   })
-  async create(req: Request): Promise<AvPost> {
+  async create(req: hapi.Request): Promise<AvPost> {
     const input = req.payload as CreateAvPostDto;
     return this.avPostService.createAvPost(input);
   }
@@ -81,7 +81,7 @@ export class AvPostApiController extends MController {
     description: "删除商品",
     notes: "测试",
   })
-  async delete(req: Request): Promise<any> {
+  async delete(req: hapi.Request): Promise<any> {
     const id = req.params.id;
     return this.avPostService.deleteAvPost(id);
   }
@@ -98,7 +98,7 @@ export class AvPostApiController extends MController {
       payload: UpdateAvPostDtoSchema,
     },
   })
-  async updateAvPost(req: Request) {
+  async updateAvPost(req: hapi.Request) {
     const id = req.params.id;
     return this.avPostService.updateAvPost(id, req.payload as UpdateAvPostDto);
   }
@@ -117,7 +117,7 @@ export class AvPostApiController extends MController {
       }),
     },
   })
-  async patchAvPost(req: Request) {
+  async patchAvPost(req: hapi.Request) {
     const id = req.params.id;
     return this.avPostService.patchAvPost(id, req.payload as UpdateAvPostDto);
   }
@@ -132,7 +132,7 @@ export class AvPostApiController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteMany(req: Request): Promise<string[]> {
+  async deleteMany(req: hapi.Request): Promise<string[]> {
     const ids = req.query.checkedIds;
     return this.avPostService.deleteAvPosts(JSON.parse(ids));
   }

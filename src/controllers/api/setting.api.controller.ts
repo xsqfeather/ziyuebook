@@ -2,7 +2,7 @@ import { controller, get, options, put } from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
 import { SettingService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import Joi from "joi";
 import { Setting } from "../../models";
 
@@ -18,12 +18,12 @@ export class SettingApiController extends MController {
     description: "测试",
     notes: "测试",
   })
-  async getValue(req: Request): Promise<{ data: string }> {
+  async getValue(req: hapi.Request): Promise<{ data: string }> {
     const key = req.params.key as string;
     const locale = req.params.locale as string;
     const value = await this.settingService.get(key + locale);
     return {
-      data: value,
+      data: value || "",
     };
   }
 
@@ -33,7 +33,7 @@ export class SettingApiController extends MController {
     description: "测试",
     notes: "测试",
   })
-  async putValue(req: Request): Promise<Setting> {
+  async putValue(req: hapi.Request): Promise<Setting | null> {
     const key = req.params.key as string;
     const locale = req.params.locale as string;
     const data = req.payload as any;

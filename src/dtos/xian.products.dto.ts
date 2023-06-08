@@ -1,16 +1,14 @@
 import Joi from "joi";
 import {
-  ClassDescription,
   CustomSchema,
   Optional,
   Required,
   getSchema,
-  getSchemaDescription,
 } from "joi-typescript-validator";
 
 export class XianProductPublishDto {
   @Required()
-  productId: string;
+  productId?: string;
 
   @CustomSchema(
     Joi.object({
@@ -21,25 +19,25 @@ export class XianProductPublishDto {
       price: Joi.number(),
     })
   )
-  xianInfo: {
-    channel_cat_id: string;
-    title: string;
-    desc: string;
-    images: string[];
-    price: number;
+  xianInfo?: {
+    channel_cat_id?: string;
+    title?: string;
+    desc?: string;
+    images?: string[];
+    price?: number;
   };
 }
 export const XianProductPublishDtoSchema = getSchema(XianProductPublishDto);
 
 export class XianProductPublishManyDto {
   @Required()
-  productIds: string[];
+  productIds?: string[];
 
   @Optional()
-  rate: number;
+  rate?: number;
 
   @Optional()
-  addPrice: number;
+  addPrice?: number;
 }
 
 export const XianProductPublishManyDtoSchema = getSchema(
@@ -54,15 +52,15 @@ export class XianProductCreateDto {
   /**
    * 商品类目ID，示例：e11455b218c06e7ae10cfa39bf43dc0f
    */
-  channel_cat_id: string;
+  channel_cat_id?: string;
   /**
    * 商品描述，注意：不支持HTML代码，可使用\n换行
    */
-  desc: string;
+  desc?: string;
   /**
    * 发货地区ID，示例：440305
    */
-  district_id: number;
+  district_id?: number;
   /**
    * 运费（分），示例：100
    */
@@ -70,11 +68,11 @@ export class XianProductCreateDto {
   /**
    * 商品图片URL，示例：[xx,xx]（第一张为商品主图）
    */
-  images: string[];
+  images?: string[];
   /**
    * 商品类型ID，示例：2
    */
-  item_biz_type: number;
+  item_biz_type?: number;
   /**
    * 商品原价（分），示例：299900
    */
@@ -86,7 +84,7 @@ export class XianProductCreateDto {
   /**
    * 商品售价（分），示例：199900（多规格商品，必须是SKU其中一个金额）
    */
-  price: number;
+  price?: number;
   /**
    * 验货报告信息，仅已验货自检商品类型传入
    */
@@ -98,7 +96,7 @@ export class XianProductCreateDto {
   /**
    * 商品分类ID，示例：1
    */
-  sp_biz_type: number;
+  sp_biz_type?: number;
   /**
    * 商品标签，示例：1,2（最多设置两个）
    *
@@ -116,7 +114,7 @@ export class XianProductCreateDto {
   /**
    * 商品库存，示例：99（多规格商品，必须是SKU库存的合计）
    */
-  stock: number;
+  stock?: number;
   /**
    * 商品成色，示例：100（非普通商品类型时必填）
    */
@@ -140,7 +138,7 @@ export class XianProductCreateDto {
   /**
    * 商品标题，示例：iPhone 12 128G 黑色
    */
-  title: string;
+  title?: string;
 }
 
 /**
@@ -150,19 +148,19 @@ export class BookDataDto {
   /**
    * 作者，示例：李敖
    */
-  author: string;
+  author?: string;
   /**
    * ISBN码，示例：9787505720176
    */
-  isbn: string;
+  isbn?: string;
   /**
    * 出版社，示例：中国友谊出版公司
    */
-  publisher: string;
+  publisher?: string;
   /**
    * 书名，示例：北京法源寺
    */
-  title: string;
+  title?: string;
 }
 
 /**
@@ -403,7 +401,7 @@ export class XianProductEditDto {
   /**
    * 管家商品ID，示例：219530767978565
    */
-  product_id: string;
+  product_id?: string;
   /**
    * 验货报告信息，仅已验货自检商品类型传入
    */

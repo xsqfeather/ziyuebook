@@ -4,7 +4,7 @@ import { Service } from "typedi";
 
 @Service()
 export class BrowserContextService {
-  context: BrowserContext = null;
+  context: BrowserContext | null = null;
 
   getBrowser = async () => {
     if (!this.context) {

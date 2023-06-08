@@ -14,7 +14,7 @@ import { chromium } from "playwright"; // Or 'chromium' or 'webkit'.
   await page.waitForLoadState();
 
   const ral = await page.$("div");
-  await ral.click();
+  await ral?.click();
   await page.waitForLoadState();
 
   await page.keyboard.type("n");

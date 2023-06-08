@@ -6,17 +6,27 @@ const cidSizeCache: { [x: string]: number } = {};
 @Service()
 export class OssService {
   getIpfsClient = async () => {
-    const { create } = await import("kubo-rpc-client");
-    const client = create("/ip4/127.0.0.1/tcp/5001");
-    return client;
+    try {
+      const { create } = await import("kubo-rpc-client");
+      const client = create("/ip4/127.0.0.1/tcp/5001" as any);
+      return client;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
   async addFile(buffer: Buffer) {
-    const client = await this.getIpfsClient();
-    const result = await client.add(buffer, {
-      progress: (progress: any) => console.log(progress),
-    });
-    return result;
+    try {
+      const client = await this.getIpfsClient();
+      const result = await client.add(buffer, {
+        progress: (progress: any) => console.log(progress),
+      });
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   async showVideo(cid: string) {
@@ -79,14 +89,18 @@ export class OssService {
   }
 
   async addImage(buffer: Buffer) {
-    const { fileTypeFromBuffer } = require("file-type");
-    const fileType = await fileTypeFromBuffer(buffer);
-    console.log(fileType, typeof fileType.mime);
-    if (!fileType.mime?.includes("image")) {
-      throw Boom.badRequest("不是图片");
+    try {
+      const { fileTypeFromBuffer } = await import("file-type");
+      const fileType = await fileTypeFromBuffer(buffer);
+      if (!fileType.mime?.includes("image")) {
+        throw Boom.badRequest("不是图片");
+      }
+      const result = await this.addFile(buffer);
+      return { imageName: result.path + "." + fileType.ext };
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-    const result = await this.addFile(buffer);
-    return { imageName: result.path + "." + fileType.ext };
   }
 
   async addVideo(buffer: Buffer) {
@@ -112,7 +126,7 @@ export class OssService {
     const { concat: uint8ArrayConcat } = await import("uint8arrays/concat");
     const data = uint8ArrayConcat(await all(await client.cat(cid)));
     const buffer = Buffer.from(data);
-    const { fileTypeFromBuffer } = require("file-type");
+    const { fileTypeFromBuffer } = await import("file-type");
     const fileType = await fileTypeFromBuffer(buffer);
     console.log(fileType, typeof fileType.mime);
     if (!fileType.mime?.includes("image")) {

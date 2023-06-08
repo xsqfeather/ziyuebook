@@ -16,7 +16,7 @@ export class AvTag extends Base {
   @prop({
     type: Object,
   })
-  langs: {
+  langs!: {
     [locale: string]: string;
   };
 

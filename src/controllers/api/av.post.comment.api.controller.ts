@@ -4,7 +4,7 @@ import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
 import { AvPostComment } from "../../models";
 import { AvPostCommentService } from "../../services";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import {
   CreateAvPostCommentDto,
   CreateAvPostCommentSchema,
@@ -29,7 +29,7 @@ export class AvPostCommentApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<AvPostComment>> {
+  async list(req: hapi.Request): Promise<ListData<AvPostComment>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<AvPostComment>(query);
     return this.AvPostCommentService.getAvPostCommentList(listQuery);
@@ -44,7 +44,7 @@ export class AvPostCommentApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async getOne(req: Request): Promise<AvPostComment> {
+  async getOne(req: hapi.Request): Promise<AvPostComment> {
     return this.AvPostCommentService.getOne(req.params.id as string);
   }
 
@@ -62,9 +62,13 @@ export class AvPostCommentApiController extends MController {
       payload: CreateAvPostCommentSchema,
     },
   })
-  async create(req: Request): Promise<AvPostComment> {
+  async create(req: hapi.Request): Promise<AvPostComment | undefined> {
     const input = req.payload as CreateAvPostCommentDto;
-    return this.AvPostCommentService.createAvPostComment(input);
+    const { userId } = req.auth.credentials;
+    return this.AvPostCommentService.createAvPostComment(
+      userId as string,
+      input
+    );
   }
 
   @route("delete", "/")
@@ -77,7 +81,7 @@ export class AvPostCommentApiController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteMany(req: Request): Promise<string[]> {
+  async deleteMany(req: hapi.Request): Promise<string[]> {
     const ids = req.query.checkedIds;
     return this.AvPostCommentService.deleteAvPostComments(JSON.parse(ids));
   }
@@ -92,7 +96,7 @@ export class AvPostCommentApiController extends MController {
       scope: ["admin"],
     },
   })
-  async deleteOne(req: Request): Promise<AvPostComment> {
+  async deleteOne(req: hapi.Request): Promise<AvPostComment> {
     const id = req.params.id as string;
     return this.AvPostCommentService.deleteOneAvPostComment(id);
   }
@@ -109,7 +113,7 @@ export class AvPostCommentApiController extends MController {
       payload: UpdateAvPostCommentSchema,
     },
   })
-  async updateAvPostComment(req: Request) {
+  async updateAvPostComment(req: hapi.Request) {
     const id = req.params.id;
     return this.AvPostCommentService.updateAvPostComment(
       id,

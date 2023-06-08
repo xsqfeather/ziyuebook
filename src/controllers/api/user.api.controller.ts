@@ -8,7 +8,7 @@ import {
 } from "../../lib";
 import { UserService } from "../../services";
 import { User } from "../../models";
-import { Request } from "@hapi/hapi";
+import * as hapi from "@hapi/hapi";
 import Joi from "joi";
 import { CreateUserDto, CreateUserSchema } from "../../dtos";
 
@@ -27,7 +27,7 @@ export class UserApiController extends MController {
       query: ListQuerySchema,
     },
   })
-  async list(req: Request): Promise<ListData<User>> {
+  async list(req: hapi.Request): Promise<ListData<User>> {
     const query = req.query as ListQueryDto;
     let listQuery = this.parseListQuery<User>(query);
     listQuery = JSON.parse(JSON.stringify(listQuery));
@@ -51,7 +51,7 @@ export class UserApiController extends MController {
       payload: CreateUserSchema,
     },
   })
-  async createUser(req: Request): Promise<Partial<User>> {
+  async createUser(req: hapi.Request): Promise<Partial<User>> {
     return this.userService.createUser(req.payload as CreateUserDto);
   }
 
@@ -66,7 +66,7 @@ export class UserApiController extends MController {
       }),
     },
   })
-  detail(req: Request): Promise<User> {
+  detail(req: hapi.Request): Promise<User> {
     return this.userService.getUserById(req.params.id);
   }
 
@@ -76,7 +76,7 @@ export class UserApiController extends MController {
     description: "测试",
     notes: "测试",
   })
-  async update(req: Request): Promise<User> {
+  async update(req: hapi.Request): Promise<User> {
     return this.userService.updateUser(req.params.id, req.payload);
   }
 }
