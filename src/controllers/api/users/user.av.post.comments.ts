@@ -69,9 +69,9 @@ export class UserAvPostCommentsController extends MController {
   })
   async create(req: Request): Promise<AvPostComment> {
     const input = req.payload as CreateAvPostCommentDto;
-    const { id, name, role } = req.auth.credentials;
-    console.log({ id, name, role });
-    return this.avPostCommentService.createAvPostComment(id as string, {
+    const { userId, name, role } = req.auth.credentials;
+    console.log({ userId, name, role });
+    return this.avPostCommentService.createAvPostComment(userId as string, {
       ...input,
     });
   }

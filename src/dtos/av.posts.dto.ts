@@ -83,6 +83,9 @@ export class UpdateAvPostDto {
 
   @Optional()
   public designator?: string;
+
+  @Optional()
+  public hot?: number;
 }
 
 export const UpdateAvPostDtoSchema =

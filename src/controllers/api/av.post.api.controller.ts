@@ -1,4 +1,12 @@
-import { controller, get, options, post, put, route } from "hapi-decorators";
+import {
+  controller,
+  get,
+  options,
+  patch,
+  post,
+  put,
+  route,
+} from "hapi-decorators";
 import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
 import { ListData } from "../../lib/types";
@@ -93,6 +101,25 @@ export class AvPostApiController extends MController {
   async updateAvPost(req: Request) {
     const id = req.params.id;
     return this.avPostService.updateAvPost(id, req.payload as UpdateAvPostDto);
+  }
+
+  @patch("/{id}")
+  @options({
+    tags: ["api", "AV影片"],
+    description: "更新影片详请",
+    notes: "AV影片",
+    validate: {
+      params: Joi.object({
+        id: Joi.string().required(),
+      }),
+      payload: Joi.object({
+        hot: Joi.number().optional(),
+      }),
+    },
+  })
+  async patchAvPost(req: Request) {
+    const id = req.params.id;
+    return this.avPostService.patchAvPost(id, req.payload as UpdateAvPostDto);
   }
 
   @route("delete", "/")

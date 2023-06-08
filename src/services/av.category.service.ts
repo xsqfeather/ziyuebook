@@ -9,6 +9,17 @@ import { BeAnObject } from "@typegoose/typegoose/lib/types";
 
 @Service()
 export class AvCategoryService extends BaseService<AvCategory> {
+  public async getSubSubCates(categoryIds: string[]) {
+    const subCates = await AvCategoryModel.find({
+      superCategoryId: {
+        $in: categoryIds,
+      },
+    });
+    const subIds = subCates.map((category) => category.id);
+    if (subIds.length === 0) return categoryIds;
+    const newSubIds: string[] = await this.getSubSubCates(subIds);
+    return [...categoryIds, ...newSubIds];
+  }
   public async getAvCategoryList(
     input: GetListQuery<AvCategory>
   ): Promise<ListData<AvCategory>> {

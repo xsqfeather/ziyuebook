@@ -23,7 +23,7 @@ export class AvPostComment extends Base {
   @prop({
     type: String,
     required: true,
-    minlength: 15,
+    minlength: 1,
   })
   public comment!: string;
 
@@ -31,14 +31,15 @@ export class AvPostComment extends Base {
   @prop({
     type: String,
   })
-  public referUserId: string;
+  public referCommentId: string;
 
-  @Optional()
+  @Required()
   @prop({
-    type: String,
-    maxlength: 80,
+    type: Number,
+    required: true,
+    default: 0,
   })
-  public referComment?: string;
+  public replyCount: number;
 }
 
 export const AvPostCommentModel = getModelForClass(AvPostComment);

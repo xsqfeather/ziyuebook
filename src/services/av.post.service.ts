@@ -7,18 +7,56 @@ import {
   AvStarModel,
   AvTagModel,
 } from "../models";
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { BaseService } from "./base.service";
 import Boom from "@hapi/boom";
+import { AvCategoryService } from ".";
 
 @Service()
 export class AvPostService extends BaseService<AvPost> {
+  @Inject(() => AvCategoryService)
+  private readonly avCategoryService: AvCategoryService;
+
   public async getAvPostList(
     input: GetListQuery<AvPost>
   ): Promise<ListData<AvPost>> {
+    if (input.filter.categoryId) {
+      const categoryIds = await this.avCategoryService.getSubSubCates([
+        input.filter.categoryId,
+      ]);
+      input.filter = {
+        ...input.filter,
+        categoryId: {
+          $in: categoryIds,
+        },
+      };
+    }
     const { data, total } = await this.getListData<AvPost>(AvPostModel, input, [
       "title",
     ]);
+    return {
+      data,
+      total,
+    };
+  }
+
+  public async getAvPostByCategory(categoryId: string, filter: any) {
+    const data = await AvPostModel.find({
+      $and: [
+        {
+          $or: [{ categoryId }, { "category.superCategoryIds": categoryId }],
+        },
+        ...filter,
+      ],
+    });
+    const total = await AvPostModel.countDocuments({
+      $and: [
+        {
+          $or: [{ categoryId }, { "category.superCategoryIds": categoryId }],
+        },
+        ...filter,
+      ],
+    });
     return {
       data,
       total,
@@ -84,6 +122,17 @@ export class AvPostService extends BaseService<AvPost> {
     return checkedIds;
   }
 
+  public async patchAvPost(id: string, input: Partial<UpdateAvPostDto>) {
+    return AvPostModel.findOneAndUpdate(
+      { id },
+      {
+        $set: {
+          ...input,
+        },
+      }
+    );
+  }
+
   async updateAvPost(id: string, input: UpdateAvPostDto) {
     const avPost = await AvPostModel.findOne({ id });
     if (!avPost) {
@@ -95,7 +144,6 @@ export class AvPostService extends BaseService<AvPost> {
         throw Boom.notFound("该分类不存在");
       }
       avPost.categoryId = category.id;
-
       avPost.category = category;
     } else {
       const category = await AvCategoryModel.findOne({ isDefault: true });

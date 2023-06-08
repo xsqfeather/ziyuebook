@@ -12,22 +12,24 @@ export class AvStarService extends BaseService<AvStar> {
       if (!avTag) {
         throw Boom.notFound("该标签不存在");
       }
-      const updatedAvTag = await AvStarModel.findOneAndUpdate(
+      const updatedAvStar = await AvStarModel.findOneAndUpdate(
         { id },
         {
-          ...input,
-          langs:
-            (input.locale && (!input.langs as any)[input.locale]) ||
-            (input.langs as any)[input.locale] === ""
-              ? {
-                  ...input.langs,
-                  [input.locale]: input.name,
-                }
-              : input.langs,
+          $set: {
+            ...input,
+            langs:
+              (input.locale && (!input.langs as any)[input.locale]) ||
+              (input.langs as any)[input.locale] === ""
+                ? {
+                    ...input.langs,
+                    [input.locale]: input.name,
+                  }
+                : input.langs,
+          },
         }
       );
 
-      return updatedAvTag;
+      return updatedAvStar;
     } catch (error) {
       console.error(error);
     }
@@ -43,7 +45,7 @@ export class AvStarService extends BaseService<AvStar> {
     input: GetListQuery<AvStar>
   ): Promise<ListData<AvStar>> {
     const { data, total } = await this.getListData<AvStar>(AvStarModel, input, [
-      "title",
+      "name",
     ]);
     return {
       data,

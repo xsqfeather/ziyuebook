@@ -102,6 +102,11 @@ export class AvPost extends Base {
   public videoName!: string;
 
   @prop({
+    type: SchemaTypes.Array,
+  })
+  public otherVideoUrls!: string[];
+
+  @prop({
     type: String,
   })
   public tagsStr!: string;
@@ -118,6 +123,14 @@ export class AvPost extends Base {
     default: 0,
   })
   public hot!: number;
+
+  @Required()
+  @prop({
+    type: Number,
+    required: true,
+    default: 0,
+  })
+  public commentsCount!: number;
 }
 
 export const AvPostModel = getModelForClass(AvPost);

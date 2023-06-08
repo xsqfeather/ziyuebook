@@ -1,6 +1,6 @@
 import { CreateAvPostCommentDto, UpdateAvPostCommentDto } from "../dtos";
 import { GetListQuery, ListData } from "../lib/types";
-import { AvPostComment, AvPostCommentModel } from "../models";
+import { AvPostComment, AvPostCommentModel, AvPostModel } from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
 import Boom from "@hapi/boom";
@@ -52,6 +52,26 @@ export class AvPostCommentService extends BaseService<AvPostComment> {
         ...input,
         userId,
       });
+      if (input.referCommentId) {
+        await AvPostCommentModel.findOneAndUpdate(
+          { id: input.referCommentId },
+          {
+            $inc: {
+              replyCount: 1,
+            },
+          }
+        );
+      }
+      if (input.avPostId) {
+        await AvPostModel.findOneAndUpdate(
+          { id: input.avPostId },
+          {
+            $inc: {
+              commentsCount: 1,
+            },
+          }
+        );
+      }
       return AvPostComment;
     } catch (error) {
       console.error(error);

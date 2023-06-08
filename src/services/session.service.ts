@@ -37,6 +37,7 @@ export class SessionService {
       {
         userId: user.id,
         username: user.username,
+        name: user.nickname,
         roles: user.roles,
         id: session.id,
       },
@@ -66,6 +67,8 @@ export class SessionService {
         credentials: {
           ...decoded,
           scope: [...(userSession.roles || []), ...idRoles],
+          role: [...(userSession.roles || []), ...idRoles],
+          name: userSession.userId,
         },
       };
     } else {
