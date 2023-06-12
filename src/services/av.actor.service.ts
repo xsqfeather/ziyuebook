@@ -59,16 +59,11 @@ export class AvStarService extends BaseService<AvStar> {
   }
 
   public async deleteAvStar(id: string): Promise<AvStar | null> {
-    try {
-      const article = await AvStarModel.findOneAndDelete({ id });
-      if (!article) {
-        throw Boom.notFound("Not Found");
-      }
-      return article;
-    } catch (error) {
-      console.error(error);
-      throw error;
+    const star = await AvStarModel.findOneAndDelete({ id });
+    if (!star) {
+      throw Boom.notFound("Star Not Found");
     }
+    return star;
   }
   public async deleteAvStars(checkedIds: string[]) {
     await AvStarModel.deleteMany({ id: { $in: checkedIds } });

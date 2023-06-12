@@ -22,9 +22,11 @@ export class AvStar extends Base {
   @Optional()
   @prop({
     type: String,
+    default: "",
   })
   public introduction!: string;
 
+  @Required()
   @prop({
     type: String,
   })
