@@ -47,6 +47,10 @@ export class AvStarApiController extends MController {
 
     validate: {
       payload: CreateAvStarSchema,
+      failAction: (req, h, err) => {
+        console.error(err);
+        throw err;
+      },
     },
   })
   async create(req: hapi.Request): Promise<AvStar> {
