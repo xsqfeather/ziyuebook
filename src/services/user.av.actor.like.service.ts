@@ -1,8 +1,8 @@
-import { CreateUserAvActorLikeDto } from "../dtos";
 import { GetListQuery, ListData } from "../lib/types";
 import { UserAvActorLike, UserAvActorLikeModel } from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
+import { CreateUserAvPostLikeDto } from "../dtos";
 
 @Service()
 export class UserAvActorLikeService extends BaseService<UserAvActorLike> {
@@ -21,7 +21,7 @@ export class UserAvActorLikeService extends BaseService<UserAvActorLike> {
   }
 
   public async createUserAvActorLike(
-    input: CreateUserAvActorLikeDto
+    input: CreateUserAvPostLikeDto
   ): Promise<UserAvActorLike> {
     const article = await UserAvActorLikeModel.create(input);
     return article;
