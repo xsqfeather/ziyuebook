@@ -89,6 +89,7 @@ export class OssController extends MController {
       parse: true,
       maxBytes: 1024 * 1024 * 1024 * 3, //10G
       allow: "multipart/form-data",
+      timeout: false,
       multipart: {
         output: "file",
       },
