@@ -8,7 +8,10 @@ import {
 
 export class CreateAvStarDto {
   @Optional()
-  isFemaleFriendly!: boolean;
+  isFemaleFriendly?: boolean;
+
+  @Optional()
+  introduction?: string;
 
   @Required()
   public name!: string;
@@ -39,7 +42,9 @@ export class CreateAvStarDto {
       zh: Joi.string().optional().allow(""),
       en: Joi.string().optional().allow(""),
       "zh-TW": Joi.string().optional().allow(""),
-    }).optional()
+    })
+      .optional()
+      .allow(null)
   )
   public langs?: {
     zh: string;
@@ -52,6 +57,12 @@ export const CreateAvStarSchema =
   getSchema(CreateAvStarDto).label("CreateAvStarDto");
 
 export class UpdateAvStarDto {
+  @Optional()
+  introduction?: string;
+
+  @Optional()
+  isFemaleFriendly?: boolean;
+
   @Required()
   public name!: string;
 
