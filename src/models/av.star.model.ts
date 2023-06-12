@@ -2,7 +2,7 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { Optional, getSchema } from "joi-typescript-validator";
 import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
-import { SchemaType, SchemaTypes } from "mongoose";
+import { SchemaTypes } from "mongoose";
 
 @modelOptions({ options: { allowMixed: 0 } })
 export class AvStar extends Base {
@@ -19,6 +19,7 @@ export class AvStar extends Base {
   })
   public gallery?: string[];
 
+  @Optional()
   @prop({
     type: String,
   })
