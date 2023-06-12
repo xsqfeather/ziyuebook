@@ -37,9 +37,9 @@ export class AvStarApiController extends MController {
 
   @post("/")
   @options({
-    description: "新建文章",
-    notes: "返回文章数据",
-    tags: ["api", "文章"],
+    description: "新建演员",
+    notes: "返回演员数据",
+    tags: ["api", "Av演员"],
     auth: {
       strategy: "jwt",
       scope: ["admin"],
@@ -47,10 +47,6 @@ export class AvStarApiController extends MController {
 
     validate: {
       payload: CreateAvStarSchema,
-      failAction: (_request, _h, err) => {
-        console.error({ err });
-        return "error";
-      },
     },
   })
   async create(req: hapi.Request): Promise<AvStar> {
