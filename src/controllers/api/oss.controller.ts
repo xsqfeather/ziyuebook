@@ -35,12 +35,12 @@ export class OssController extends MController {
       scope: ["admin", "user"],
     },
     payload: {
-      output: "stream",
+      output: "file",
       parse: true,
       maxBytes: 1024 * 1024 * 100, //100m
       allow: "multipart/form-data",
       multipart: {
-        output: "stream",
+        output: "file",
       },
     },
     validate: {
@@ -59,7 +59,7 @@ export class OssController extends MController {
   })
   async uploadImage(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { image } = request.payload as UploadImageDto;
-    const result = await this.ossService.addImage(image._data);
+    const result = await this.ossService.addImage(image.path);
     return result;
   }
 
@@ -85,12 +85,12 @@ export class OssController extends MController {
       scope: ["admin", "user"],
     },
     payload: {
-      output: "stream",
+      output: "file",
       parse: true,
       maxBytes: 1024 * 1024 * 1024 * 3, //10G
       allow: "multipart/form-data",
       multipart: {
-        output: "stream",
+        output: "file",
       },
     },
     validate: {
@@ -104,7 +104,7 @@ export class OssController extends MController {
   })
   async uploadVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { video } = request.payload as UploadVideoDto;
-    const result = await this.ossService.addVideo(video._data);
+    const result = await this.ossService.addVideo(video.path);
     return result;
   }
 

@@ -1,5 +1,6 @@
 import { Service } from "typedi";
 import Boom from "@hapi/boom";
+import { readFileSync } from "fs";
 
 const cidSizeCache: { [x: string]: number } = {};
 
@@ -16,12 +17,15 @@ export class OssService {
     }
   };
 
-  async addFile(buffer: Buffer) {
+  async addFile(filepath: string) {
+    console.log({ filepath });
     try {
       const client = await this.getIpfsClient();
-      const result = await client.add(buffer, {
+      const result = await client.add(readFileSync(filepath), {
         progress: (progress: any) => console.log(progress),
       });
+      console.log({ result });
+
       return result;
     } catch (error) {
       console.error(error);
@@ -80,7 +84,9 @@ export class OssService {
           })
         )
       );
+
       const buffer = Buffer.from(data);
+
       return { buffer, size: cidSizeCache[cid] };
     } catch (error) {
       console.error({ error });
@@ -88,14 +94,14 @@ export class OssService {
     }
   }
 
-  async addImage(buffer: Buffer) {
+  async addImage(imagePath: string) {
     try {
-      const { fileTypeFromBuffer } = await import("file-type");
-      const fileType = await fileTypeFromBuffer(buffer);
-      if (!fileType.mime?.includes("image")) {
+      const { fileTypeFromFile } = await import("file-type");
+      const fileType = await fileTypeFromFile(imagePath);
+      if (!fileType?.mime?.includes("image")) {
         throw Boom.badRequest("不是图片");
       }
-      const result = await this.addFile(buffer);
+      const result = await this.addFile(imagePath);
       return { imageName: result.path + "." + fileType.ext };
     } catch (error) {
       console.error(error);
@@ -103,11 +109,11 @@ export class OssService {
     }
   }
 
-  async addVideo(buffer: Buffer) {
-    const { fileTypeFromBuffer } = require("file-type");
+  async addVideo(videoPath: string) {
+    const { fileTypeFromFile } = await import("file-type");
     let fileType = null;
     try {
-      fileType = await fileTypeFromBuffer(buffer);
+      fileType = await fileTypeFromFile(videoPath);
       console.log(fileType, typeof fileType.mime);
       if (!fileType.mime?.includes("video")) {
         throw Boom.badRequest("不是视频");
@@ -116,7 +122,7 @@ export class OssService {
       throw Boom.badRequest("视频格式有问题或者视频已经损坏");
     }
 
-    const result = await this.addFile(buffer);
+    const result = await this.addFile(videoPath);
     return { videoName: result.path + "." + fileType?.ext };
   }
 
@@ -128,8 +134,7 @@ export class OssService {
     const buffer = Buffer.from(data);
     const { fileTypeFromBuffer } = await import("file-type");
     const fileType = await fileTypeFromBuffer(buffer);
-    console.log(fileType, typeof fileType.mime);
-    if (!fileType.mime?.includes("image")) {
+    if (!fileType?.mime?.includes("image")) {
       throw Boom.badRequest("不是图片");
     }
     return buffer;

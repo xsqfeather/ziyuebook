@@ -94,12 +94,12 @@ export class ProductApiController extends MController {
       },
     },
     payload: {
-      output: "stream",
+      output: "file",
       parse: true,
       maxBytes: 1024 * 1024 * 100, //100m
       allow: "multipart/form-data",
       multipart: {
-        output: "stream",
+        output: "file",
       },
     },
     plugins: {
