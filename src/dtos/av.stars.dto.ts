@@ -10,7 +10,7 @@ export class CreateAvStarDto {
   @Optional()
   isFemaleFriendly?: boolean;
 
-  @CustomSchema(Joi.any())
+  @CustomSchema(Joi.string().allow(null, "", undefined))
   introduction?: string;
 
   @Required()
@@ -35,7 +35,7 @@ export class CreateAvStarDto {
   public bustSize?: number;
 
   @Optional()
-  public locale?: number;
+  public locale?: string;
 
   @CustomSchema(
     Joi.object({
@@ -85,7 +85,7 @@ export class UpdateAvStarDto {
   public bustSize?: number;
 
   @Optional()
-  public locale?: number;
+  public locale?: string;
 
   @CustomSchema(
     Joi.object({
