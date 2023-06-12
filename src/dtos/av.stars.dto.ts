@@ -57,7 +57,7 @@ export const CreateAvStarSchema =
   getSchema(CreateAvStarDto).label("CreateAvStarDto");
 
 export class UpdateAvStarDto {
-  @CustomSchema(Joi.optional().empty())
+  @CustomSchema(Joi.string().optional().allow(""))
   introduction?: string;
 
   @Optional()
