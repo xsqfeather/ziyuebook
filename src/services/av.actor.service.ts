@@ -54,13 +54,8 @@ export class AvStarService extends BaseService<AvStar> {
   }
 
   public async createAvStar(input: CreateAvStarDto): Promise<AvStar> {
-    try {
-      const article = await AvStarModel.create(input);
-      return article;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    const star = await AvStarModel.create(input);
+    return star;
   }
 
   public async deleteAvStar(id: string): Promise<AvStar | null> {
