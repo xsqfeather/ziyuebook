@@ -69,8 +69,7 @@ export class UserAvPostCommentsController extends MController {
   })
   async create(req: hapi.Request): Promise<AvPostComment | undefined> {
     const input = req.payload as CreateAvPostCommentDto;
-    const { userId, name, role } = req.auth.credentials;
-    console.log({ userId, name, role });
+    const { userId } = req.params;
     return this.avPostCommentService.createAvPostComment(userId as string, {
       ...input,
     });

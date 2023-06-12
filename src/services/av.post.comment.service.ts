@@ -1,6 +1,12 @@
 import { CreateAvPostCommentDto, UpdateAvPostCommentDto } from "../dtos";
 import { GetListQuery, ListData } from "../lib/types";
-import { AvPostComment, AvPostCommentModel, AvPostModel } from "../models";
+import {
+  AvPostComment,
+  AvPostCommentModel,
+  AvPostModel,
+  UserMessageModel,
+  UserModel,
+} from "../models";
 import { Service } from "typedi";
 import { BaseService } from "./base.service";
 import Boom from "@hapi/boom";
@@ -47,35 +53,53 @@ export class AvPostCommentService extends BaseService<AvPostComment> {
     userId: string,
     input: CreateAvPostCommentDto
   ): Promise<AvPostComment | undefined> {
-    try {
-      const AvPostComment = await AvPostCommentModel.create({
-        ...input,
-        userId,
+    const AvPostComment = await AvPostCommentModel.create({
+      ...input,
+      userId,
+    });
+    if (input.referCommentId) {
+      const refComment = await AvPostCommentModel.findOne({
+        id: input.referCommentId,
       });
-      if (input.referCommentId) {
-        await AvPostCommentModel.findOneAndUpdate(
-          { id: input.referCommentId },
-          {
-            $inc: {
-              replyCount: 1,
-            },
-          }
-        );
+      if (!refComment) {
+        throw Boom.badRequest("referCommentId不存在");
       }
-      if (input.avPostId) {
-        await AvPostModel.findOneAndUpdate(
-          { id: input.avPostId },
-          {
-            $inc: {
-              commentsCount: 1,
-            },
-          }
-        );
+      if (!input.referUserId || input.referUserId == "") {
+        throw Boom.badRequest("当referCommentId存在, referUserId不能为空");
       }
-      return AvPostComment;
-    } catch (error) {
-      console.error(error);
+      const referUser = await UserModel.findOne({ id: input.referUserId });
+      if (!referUser) {
+        throw Boom.badRequest("referUserId不存在");
+      }
+      await AvPostCommentModel.findOneAndUpdate(
+        { id: input.referCommentId },
+        {
+          $inc: {
+            replyCount: 1,
+          },
+        }
+      );
     }
+    if (input.avPostId) {
+      await AvPostModel.findOneAndUpdate(
+        { id: input.avPostId },
+        {
+          $inc: {
+            commentsCount: 1,
+          },
+        }
+      );
+    }
+    // if (input.referCommentId) {
+    //   await UserMessageModel.create({
+    //     userId: input.referUserId,
+    //     sourceObj: AvPostComment,
+    //     resource: "av_post_comments",
+    //     resourceId: AvPostComment.id,
+    //     content: "评论了你的视频",
+    //   });
+    // }
+    return AvPostComment;
   }
 
   async updateAvPostComment(id: string, input: UpdateAvPostCommentDto) {

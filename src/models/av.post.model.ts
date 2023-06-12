@@ -1,5 +1,5 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
-import { getSchema } from "joi-typescript-validator";
+import { Optional, getSchema } from "joi-typescript-validator";
 import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
 import { SchemaTypes } from "mongoose";
@@ -131,6 +131,22 @@ export class AvPost extends Base {
     default: 0,
   })
   public commentsCount!: number;
+
+  @Required()
+  @prop({
+    type: Number,
+    required: true,
+    default: 0,
+  })
+  public likeCount!: number;
+
+  @Optional()
+  @prop({
+    type: Number,
+    required: true,
+    default: false,
+  })
+  public isFemaleFriendly?: boolean;
 }
 
 export const AvPostModel = getModelForClass(AvPost);

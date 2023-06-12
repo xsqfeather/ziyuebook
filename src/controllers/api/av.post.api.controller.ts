@@ -68,6 +68,10 @@ export class AvPostApiController extends MController {
 
     validate: {
       payload: CreateAvPostSchema,
+      failAction: (req, h, err) => {
+        console.error(err);
+        throw err;
+      },
     },
   })
   async create(req: hapi.Request): Promise<AvPost> {

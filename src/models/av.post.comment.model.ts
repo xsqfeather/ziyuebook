@@ -40,6 +40,12 @@ export class AvPostComment extends Base {
     default: 0,
   })
   public replyCount!: number;
+
+  @Optional()
+  @prop({
+    type: String,
+  })
+  public referUserId!: string;
 }
 
 export const AvPostCommentModel = getModelForClass(AvPostComment);

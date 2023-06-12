@@ -13,3 +13,4 @@ export * from "./setting.model";
 export * from "./av.category.model";
 export * from "./article.category.model";
 export * from "./av.post.comment.model";
+export * from "./user.message.model";

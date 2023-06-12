@@ -33,6 +33,10 @@ export class AvPostService extends BaseService<AvPost> {
     }
     const { data, total } = await this.getListData<AvPost>(AvPostModel, input, [
       "title",
+      "description",
+      "tagsStr",
+      "categoryNameStr",
+      "starsStr",
     ]);
     return {
       data,
@@ -112,6 +116,7 @@ export class AvPostService extends BaseService<AvPost> {
     avPost.images = input.images || [];
     avPost.introduction = input.introduction;
     avPost.designator = input.designator;
+    avPost.isFemaleFriendly = input.isFemaleFriendly;
 
     await avPost.save();
     return avPost;
@@ -182,6 +187,7 @@ export class AvPostService extends BaseService<AvPost> {
     avPost.images = input.images || [];
     avPost.introduction = input.introduction;
     avPost.designator = input.designator;
+    avPost.isFemaleFriendly = input.isFemaleFriendly;
 
     await avPost.save();
     return avPost;

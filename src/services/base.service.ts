@@ -47,9 +47,7 @@ export class BaseService<T> {
       .limit(limit)
       .skip(skip)
       .sort(sort);
-    const total = await model.countDocuments(
-      this.parseFilter(filter, searchFields)
-    );
+    const total = await model.countDocuments(paredFilter);
     return {
       data,
       total,

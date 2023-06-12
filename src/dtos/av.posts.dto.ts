@@ -39,6 +39,9 @@ export class CreateAvPostDto {
 
   @Optional()
   public designator?: string;
+
+  @Optional()
+  public isFemaleFriendly?: boolean;
 }
 
 export const CreateAvPostSchema =
@@ -86,6 +89,9 @@ export class UpdateAvPostDto {
 
   @Optional()
   public hot?: number;
+
+  @Optional()
+  public isFemaleFriendly?: boolean;
 }
 
 export const UpdateAvPostDtoSchema =
