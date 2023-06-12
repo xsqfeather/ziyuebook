@@ -14,9 +14,6 @@ export class CreateAvStarDto {
   public avatar!: string;
 
   @Optional()
-  public introduction?: string;
-
-  @Optional()
   public description?: string;
 
   @Optional()
@@ -57,9 +54,6 @@ export class UpdateAvStarDto {
 
   @Required()
   public avatar!: string;
-
-  @Optional()
-  public introduction?: string;
 
   @Optional()
   public description?: string;
