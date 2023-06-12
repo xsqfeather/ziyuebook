@@ -5,11 +5,12 @@ import { ListData } from "../../lib/types";
 import { UserAvActorLike } from "../../models";
 import { UserAvActorLikeService } from "../../services";
 import * as hapi from "@hapi/hapi";
-import {
-  CreateUserAvActorLikeDto,
-  CreateUserAvActorLikeSchema,
-} from "../../dtos";
+
 import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
+import {
+  CreateUserAvPostLikeDto,
+  CreateUserAvPostLikeSchema,
+} from "../../dtos";
 
 @Service()
 @controller("/api/articles")
@@ -43,11 +44,11 @@ export class UserAvActorLikeApiController extends MController {
     },
 
     validate: {
-      payload: CreateUserAvActorLikeSchema,
+      payload: CreateUserAvPostLikeSchema,
     },
   })
   async create(req: hapi.Request): Promise<UserAvActorLike> {
-    const input = req.payload as CreateUserAvActorLikeDto;
+    const input = req.payload as CreateUserAvPostLikeDto;
     return this.articleService.createUserAvActorLike(input);
   }
 }
