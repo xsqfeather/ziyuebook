@@ -15,6 +15,13 @@ export class AvStar extends Base {
 
   @Optional()
   @prop({
+    type: String,
+    default: false,
+  })
+  isFemaleFriendly!: boolean;
+
+  @Optional()
+  @prop({
     type: SchemaTypes.Array,
   })
   public gallery?: string[];

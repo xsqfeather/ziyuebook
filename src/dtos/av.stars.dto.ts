@@ -7,6 +7,9 @@ import {
 } from "joi-typescript-validator";
 
 export class CreateAvStarDto {
+  @Optional()
+  isFemaleFriendly!: boolean;
+
   @Required()
   public name!: string;
 
