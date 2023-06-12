@@ -104,6 +104,7 @@ export class OssController extends MController {
   })
   async uploadVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
     const { video } = request.payload as UploadVideoDto;
+    console.log({ video });
     const result = await this.ossService.addVideo(video.path);
     return result;
   }

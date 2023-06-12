@@ -110,20 +110,8 @@ export class OssService {
   }
 
   async addVideo(videoPath: string) {
-    const { fileTypeFromFile } = await import("file-type");
-    let fileType = null;
-    try {
-      fileType = await fileTypeFromFile(videoPath);
-      console.log(fileType, typeof fileType.mime);
-      if (!fileType.mime?.includes("video")) {
-        throw Boom.badRequest("不是视频");
-      }
-    } catch (error) {
-      throw Boom.badRequest("视频格式有问题或者视频已经损坏");
-    }
-
     const result = await this.addFile(videoPath);
-    return { videoName: result.path + "." + fileType?.ext };
+    return { videoName: result.path + "." + "mp4" };
   }
 
   async showImage(cid: string) {
