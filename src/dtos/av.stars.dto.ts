@@ -10,7 +10,7 @@ export class CreateAvStarDto {
   @Optional()
   isFemaleFriendly?: boolean;
 
-  @CustomSchema(Joi.string().optional().allow("", null))
+  @CustomSchema(Joi.string().allow("", null).optional().allow(""))
   introduction?: string;
 
   @Required()
