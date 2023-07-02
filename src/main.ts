@@ -1,9 +1,6 @@
 import { startApp } from "./lib";
 import Container from "typedi";
 import { SessionService } from "./services";
-import Gun from "gun";
-
-import http from "http";
 
 import {
   ArticleApiController,
@@ -22,7 +19,6 @@ import {
   AvCategoryApiController,
   ArticleCategoryApiController,
   AvTagApiController,
-  OssController,
   AvPostCommentApiController,
 } from "./controllers";
 import {
@@ -48,7 +44,6 @@ startApp({
     SettingApiController,
     AvCategoryApiController,
     AvTagApiController,
-    OssController,
     AvPostCommentApiController,
     UserAvPostCommentsController,
     UserUserAvPostLikesController,
@@ -56,9 +51,3 @@ startApp({
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,
 });
-const server = http
-  .createServer((Gun as any).serve("../node_modules/gun"))
-  .listen(8084, () => {
-    console.log("gun server started at port 8084");
-  });
-Gun({ web: server });

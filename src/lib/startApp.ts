@@ -7,6 +7,7 @@ import Handlebars from "handlebars";
 import { getJwtSecret, getMongoURI, serverConfig } from "./config";
 import { DbSessionAuth } from "./plugins/dbSessionAuth";
 import { AvCategoryModel } from "../models";
+import fs from "fs";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -15,6 +16,10 @@ export const startApp = async (startAppConfig: {
 }) => {
   const { pageControllers, apiControllers, jwtValidation } = startAppConfig;
   try {
+    const uploadExist = fs.existsSync(`${process.cwd()}/uploads`);
+    if (!uploadExist) {
+      fs.mkdirSync(`${process.cwd()}/uploads`);
+    }
     mongoose.set("strictQuery", true);
     await mongoose.connect(getMongoURI());
     const defaultAvCategory = await AvCategoryModel.findOne({

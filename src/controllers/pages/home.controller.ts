@@ -15,42 +15,43 @@ export class HomeController extends MController {
   @Inject(() => OssService)
   ossService!: OssService;
 
-  @get("/images/{imageName}")
+  @get("/images/{filename}")
   async showImage(request: hapi.Request, h: hapi.ResponseToolkit) {
-    const { imageName } = request.params;
-    const [cid, ext] = imageName.split(".");
-    const stream = await this.ossService.showImage(cid);
+    const { filename } = request.params;
+    const [, ext] = filename.split(".");
+    const stream = await this.ossService.showImage(filename);
     return h.response(stream).type("image/" + ext);
   }
 
-  @get("/videos/{videoName}")
+  @get("/videos/{filename}")
   async showVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
-    const { videoName } = request.params;
-    const [cid, ext] = videoName.split(".");
-    const { buffer } = await this.ossService.showVideo(cid);
-    return h.response(buffer).type("video/" + ext);
+    const { filename } = request.params;
+    const [, ext] = filename.split(".");
+    const stream = await this.ossService.showVideo(filename);
+    return h.response(stream).type("video/" + ext);
   }
 
-  @get("/videos/{cid}/play")
+  @get("/videos/{filename}/play")
   async playVideo(request: hapi.Request, h: hapi.ResponseToolkit) {
-    const { cid } = request.params;
+    const { filename } = request.params;
+    const [, ext] = filename.split(".");
     const range = request.headers.range;
     if (!range) {
-      const { buffer, mime } = await this.ossService.showVideo(cid);
-      return h.response(buffer).type(mime);
+      const stream = await this.ossService.showVideo(filename);
+      return h.response(stream).type("videos/" + ext);
     }
     const CHUNK_SIZE = 2233467 * 10;
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);
 
-    const { buffer, size } = await this.ossService.showVideoRange(
-      cid,
+    const { stream, size } = await this.ossService.getVideoChunkStream(
+      filename,
       start || 0,
       CHUNK_SIZE
     );
     const end = parts[1] && parts[1] !== "" ? parseInt(parts[1], 10) : size - 1;
     return h
-      .response(buffer)
+      .response(stream)
       .type("video/mp4")
       .header("Content-Range", `bytes ${start}-${end}/${size}`)
       .header("Content-Length", CHUNK_SIZE.toString())

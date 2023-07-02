@@ -16,7 +16,6 @@ export class PublishToXianEvent {
   productService!: ProductService;
 
   constructor() {
-    console.log("事件名字", PublishToXianEvent.name);
     this.emitter.on(PublishToXianEvent.name, this.handle);
   }
 

@@ -1,8 +1,6 @@
 import { Service } from "typedi";
 import Boom from "@hapi/boom";
-import { readFileSync } from "fs";
-
-const cidSizeCache: { [x: string]: number } = {};
+import { createReadStream, existsSync, readFileSync, statSync } from "fs";
 
 @Service()
 export class OssService {
@@ -16,6 +14,8 @@ export class OssService {
       throw error;
     }
   };
+
+  getGunCid() {}
 
   async addFile(filepath: string) {
     console.log({ filepath });
@@ -33,65 +33,33 @@ export class OssService {
     }
   }
 
-  async showVideo(cid: string) {
-    const all = (await import("it-all")).default;
-    const client = await this.getIpfsClient();
-    if (!cidSizeCache[cid]) {
-      try {
-        for await (const file of client.ls(cid)) {
-          if (file.size > (cidSizeCache[cid] || 0)) {
-            cidSizeCache[cid] = file.size;
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
+  async showVideo(filename: string) {
+    const filepath = `${process.cwd()}/uploads/${filename}`;
+    const uploadExist = existsSync(filepath);
+    if (!uploadExist) {
+      throw Boom.notFound("文件不存在");
     }
-    const { concat: uint8ArrayConcat } = await import("uint8arrays/concat");
 
-    const data = uint8ArrayConcat(await all(client.cat(cid)));
-    const buffer = Buffer.from(data);
-    const { fileTypeFromBuffer } = require("file-type");
-    const fileType = await fileTypeFromBuffer(buffer);
-    console.log(fileType, typeof fileType.mime);
-    if (!fileType.mime?.includes("video")) {
-      throw Boom.badRequest("不是shiping");
-    }
-    console.log("size", cidSizeCache[cid]);
-    return { buffer, size: cidSizeCache[cid], mime: fileType.mime };
+    const stream = createReadStream(filepath);
+    return stream;
   }
 
-  async showVideoRange(cid: string, offset: number, length: number) {
-    const all = (await import("it-all")).default;
-    const client = await this.getIpfsClient();
-    if (!cidSizeCache[cid]) {
-      cidSizeCache[cid] = 0;
-      try {
-        for await (const file of client.ls(cid)) {
-          cidSizeCache[cid] += file.size || 0;
-        }
-      } catch (error) {
-        console.error(error);
-      }
+  async getVideoChunkStream(filename: string, offset: number, length: number) {
+    const filepath = `${process.cwd()}/uploads/${filename}`;
+    const uploadExist = existsSync(filepath);
+    if (!uploadExist) {
+      throw Boom.notFound("文件不存在");
     }
-    try {
-      const { concat: uint8ArrayConcat } = await import("uint8arrays/concat");
-      const data = uint8ArrayConcat(
-        await all(
-          await client.cat(cid, {
-            offset,
-            length,
-          })
-        )
-      );
-
-      const buffer = Buffer.from(data);
-
-      return { buffer, size: cidSizeCache[cid] };
-    } catch (error) {
-      console.error({ error });
-      throw error;
-    }
+    const stats = statSync(filepath);
+    const size = stats.size;
+    const stream = createReadStream(filepath, {
+      start: offset,
+      end: offset + length - 1,
+    });
+    return {
+      stream,
+      size,
+    };
   }
 
   async addImage(imagePath: string) {
@@ -114,17 +82,13 @@ export class OssService {
     return { videoName: result.path + "." + "mp4" };
   }
 
-  async showImage(cid: string) {
-    const all = (await import("it-all")).default;
-    const client = await this.getIpfsClient();
-    const { concat: uint8ArrayConcat } = await import("uint8arrays/concat");
-    const data = uint8ArrayConcat(await all(await client.cat(cid)));
-    const buffer = Buffer.from(data);
-    const { fileTypeFromBuffer } = await import("file-type");
-    const fileType = await fileTypeFromBuffer(buffer);
-    if (!fileType?.mime?.includes("image")) {
-      throw Boom.badRequest("不是图片");
+  async showImage(filename: string) {
+    const filepath = `${process.cwd()}/uploads/${filename}`;
+    const uploadExist = existsSync(filepath);
+    if (!uploadExist) {
+      throw Boom.notFound("文件不存在");
     }
-    return buffer;
+    const stream = createReadStream(filepath);
+    return stream;
   }
 }
