@@ -14,6 +14,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@hapi/cookie": "^12.0.1",
     "@hapi/hapi": "^21.3.1",
     "@hapi/inert": "^7.1.0",
@@ -21,6 +22,7 @@
     "@mapbox/node-pre-gyp": "^1.0.10",
     "@playwright/test": "^1.34.0",
     "@typegoose/typegoose": "^10.3.4 ",
+    "@types/fluent-ffmpeg": "^2.1.21",
     "@types/hapi__inert": "^5.2.6",
     "@types/hapi__joi": "^17.1.9",
     "@types/hapi__vision": "^5.5.4",
@@ -34,6 +36,7 @@
     "dotenv": "^16.0.3",
     "emittery": "^1.0.1",
     "file-type": "^18.3.0",
+    "fluent-ffmpeg": "^2.1.2",
     "handlebars": "^4.7.7",
     "hapi-auth-jwt2": "^10.4.0",
     "hapi-decorators": "^2.0.0",

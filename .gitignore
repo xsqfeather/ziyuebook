@@ -5,8 +5,10 @@ yarn.lock
 env
 .env
 level_cache
+level_cache_data
 dist
 userData
 radata
 radata*
 uploads
+hls

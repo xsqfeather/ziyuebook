@@ -1,6 +1,6 @@
 import level from "level-party";
 
-const levelDB = level(process.cwd() + "/level_cache", {
+const levelDB = level(process.cwd() + "/level_cache_data", {
   valueEncoding: "json",
 });
 

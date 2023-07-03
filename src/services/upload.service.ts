@@ -4,7 +4,7 @@ import {
   getTTSecretId,
   getTTSecretKey,
 } from "../lib/config";
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import Boom from "@hapi/boom";
 
 import COS from "cos-nodejs-sdk-v5";
@@ -16,11 +16,15 @@ import {
   existsSync,
   unlinkSync,
 } from "fs";
+import { HLSJob } from "../jobs";
 
 const CHUNK_SIZE = 2 * 1024 * 1024;
 
 @Service()
 export class UploadService {
+  @Inject(() => HLSJob)
+  hlsJob!: HLSJob;
+
   async uploadTTImage(body: Buffer, Key: string) {
     return new Promise((res: any, rej: any) => {
       const cos = new COS({
@@ -90,6 +94,7 @@ export class UploadService {
     const dest = `${process.cwd()}/uploads/${newFilename}`;
     const exist = existsSync(dest);
     if (exist) {
+      this.hlsJob.start({ filename: newFilename });
       return {
         filename: newFilename,
       };
@@ -124,6 +129,9 @@ export class UploadService {
     await Promise.all(pipes);
 
     await setLevelValue(md5, newFilename);
+
+    this.hlsJob.start({ filename: newFilename });
+
     return {
       filename: newFilename,
     };

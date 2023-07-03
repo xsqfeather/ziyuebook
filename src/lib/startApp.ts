@@ -20,6 +20,10 @@ export const startApp = async (startAppConfig: {
     if (!uploadExist) {
       fs.mkdirSync(`${process.cwd()}/uploads`);
     }
+    const hlsExist = fs.existsSync(`${process.cwd()}/hls`);
+    if (!hlsExist) {
+      fs.mkdirSync(`${process.cwd()}/hls`);
+    }
     mongoose.set("strictQuery", true);
     await mongoose.connect(getMongoURI());
     const defaultAvCategory = await AvCategoryModel.findOne({
@@ -97,6 +101,15 @@ export const startApp = async (startAppConfig: {
         directory: {
           path: ".",
           redirectToSlash: true,
+        },
+      },
+    },
+    {
+      method: "GET",
+      path: "/hls/{param*}",
+      handler: {
+        directory: {
+          path: `${process.cwd()}/hls`,
         },
       },
     },

@@ -3,3 +3,4 @@ export * from "./session.expired.job";
 export * from "./session.log.job";
 export * from "./kong.creeper.job";
 export * from "./kong.price.job";
+export * from "./HLS.job";
