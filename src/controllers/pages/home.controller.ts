@@ -6,6 +6,8 @@ import { CreateSessionDto } from "../../dtos";
 import { OssService, SessionService } from "../../services";
 import { showNoAccessPage } from "../../lib/utils/showNoAccessPage";
 
+const CHUNK_SIZE = 1024 * 1024;
+
 @Service()
 @controller("/")
 export class HomeController extends MController {
@@ -41,7 +43,7 @@ export class HomeController extends MController {
       const stream = await this.ossService.showVideo(filename);
       return h.response(stream).type("videos/" + ext);
     }
-    const CHUNK_SIZE = 2233467;
+
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);
 
