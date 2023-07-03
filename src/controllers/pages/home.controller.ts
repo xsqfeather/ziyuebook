@@ -37,10 +37,11 @@ export class HomeController extends MController {
     const [, ext] = filename.split(".");
     const range = request.headers.range;
     if (!range) {
+      console.log("range not exist");
       const stream = await this.ossService.showVideo(filename);
       return h.response(stream).type("videos/" + ext);
     }
-    const CHUNK_SIZE = 2233467 * 10;
+    const CHUNK_SIZE = 2233467;
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);
 
@@ -49,6 +50,7 @@ export class HomeController extends MController {
       start || 0,
       CHUNK_SIZE
     );
+
     const end = parts[1] && parts[1] !== "" ? parseInt(parts[1], 10) : size - 1;
     return h
       .response(stream)
