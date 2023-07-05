@@ -13,3 +13,4 @@ export * from "./article.category.service";
 export * from "./av.tag.service";
 export * from "./oss.service";
 export * from "./av.post.comment.service";
+export * from "./chat.msg.service";

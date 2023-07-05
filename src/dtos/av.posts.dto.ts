@@ -5,7 +5,10 @@ export class CreateAvPostDto {
   public title!: string;
 
   @Optional()
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public categoryId!: string;
@@ -22,14 +25,20 @@ export class CreateAvPostDto {
   @Optional()
   public previewVideo!: string;
 
-  @Required()
-  public videoName!: string;
+  @Optional()
+  public video!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public tagIds?: string[];
 
   @Optional()
-  public images?: string[];
+  public images?: {
+    name: string;
+    origin: string;
+  }[];
 
   @Optional()
   publishDate?: Date;
@@ -52,7 +61,10 @@ export class UpdateAvPostDto {
   public title!: string;
 
   @Optional()
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public categoryId!: string;
@@ -70,7 +82,10 @@ export class UpdateAvPostDto {
   public previewVideo!: string;
 
   @Required()
-  public videoName!: string;
+  public video!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public tagIds?: string[];
@@ -82,7 +97,7 @@ export class UpdateAvPostDto {
   public starIds?: string[];
 
   @Optional()
-  public images?: string[];
+  public images?: { name: string; origin: string }[];
 
   @Optional()
   public designator?: string;

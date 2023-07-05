@@ -20,6 +20,7 @@ import {
   ArticleCategoryApiController,
   AvTagApiController,
   AvPostCommentApiController,
+  ChatMsgApiController,
 } from "./controllers";
 import {
   UserAvPostCommentsController,
@@ -47,6 +48,7 @@ startApp({
     AvPostCommentApiController,
     UserAvPostCommentsController,
     UserUserAvPostLikesController,
+    ChatMsgApiController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,

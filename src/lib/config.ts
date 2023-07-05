@@ -43,6 +43,10 @@ export const getMongoDBName = () => {
   return config["DB_NAME"];
 };
 
+export const getMongoBaseURI = () => {
+  return config["MONGO_BASE_URL"];
+};
+
 export const getAgendaMongoDBName = () => {
   return config["AGENDA_DB_NAME"];
 };
@@ -81,6 +85,10 @@ export const getAvatarApiKey = () => {
 
 export const getAvatarUrl = () => {
   return config["AVATAR_URL"];
+};
+
+export const getOriginUrl = () => {
+  return config["ORIGIN_URL"];
 };
 
 export const getTTSecretId = () => {

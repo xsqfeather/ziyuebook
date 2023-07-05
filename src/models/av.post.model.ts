@@ -31,10 +31,13 @@ export class AvPost extends Base {
 
   @Required()
   @prop({
-    type: String,
+    type: Object,
     required: true,
   })
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @prop({
     type: String,
@@ -44,7 +47,10 @@ export class AvPost extends Base {
   @prop({
     type: SchemaTypes.Array,
   })
-  public images!: string[];
+  public images!: {
+    name: string;
+    origin: string;
+  }[];
 
   @prop({
     type: String,
@@ -92,14 +98,12 @@ export class AvPost extends Base {
   public starIds!: string[];
 
   @prop({
-    type: String,
+    type: Object,
   })
-  public previewVideo!: string;
-
-  @prop({
-    type: String,
-  })
-  public videoName!: string;
+  public video: {
+    name: string;
+    origin: string;
+  };
 
   @prop({
     type: SchemaTypes.Array,

@@ -4,6 +4,7 @@ import { MController } from "../../lib";
 import * as hapi from "@hapi/hapi";
 import { UploadService } from "../../services/upload.service";
 import { createWriteStream } from "fs";
+import { getOriginUrl } from "../../lib/config";
 const { nanoid } = require("nanoid");
 
 @Service()
@@ -46,6 +47,7 @@ export class UploadApiController extends MController {
     await file.pipe(writeStream);
     return {
       filename: newFilename,
+      origin: getOriginUrl(),
     };
   }
 

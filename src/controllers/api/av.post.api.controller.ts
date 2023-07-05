@@ -100,6 +100,10 @@ export class AvPostApiController extends MController {
         id: Joi.string().required(),
       }),
       payload: UpdateAvPostDtoSchema,
+      failAction: (req, h, err) => {
+        console.error(err);
+        throw err;
+      },
     },
   })
   async updateAvPost(req: hapi.Request) {

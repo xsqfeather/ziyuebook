@@ -14,3 +14,4 @@ export * from "./av.category.api.controller";
 export * from "./article.category.api.controller";
 export * from "./av.tag.api.controller";
 export * from "./av.post.comment.api.controller";
+export * from "./chat.msg.api.controller";

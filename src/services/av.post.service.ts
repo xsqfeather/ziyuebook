@@ -103,11 +103,8 @@ export class AvPostService extends BaseService<AvPost> {
         .toString();
       avPost.starIds = stars.map((star) => star.id);
     }
-    if (input.previewVideo) {
-      avPost.previewVideo = input.previewVideo;
-    }
 
-    avPost.videoName = input.videoName;
+    avPost.video = input.video;
     avPost.title = input.title;
     avPost.description = input.description;
     avPost.locale = input.locale;
@@ -166,9 +163,9 @@ export class AvPostService extends BaseService<AvPost> {
         .toString();
       avPost.tagIds = tags.map((tag) => tag.id);
     }
-    if (input.previewVideo) {
-      avPost.previewVideo = input.previewVideo;
-    }
+
+    avPost.video = input.video;
+
     if (input.starIds) {
       const stars = await AvStarModel.find({ id: { $in: input.starIds } });
       avPost.stars = stars.map((star) => star.name);
@@ -178,7 +175,7 @@ export class AvPostService extends BaseService<AvPost> {
       avPost.starIds = stars.map((star) => star.id);
     }
 
-    avPost.videoName = input.videoName;
+    avPost.video = input.video;
     avPost.title = input.title;
     avPost.description = input.description;
     avPost.locale = input.locale;

@@ -11,3 +11,4 @@ export * from "./av.category.dto";
 export * from "./article.category.dto";
 export * from "./av.tag.dto";
 export * from "./av.post.comment.dto";
+export * from "./chat.msg.dto";

@@ -1,11 +1,11 @@
 import {
+  getOriginUrl,
   getTTBucket,
   getTTBucketRegion,
   getTTSecretId,
   getTTSecretKey,
 } from "../lib/config";
 import { Inject, Service } from "typedi";
-import Boom from "@hapi/boom";
 
 import COS from "cos-nodejs-sdk-v5";
 import { getLevelValue, setLevelValue } from "../utils/level";
@@ -94,9 +94,10 @@ export class UploadService {
     const dest = `${process.cwd()}/uploads/${newFilename}`;
     const exist = existsSync(dest);
     if (exist) {
-      this.hlsJob.start({ filename: newFilename });
+      // this.hlsJob.start({ filename: newFilename });
       return {
         filename: newFilename,
+        origin: getOriginUrl(),
       };
     }
     for (let index = 0; index < length; index++) {
@@ -134,6 +135,7 @@ export class UploadService {
 
     return {
       filename: newFilename,
+      origin: getOriginUrl(),
     };
   }
 

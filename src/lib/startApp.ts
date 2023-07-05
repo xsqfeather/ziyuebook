@@ -8,6 +8,9 @@ import { getJwtSecret, getMongoURI, serverConfig } from "./config";
 import { DbSessionAuth } from "./plugins/dbSessionAuth";
 import { AvCategoryModel } from "../models";
 import fs from "fs";
+import { Server } from "socket.io";
+import createSocketAdapter from "../utils/createSocketAdapter";
+import { globalEmitter } from "./utils/globalEmitter";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -121,7 +124,33 @@ export const startApp = async (startAppConfig: {
       },
     },
   ]);
+  const io = new Server(server.listener, {
+    cors: {
+      origin: "*",
+      allowedHeaders: ["*"],
+    },
+  });
+  const adapter = await createSocketAdapter();
+  io.adapter(adapter);
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token || token === "") {
+      next(new Error("token is required"));
+    }
+    socket.join("global-chat");
+    next();
+  });
+  io.on("connection", (socket) => {
+    console.log("a user connected");
 
+    globalEmitter.on("new-message", (message) => {
+      socket.emit("new-message", message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("user disconnected");
+    });
+  });
   await server.start();
   console.log("Server running on %s", server.info.uri);
 };
