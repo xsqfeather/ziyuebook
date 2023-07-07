@@ -79,7 +79,7 @@ export class UpdateAvStarDto {
   public description?: string;
 
   @Optional()
-  public gallery?: string[];
+  public gallery?: { origin: string; name: string }[];
 
   @Optional()
   public tags?: string[];

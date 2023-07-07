@@ -24,7 +24,7 @@ export class AvStar extends Base {
   @prop({
     type: SchemaTypes.Array,
   })
-  public gallery?: string[];
+  public gallery?: { name: string; origin: string }[];
 
   @Optional()
   @prop({
