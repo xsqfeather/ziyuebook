@@ -17,7 +17,10 @@ export class CreateAvStarDto {
   public name!: string;
 
   @Required()
-  public avatar!: string;
+  public avatar!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public description?: string;
@@ -67,7 +70,10 @@ export class UpdateAvStarDto {
   public name!: string;
 
   @Required()
-  public avatar!: string;
+  public avatar!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public description?: string;

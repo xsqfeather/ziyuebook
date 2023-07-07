@@ -11,7 +11,10 @@ export class CreateAvTagDto {
   public name!: string;
 
   @Optional()
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public description!: string;
@@ -41,7 +44,10 @@ export class UpdateAvTagDto {
   public name!: string;
 
   @Optional()
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public description!: string;

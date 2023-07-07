@@ -33,9 +33,12 @@ export class AvCategory extends Base {
   public description!: string;
 
   @prop({
-    type: String,
+    type: Object,
   })
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @prop({
     type: Number,

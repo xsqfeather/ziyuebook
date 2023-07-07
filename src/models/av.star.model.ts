@@ -41,10 +41,13 @@ export class AvStar extends Base {
 
   @Required()
   @prop({
-    type: String,
+    type: Object,
     required: true,
   })
-  public avatar!: string;
+  public avatar!: {
+    name: string;
+    origin: string;
+  };
 
   @prop({
     type: Number,

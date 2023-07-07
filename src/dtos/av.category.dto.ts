@@ -11,7 +11,10 @@ export class CreateAvCategoryDto {
   public name!: string;
 
   @Optional()
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public description!: string;
@@ -49,7 +52,10 @@ export class UpdateAvCategoryDto {
   public superCategoryId!: string;
 
   @Optional()
-  public cover!: string;
+  public cover!: {
+    name: string;
+    origin: string;
+  };
 
   @Optional()
   public description!: string;

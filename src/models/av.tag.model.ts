@@ -21,9 +21,12 @@ export class AvTag extends Base {
   };
 
   @prop({
-    type: String,
+    type: Object,
   })
-  public cover!: string;
+  public cover!: {
+    origin: string;
+    name: string;
+  };
 
   @prop({
     type: String,
