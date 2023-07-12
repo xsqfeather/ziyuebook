@@ -26,7 +26,7 @@ export class CreateAvStarDto {
   public description?: string;
 
   @Optional()
-  public gallery?: string[] = [];
+  public gallery?: { name: string; origin: string }[] = [];
 
   @Optional()
   public tags?: string[];
