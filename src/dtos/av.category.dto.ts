@@ -26,7 +26,7 @@ export class CreateAvCategoryDto {
     Joi.object({
       zh: Joi.string().optional().allow(""),
       en: Joi.string().optional().allow(""),
-      "zh-TW": Joi.string().optional().allow(""),
+      zhTW: Joi.string().optional().allow(""),
       "zh-Hk": Joi.string().optional().allow(""),
       "zh-HK": Joi.string().optional().allow(""),
     }).optional()
@@ -34,7 +34,7 @@ export class CreateAvCategoryDto {
   public langs!: {
     zh: string;
     en: string;
-    "zh-TW": string;
+    zhTW: string;
     "zh-Hk": string;
     "zh-HK": string;
   };
@@ -67,7 +67,7 @@ export class UpdateAvCategoryDto {
     Joi.object({
       zh: Joi.string().optional().allow(""),
       en: Joi.string().optional().allow(""),
-      "zh-TW": Joi.string().optional().allow(""),
+      zhTW: Joi.string().optional().allow(""),
       "zh-Hk": Joi.string().optional().allow(""),
       "zh-HK": Joi.string().optional().allow(""),
     }).optional()
@@ -75,7 +75,7 @@ export class UpdateAvCategoryDto {
   public langs!: {
     zh: string;
     en: string;
-    "zh-TW": string;
+    zhTW: string;
     "zh-Hk": string;
     "zh-HK": string;
   };

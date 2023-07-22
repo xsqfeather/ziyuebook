@@ -38,7 +38,7 @@ export const startApp = async (startAppConfig: {
         langs: {
           zh: "默认分类",
           en: "Default Category",
-          "zh-TW": "默認分類",
+          zhTW: "默認分類",
           "zh-Hk": "默認分類",
         },
         description: "默认分类",

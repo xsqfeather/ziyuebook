@@ -26,13 +26,13 @@ export class CreateAvTagDto {
     Joi.object({
       zh: Joi.string().optional().allow(""),
       en: Joi.string().optional().allow(""),
-      "zh-TW": Joi.string().optional().allow(""),
+      zhTW: Joi.string().optional().allow(""),
     }).optional()
   )
   public langs?: {
     zh: string;
     en: string;
-    "zh-TW": string;
+    zhTW: string;
   };
 }
 
@@ -59,13 +59,13 @@ export class UpdateAvTagDto {
     Joi.object({
       zh: Joi.string().optional().allow(""),
       en: Joi.string().optional().allow(""),
-      "zh-TW": Joi.string().optional().allow(""),
+      zhTW: Joi.string().optional().allow(""),
     }).optional()
   )
   public langs!: {
     zh: string;
     en: string;
-    "zh-TW": string;
+    zhTW: string;
   };
 }
 
