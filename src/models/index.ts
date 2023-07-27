@@ -15,3 +15,6 @@ export * from "./article.category.model";
 export * from "./av.post.comment.model";
 export * from "./user.message.model";
 export * from "./chat.msg.model";
+export * from "./gpt.chat.model";
+export * from "./gpt.chat.comment.model";
+export * from "./user.gpt.chat.like.model";

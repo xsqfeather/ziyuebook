@@ -2,6 +2,7 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { Optional, getSchema } from "joi-typescript-validator";
 import { Base } from "../lib/models";
 import { SchemaTypes } from "mongoose";
+import { ChatCompletionRequestMessage } from "openai";
 
 @modelOptions({ options: { allowMixed: 0 } })
 export class GptChat extends Base {
@@ -20,7 +21,7 @@ export class GptChat extends Base {
   @prop({
     type: SchemaTypes.Array,
   })
-  public messages!: string[];
+  public messages!: ChatCompletionRequestMessage[];
 
   @prop({
     type: String,
@@ -48,12 +49,23 @@ export class GptChat extends Base {
   @prop({
     type: String,
   })
+  public deviceId!: string;
+
+  @prop({
+    type: String,
+  })
   public tags!: string;
 
   @prop({
     type: String,
   })
   public title!: string;
+
+  @prop({
+    type: Boolean,
+    default: false,
+  })
+  public isPublic!: Boolean;
 }
 
 export const GptChatModel = getModelForClass(GptChat);

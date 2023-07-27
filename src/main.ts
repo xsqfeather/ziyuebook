@@ -21,11 +21,16 @@ import {
   AvTagApiController,
   AvPostCommentApiController,
   ChatMsgApiController,
+  GptChatApiController,
 } from "./controllers";
 import {
   UserAvPostCommentsController,
+  UserGptChatCommentsController,
+  UserGptChatsController,
   UserUserAvPostLikesController,
 } from "./controllers/api/users";
+import { GptChatCommentApiController } from "./controllers/api/gpt.chat.comment.api.controller";
+import { UserUserGptChatLikesController } from "./controllers/api/users/user.gpt.chat.like";
 
 startApp({
   apiControllers: [
@@ -49,6 +54,11 @@ startApp({
     UserAvPostCommentsController,
     UserUserAvPostLikesController,
     ChatMsgApiController,
+    GptChatApiController,
+    UserGptChatsController,
+    UserGptChatCommentsController,
+    GptChatCommentApiController,
+    UserUserGptChatLikesController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,

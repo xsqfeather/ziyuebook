@@ -14,3 +14,6 @@ export * from "./av.tag.service";
 export * from "./oss.service";
 export * from "./av.post.comment.service";
 export * from "./chat.msg.service";
+export * from "./gpt.chat.service";
+export * from "./gpt.chat.comment.service";
+export * from "./user.gpt.chat.like.service";

@@ -54,6 +54,7 @@
     "mongoose": "^6.9.0",
     "nanoid": "3",
     "node-xlsx": "^0.21.2",
+    "openai": "^3.3.0",
     "playwright": "^1.32.3",
     "random-avatar-generator": "^2.0.0",
     "reflect-metadata": "^0.1.13",
