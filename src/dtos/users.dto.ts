@@ -67,3 +67,13 @@ export class CreateUserDto {
 }
 
 export const CreateUserSchema = getSchema(CreateUserDto).label("CreateUserDto");
+
+export class UpdateUserDto {
+  public nickname!: string;
+
+  public avatar!: string;
+
+  public password!: string;
+
+  public repeatPassword!: string;
+}

@@ -40,7 +40,13 @@ export class GptChatApiController extends MController {
   async list(req: hapi.Request): Promise<ListData<GptChat>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<GptChat>(query);
-    return this.gptChatService.getGptChatList(listQuery);
+    return this.gptChatService.getGptChatList({
+      ...listQuery,
+      filter: {
+        ...listQuery.filter,
+        isPublic: true,
+      },
+    });
   }
 
   @get("/{id}")

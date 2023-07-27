@@ -35,7 +35,6 @@ export class UserService extends BaseService<User> {
     username: string;
     password: string;
   }) {
-    //check normal user
     const userExist = await UserModel.findOne({
       $or: [{ username }, { email: username }],
     });
@@ -82,12 +81,7 @@ export class UserService extends BaseService<User> {
       throw Boom.notFound("User not found");
     }
     await UserModel.updateOne({ id }, data);
-    if (user.settings?.kongUsername !== data.kongUsername) {
-      //如果更新了孔网的用户名，开始持续更新价格
-    }
-    if (user.settings?.xianAppKey !== data.xianAppKey) {
-      //如果更新了闲管家的appkey，同步商品信息
-    }
+
     return await this.getUserById(id);
   }
 

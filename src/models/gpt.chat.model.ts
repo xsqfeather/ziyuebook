@@ -29,12 +29,9 @@ export class GptChat extends Base {
   public username!: string;
 
   @prop({
-    type: Object,
+    type: String,
   })
-  public avatar!: {
-    name: string;
-    origin: string;
-  };
+  public avatar!: string;
 
   @prop({
     type: String,

@@ -1,12 +1,15 @@
 import { CreateGptChatDto, UpdateGptChatDto } from "../dtos";
 import { GetListQuery, ListData } from "../lib/types";
-import { GptChat, GptChatModel } from "../models";
+import { GptChat, GptChatModel, UserModel } from "../models";
 import { Inject, Service } from "typedi";
 import { BaseService } from "./base.service";
 import Boom from "@hapi/boom";
 import { AvCategoryService } from ".";
 import { Configuration, OpenAIApi } from "openai";
 import { getOpenAIApiKey } from "../lib/config";
+import { AvatarGenerator } from "random-avatar-generator";
+
+const generator = new AvatarGenerator();
 
 const configuration = new Configuration({
   apiKey: getOpenAIApiKey(),
@@ -63,9 +66,16 @@ export class GptChatService extends BaseService<GptChat> {
     if (!input.deviceId && !input.userId) {
       throw Boom.badRequest("缺少参数, deviceId 或 userId 必须传一个");
     }
+    if (input.deviceId && !input.userId) {
+      const count = await GptChatModel.countDocuments({
+        deviceId: input.deviceId,
+      });
+      if (count > 3) {
+        throw Boom.badRequest("未注册用户不能超过3个");
+      }
+    }
     const gptChat = new GptChatModel();
     gptChat.deviceId = input.deviceId;
-    gptChat.userId = input.userId;
     gptChat.systemContent = input.systemContent;
     if (input.systemContent) {
       gptChat.messages = [
@@ -83,6 +93,19 @@ export class GptChatService extends BaseService<GptChat> {
       ...gptChat.messages,
       chatCompletion.data.choices[0].message,
     ];
+    if (input.userId) {
+      const user = await UserModel.findOne({ id: input.userId });
+      if (!user) {
+        throw Boom.notFound("用户不存在");
+      }
+      gptChat.userId = input.userId;
+      gptChat.username = user.username;
+      gptChat.nickname = user.nickname;
+      gptChat.avatar = user.avatar;
+    } else {
+      gptChat.avatar = generator.generateRandomAvatar();
+      gptChat.nickname = "YOU";
+    }
     await gptChat.save();
     return gptChat;
   }
@@ -108,12 +131,14 @@ export class GptChatService extends BaseService<GptChat> {
     if (!gptChat) {
       throw Boom.notFound("该对话不存在");
     }
+    if (input.isPublic === true && gptChat.isPublic === true) {
+      throw Boom.badRequest("该对话已经是公开的了");
+    }
     gptChat.systemContent = input.systemContent || gptChat.systemContent;
     gptChat.temper = input.temper || gptChat.temper;
     gptChat.messages = input.messages || gptChat.messages;
     gptChat.title = input.title || gptChat.title;
     gptChat.tags = input.tags || gptChat.tags;
-    gptChat.isPublic = input.isPublic || gptChat.isPublic;
     gptChat.deviceId = input.deviceId || gptChat.deviceId;
 
     if (input.systemContent !== gptChat.systemContent) {
@@ -132,6 +157,23 @@ export class GptChatService extends BaseService<GptChat> {
         ...input.messages,
         chatCompletion.data.choices[0].message,
       ];
+    }
+
+    if (input.isPublic === true && !gptChat.isPublic) {
+      //分享到广场得积分1
+      await UserModel.findOneAndUpdate(
+        { id: gptChat.userId },
+        { $inc: { gptCredit: 1 } }
+      );
+      gptChat.isPublic = input.isPublic;
+    }
+    if (input.isPublic === false && gptChat.isPublic === true) {
+      //取消分享到广场得积分-1
+      await UserModel.findOneAndUpdate(
+        { id: gptChat.userId },
+        { $inc: { gptCredit: -1 } }
+      );
+      gptChat.isPublic = input.isPublic;
     }
 
     await gptChat.save();

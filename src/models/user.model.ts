@@ -48,6 +48,13 @@ export class User extends Base {
     type: Object,
   })
   settings: any;
+
+  @prop({
+    type: Number,
+    default: 5,
+  })
+  public gptCredit!: number;
+  //评价或者发帖都可以增加积分，积分可以兑换成gpt credit，被点赞也可以增加积分
 }
 
 export const UserModel = getModelForClass(User);
