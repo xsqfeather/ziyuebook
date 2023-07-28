@@ -67,11 +67,7 @@ export class GptChatApiController extends MController {
     description: "新建文章",
     notes: "返回文章数据",
     tags: ["api", "文章"],
-    auth: {
-      strategy: "jwt",
-      scope: ["admin"],
-    },
-
+    auth: false,
     validate: {
       payload: CreateGptChatSchema,
       failAction: (req, h, err) => {

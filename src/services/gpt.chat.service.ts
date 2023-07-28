@@ -85,28 +85,34 @@ export class GptChatService extends BaseService<GptChat> {
     } else {
       gptChat.messages = input.messages;
     }
-    const chatCompletion = await openai.createChatCompletion({
-      model: "gpt-4",
-      messages: gptChat.messages,
-    });
-    gptChat.messages = [
-      ...gptChat.messages,
-      chatCompletion.data.choices[0].message,
-    ];
-    if (input.userId) {
-      const user = await UserModel.findOne({ id: input.userId });
-      if (!user) {
-        throw Boom.notFound("用户不存在");
+    try {
+      const chatCompletion = await openai.createChatCompletion({
+        model: "gpt-4",
+        messages: gptChat.messages,
+      });
+      gptChat.messages = [
+        ...gptChat.messages,
+        chatCompletion.data.choices[0].message,
+      ];
+      if (input.userId) {
+        const user = await UserModel.findOne({ id: input.userId });
+        if (!user) {
+          throw Boom.notFound("用户不存在");
+        }
+        gptChat.userId = input.userId;
+        gptChat.username = user.username;
+        gptChat.nickname = user.nickname;
+        gptChat.avatar = user.avatar;
+      } else {
+        gptChat.avatar = generator.generateRandomAvatar();
+        gptChat.nickname = "YOU";
       }
-      gptChat.userId = input.userId;
-      gptChat.username = user.username;
-      gptChat.nickname = user.nickname;
-      gptChat.avatar = user.avatar;
-    } else {
-      gptChat.avatar = generator.generateRandomAvatar();
-      gptChat.nickname = "YOU";
+      await gptChat.save();
+    } catch (error) {
+      console.log(error);
+      throw Boom.badRequest("对话生成失败");
     }
-    await gptChat.save();
+
     return gptChat;
   }
 
