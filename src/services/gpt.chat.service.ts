@@ -64,31 +64,37 @@ export class GptChatService extends BaseService<GptChat> {
   }
 
   public async createGptChat(input: CreateGptChatDto): Promise<GptChat> {
-    if (!input.deviceId && !input.userId) {
-      throw Boom.badRequest("缺少参数, deviceId 或 userId 必须传一个");
-    }
-    if (input.deviceId && !input.userId) {
-      const count = await GptChatModel.countDocuments({
-        deviceId: input.deviceId,
-      });
-      if (count > 3) {
-        throw Boom.badRequest("未注册用户不能超过3个");
-      }
-    }
-    const gptChat = new GptChatModel();
-    gptChat.deviceId = input.deviceId;
-    gptChat.systemContent = input.systemContent;
-    if (input.systemContent) {
-      gptChat.messages = [
-        { role: "system", content: input.systemContent },
-        ...input.messages,
-      ];
-    } else {
-      gptChat.messages = input.messages;
-    }
     try {
+      if (!input.deviceId && !input.userId) {
+        throw Boom.badRequest("缺少参数, deviceId 或 userId 必须传一个");
+      }
+      if (input.deviceId && !input.userId) {
+        const count = await GptChatModel.countDocuments({
+          deviceId: input.deviceId,
+        });
+        if (count > 3) {
+          throw Boom.badRequest("未注册用户不能超过3个");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      throw Boom.badRequest("对话生成失败");
+    }
+
+    try {
+      const gptChat = new GptChatModel();
+      gptChat.deviceId = input.deviceId;
+      gptChat.systemContent = input.systemContent;
+      if (input.systemContent) {
+        gptChat.messages = [
+          { role: "system", content: input.systemContent },
+          ...input.messages,
+        ];
+      } else {
+        gptChat.messages = input.messages;
+      }
       const chatCompletion = await openai.createChatCompletion({
-        model: "gpt-4-0613",
+        model: "gpt-4",
         messages: gptChat.messages,
       });
       console.log({ chatCompletion });
@@ -110,12 +116,11 @@ export class GptChatService extends BaseService<GptChat> {
         gptChat.nickname = "YOU";
       }
       await gptChat.save();
+      return gptChat;
     } catch (error) {
       console.error(error);
       throw Boom.badRequest("对话生成失败");
     }
-
-    return gptChat;
   }
 
   public async deleteGptChats(checkedIds: string[]) {
