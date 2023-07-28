@@ -88,13 +88,13 @@ export class GptChatService extends BaseService<GptChat> {
     }
     try {
       const chatCompletion = await openai.createChatCompletion({
-        model: "gpt-4",
+        model: "gpt-4-0613",
         messages: gptChat.messages,
       });
       console.log({ chatCompletion });
       gptChat.messages = [
         ...gptChat.messages,
-        chatCompletion.data.choices[0].message,
+        chatCompletion.data?.choices[0].message,
       ];
       if (input.userId) {
         const user = await UserModel.findOne({ id: input.userId });
