@@ -6,13 +6,14 @@ import { BaseService } from "./base.service";
 import Boom from "@hapi/boom";
 import { AvCategoryService } from ".";
 import { Configuration, OpenAIApi } from "openai";
-import { getOpenAIApiKey } from "../lib/config";
+import { getOpenAIApiKey, getOpenAIOrgId } from "../lib/config";
 import { AvatarGenerator } from "random-avatar-generator";
 
 const generator = new AvatarGenerator();
 
 const configuration = new Configuration({
   apiKey: getOpenAIApiKey(),
+  organization: getOpenAIOrgId(),
 });
 const openai = new OpenAIApi(configuration);
 
@@ -90,6 +91,7 @@ export class GptChatService extends BaseService<GptChat> {
         model: "gpt-4",
         messages: gptChat.messages,
       });
+      console.log({ chatCompletion });
       gptChat.messages = [
         ...gptChat.messages,
         chatCompletion.data.choices[0].message,
@@ -109,7 +111,7 @@ export class GptChatService extends BaseService<GptChat> {
       }
       await gptChat.save();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw Boom.badRequest("对话生成失败");
     }
 
