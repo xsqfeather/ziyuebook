@@ -10,7 +10,8 @@ import { AvCategoryModel } from "../models";
 import fs from "fs";
 import { Server } from "socket.io";
 import createSocketAdapter from "../utils/createSocketAdapter";
-import { globalEmitter } from "./utils/globalEmitter";
+
+import * as SocketEvents from "../socket_events";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -137,19 +138,28 @@ export const startApp = async (startAppConfig: {
     if (!token || token === "") {
       next(new Error("token is required"));
     }
-    socket.join("global-chat");
     next();
   });
+
   io.on("connection", (socket) => {
-    console.log("a user connected");
+    const token = socket.handshake.auth?.token;
+    if (token && token !== "") {
+      socket.join(token);
+    }
 
-    globalEmitter.on("new-message", (message) => {
-      socket.emit("new-message", message);
+    Object.values(SocketEvents).forEach((SocketEvent) => {
+      const socketEvent = Container.get(SocketEvent);
+      socketEvent.listen(io, socket);
     });
-
+    setTimeout(() => {
+      io.to(token).emit("ready", "ready");
+    }, 1300);
+    // 此刻，socket 已经加入了 token 房间
     socket.on("disconnect", () => {
-      console.log("user disconnected");
+      console.log("disconnect");
+      socket.leave(token);
     });
+    console.log("a user connected");
   });
   await server.start();
   console.log("Server running on %s", server.info.uri);

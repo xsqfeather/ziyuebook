@@ -4,10 +4,10 @@ import { GptChat, GptChatModel, UserModel } from "../models";
 import { Inject, Service } from "typedi";
 import { BaseService } from "./base.service";
 import Boom from "@hapi/boom";
-import { AvCategoryService } from ".";
-import { Configuration, OpenAIApi } from "openai";
+import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 import { getOpenAIApiKey, getOpenAIOrgId } from "../lib/config";
 import { AvatarGenerator } from "random-avatar-generator";
+import { SubGptMsg } from "../events/SubGptMsg";
 
 const generator = new AvatarGenerator();
 
@@ -19,8 +19,8 @@ const openai = new OpenAIApi(configuration);
 
 @Service()
 export class GptChatService extends BaseService<GptChat> {
-  @Inject(() => AvCategoryService)
-  private readonly avCategoryService!: AvCategoryService;
+  @Inject(() => SubGptMsg)
+  private readonly subGptMsg!: SubGptMsg;
 
   public async getGptChatList(
     input: GetListQuery<GptChat>
@@ -63,24 +63,22 @@ export class GptChatService extends BaseService<GptChat> {
     return GptChatModel.findOne({ id });
   }
 
-  public async createGptChat(input: CreateGptChatDto): Promise<GptChat> {
-    try {
-      if (!input.deviceId && !input.userId) {
-        throw Boom.badRequest("缺少参数, deviceId 或 userId 必须传一个");
-      }
-      if (input.deviceId && !input.userId) {
-        const count = await GptChatModel.countDocuments({
-          deviceId: input.deviceId,
-        });
-        if (count > 3) {
-          throw Boom.badRequest("未注册用户不能超过3个");
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      throw Boom.badRequest("对话生成失败");
+  public async createGptChat(
+    input: CreateGptChatDto,
+    userId?: string
+  ): Promise<GptChat> {
+    if (!input.deviceId && userId) {
+      throw Boom.badRequest("lack-params-deviceId-or-userId-when-create");
     }
-
+    let userCount = 0;
+    if (input.deviceId && !userId) {
+      userCount = await GptChatModel.countDocuments({
+        deviceId: input.deviceId,
+      });
+      // if (userCount > 5) {
+      //   throw Boom.badRequest("unregister-user-limit-exceeded-5");
+      // }
+    }
     try {
       const gptChat = new GptChatModel();
       gptChat.deviceId = input.deviceId;
@@ -93,21 +91,12 @@ export class GptChatService extends BaseService<GptChat> {
       } else {
         gptChat.messages = input.messages;
       }
-      const chatCompletion = await openai.createChatCompletion({
-        model: "gpt-4",
-        messages: gptChat.messages,
-      });
-      console.log({ chatCompletion });
-      gptChat.messages = [
-        ...gptChat.messages,
-        chatCompletion.data?.choices[0].message,
-      ];
-      if (input.userId) {
-        const user = await UserModel.findOne({ id: input.userId });
+      if (userId) {
+        const user = await UserModel.findOne({ id: userId });
         if (!user) {
           throw Boom.notFound("用户不存在");
         }
-        gptChat.userId = input.userId;
+        gptChat.userId = userId;
         gptChat.username = user.username;
         gptChat.nickname = user.nickname;
         gptChat.avatar = user.avatar;
@@ -116,6 +105,8 @@ export class GptChatService extends BaseService<GptChat> {
         gptChat.nickname = "YOU";
       }
       await gptChat.save();
+      console.log("开始发起请求");
+      this.subGptMsg.trigger(gptChat.id, input.messages);
       return gptChat;
     } catch (error) {
       console.error(error);
@@ -162,10 +153,15 @@ export class GptChatService extends BaseService<GptChat> {
     }
 
     if (input.messages[input.messages.length - 1].role === "user") {
-      const chatCompletion = await openai.createChatCompletion({
-        model: "gpt-4",
-        messages: gptChat.messages,
-      });
+      const chatCompletion = await openai.createChatCompletion(
+        {
+          model: "gpt-4",
+          messages: gptChat.messages,
+        },
+        {
+          responseType: "stream",
+        }
+      );
       gptChat.messages = [
         ...input.messages,
         chatCompletion.data.choices[0].message,
@@ -191,6 +187,20 @@ export class GptChatService extends BaseService<GptChat> {
 
     await gptChat.save();
     return gptChat;
+  }
+
+  async getGPTStream(inputMessages: ChatCompletionRequestMessage[]) {
+    const chatCompletion = await openai.createChatCompletion(
+      {
+        model: "gpt-4",
+        messages: inputMessages,
+        stream: true,
+      },
+      {
+        responseType: "stream",
+      }
+    );
+    return chatCompletion.data as any;
   }
 
   public async deleteGptChat(id: string) {
