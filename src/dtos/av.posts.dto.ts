@@ -2,6 +2,9 @@ import { Optional, Required, getSchema } from "joi-typescript-validator";
 
 export class CreateAvPostDto {
   @Required()
+  public abyssCode!: string;
+
+  @Required()
   public title!: string;
 
   @Optional()
@@ -26,7 +29,7 @@ export class CreateAvPostDto {
   public previewVideo!: string;
 
   @Optional()
-  public video!: {
+  public video?: {
     name: string;
     origin: string;
   };
@@ -60,6 +63,9 @@ export class UpdateAvPostDto {
   @Required()
   public title!: string;
 
+  @Required()
+  public abyssCode!: string;
+
   @Optional()
   public cover!: {
     name: string;
@@ -81,8 +87,8 @@ export class UpdateAvPostDto {
   @Optional()
   public previewVideo!: string;
 
-  @Required()
-  public video!: {
+  @Optional()
+  public video?: {
     name: string;
     origin: string;
   };

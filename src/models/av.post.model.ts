@@ -118,6 +118,11 @@ export class AvPost extends Base {
   @prop({
     type: String,
   })
+  public abyssCode?: string;
+
+  @prop({
+    type: String,
+  })
   public starsStr!: string;
 
   @Required()

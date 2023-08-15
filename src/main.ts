@@ -22,6 +22,7 @@ import {
   AvPostCommentApiController,
   ChatMsgApiController,
   GptChatApiController,
+  DeviceGptChatsController,
 } from "./controllers";
 import {
   UserAvPostCommentsController,
@@ -59,6 +60,7 @@ startApp({
     UserGptChatCommentsController,
     GptChatCommentApiController,
     UserUserGptChatLikesController,
+    DeviceGptChatsController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,
