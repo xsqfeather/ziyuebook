@@ -78,7 +78,10 @@ export class XianProductService {
 
   async getProductDetailAndCheckUpdate(productId: string) {
     const productDetail = await this.getProductDetail(productId);
-    if (!productDetail.book_data?.isbn || productDetail.book_data?.isbn == "") {
+    if (
+      !productDetail?.book_data?.isbn ||
+      productDetail?.book_data?.isbn == ""
+    ) {
       return;
     }
 
