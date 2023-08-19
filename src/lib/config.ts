@@ -87,10 +87,6 @@ export const getAvatarUrl = () => {
   return config["AVATAR_URL"];
 };
 
-export const getOriginUrl = () => {
-  return config["ORIGIN_URL"];
-};
-
 export const getTTSecretId = () => {
   return config["TT_SECRET_ID"];
 };
@@ -141,4 +137,28 @@ export const getOpenAIApiKey = () => {
 
 export const getOpenAIOrgId = () => {
   return config["OPENAI_ORG_ID"];
+};
+
+export const getCloudflareR2Token = () => {
+  return config["CLOUDFLARE_R2_TOKEN"];
+};
+
+export const getCloudflareR2AccessKey = () => {
+  return config["CLOUDFLARE_R2_ACCESS_KEY"];
+};
+
+export const getCloudflareR2AccessSecret = () => {
+  return config["CLOUDFLARE_R2_ACCESS_SECRET"];
+};
+
+export const getCloudflareR2AccountId = () => {
+  return config["CLOUDFLARE_R2_ACCOUNT_ID"];
+};
+
+export const getCloudflareR2BucketName = () => {
+  return config["CLOUDFLARE_R2_BUCKET_NAME"];
+};
+
+export const getStaticsOriginUrl = () => {
+  return config["STATICS_ORIGIN_URL"];
 };

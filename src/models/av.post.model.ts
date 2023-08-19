@@ -35,8 +35,9 @@ export class AvPost extends Base {
     required: true,
   })
   public cover!: {
-    name: string;
-    origin: string;
+    name?: string;
+    origin?: string;
+    cdn?: string;
   };
 
   @prop({

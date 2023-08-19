@@ -8,9 +8,10 @@ export class CreateAvPostDto {
   public title!: string;
 
   @Optional()
-  public cover!: {
-    name: string;
-    origin: string;
+  public cover?: {
+    name?: string;
+    origin?: string;
+    cdn?: string;
   };
 
   @Optional()

@@ -3,8 +3,8 @@ import { Inject, Service } from "typedi";
 import { MController } from "../../lib";
 import * as hapi from "@hapi/hapi";
 import { UploadService } from "../../services/upload.service";
-import { createWriteStream } from "fs";
-import { getOriginUrl } from "../../lib/config";
+import { ReadStream, createWriteStream } from "fs";
+import { getStaticsOriginUrl } from "../../lib/config";
 const { nanoid } = require("nanoid");
 
 @Service()
@@ -25,7 +25,7 @@ export class UploadApiController extends MController {
     payload: {
       output: "stream",
       parse: true,
-      maxBytes: 1024 * 1024 * 5, //5m
+      maxBytes: 1024 * 1024 * 50, //50m
       allow: "multipart/form-data",
       multipart: {
         output: "stream",
@@ -38,16 +38,14 @@ export class UploadApiController extends MController {
     },
   })
   async upload(req: hapi.Request) {
-    const { file, filename } = req.payload as any;
+    const { file, filename }: { file: ReadStream; filename: string } =
+      req.payload as any;
     const id = nanoid();
     const newFilename = `${id}.${filename.split(".").pop()}`;
-    const writeStream = createWriteStream(
-      `${process.cwd()}/uploads/${newFilename}`
-    );
-    await file.pipe(writeStream);
+    await this.uploadService.uploadS3(file, newFilename);
     return {
       filename: newFilename,
-      origin: getOriginUrl(),
+      origin: getStaticsOriginUrl(),
     };
   }
 

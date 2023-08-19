@@ -1,5 +1,9 @@
 import {
-  getOriginUrl,
+  getCloudflareR2AccessKey,
+  getCloudflareR2AccessSecret,
+  getCloudflareR2AccountId,
+  getCloudflareR2BucketName,
+  getStaticsOriginUrl,
   getTTBucket,
   getTTBucketRegion,
   getTTSecretId,
@@ -16,6 +20,13 @@ import {
   existsSync,
   unlinkSync,
 } from "fs";
+
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+
 import { HLSJob } from "../jobs";
 
 const CHUNK_SIZE = 2 * 1024 * 1024;
@@ -24,6 +35,47 @@ const CHUNK_SIZE = 2 * 1024 * 1024;
 export class UploadService {
   @Inject(() => HLSJob)
   hlsJob!: HLSJob;
+
+  async deleteFromS2(key: string) {
+    const client = new S3Client({
+      region: "auto",
+      endpoint: `https://${getCloudflareR2AccountId()}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: getCloudflareR2AccessKey(),
+        secretAccessKey: getCloudflareR2AccessSecret(),
+      },
+    });
+
+    const command = new DeleteObjectCommand({
+      Bucket: getCloudflareR2BucketName(),
+      Key: key,
+    });
+
+    return client.send(command);
+  }
+
+  async uploadS3(file: any, key: string) {
+    const client = new S3Client({
+      region: "auto",
+      endpoint: `https://${getCloudflareR2AccountId()}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: getCloudflareR2AccessKey(),
+        secretAccessKey: getCloudflareR2AccessSecret(),
+      },
+    });
+    const { fileTypeFromBuffer } = await import("file-type");
+
+    const fileType = await fileTypeFromBuffer(file._data);
+
+    const command = new PutObjectCommand({
+      Bucket: getCloudflareR2BucketName(),
+      Key: "images/" + key,
+      ContentType: fileType.mime,
+      Body: file._data,
+    });
+
+    return client.send(command);
+  }
 
   async uploadTTImage(body: Buffer, Key: string) {
     return new Promise((res: any, rej: any) => {
@@ -97,7 +149,7 @@ export class UploadService {
       // this.hlsJob.start({ filename: newFilename });
       return {
         filename: newFilename,
-        origin: getOriginUrl(),
+        origin: getStaticsOriginUrl(),
       };
     }
     for (let index = 0; index < length; index++) {
@@ -135,7 +187,7 @@ export class UploadService {
 
     return {
       filename: newFilename,
-      origin: getOriginUrl(),
+      origin: getStaticsOriginUrl(),
     };
   }
 
