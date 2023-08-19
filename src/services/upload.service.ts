@@ -67,12 +67,15 @@ export class UploadService {
 
     const fileType = await fileTypeFromBuffer(file._data);
 
+    console.log({ fileType });
+
     const command = new PutObjectCommand({
       Bucket: getCloudflareR2BucketName(),
       Key: "images/" + key,
       ContentType: fileType.mime,
       Body: file._data,
     });
+    console.log({ command });
 
     return client.send(command);
   }

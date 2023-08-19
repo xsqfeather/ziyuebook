@@ -42,6 +42,7 @@ export class UploadApiController extends MController {
       req.payload as any;
     const id = nanoid();
     const newFilename = `${id}.${filename.split(".").pop()}`;
+    console.log({ newFilename });
     try {
       await this.uploadService.uploadS3(file, newFilename);
     } catch (error) {
