@@ -4,7 +4,7 @@ export function checkJoinable(socket: Socket, room: string) {
   return true;
 }
 
-export function afterJoin(socket: Socket, room: string) {
+export function afterJoin(socket: Socket, room: string = "default") {
   if (room.includes("gpt-chat-")) {
     socket.on("message", (message) => {
       socket.to(room).emit("message", message);

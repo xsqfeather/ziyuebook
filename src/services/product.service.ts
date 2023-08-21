@@ -280,6 +280,7 @@ export class ProductService extends BaseService<Product> {
     const createRlt = await this.xianProductService.createNewProduct(
       createXianProductInput
     );
+    console.log({ createRlt });
     if (createRlt.status === 200) {
       product.xianProductId = createRlt.data.product_id;
       await this.xianProductService.getProductDetailAndCheckUpdate(

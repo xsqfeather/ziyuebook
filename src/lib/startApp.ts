@@ -12,6 +12,7 @@ import { Server } from "socket.io";
 import createSocketAdapter from "../utils/createSocketAdapter";
 
 import * as SocketEvents from "../socket_events";
+import registerSocketEvent from "../registerSocketEvent";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -133,34 +134,15 @@ export const startApp = async (startAppConfig: {
   });
   const adapter = await createSocketAdapter();
   io.adapter(adapter);
-  io.use((socket, next) => {
-    const token = socket.handshake.auth?.token;
-    if (!token || token === "") {
-      next(new Error("token is required"));
-    }
-    next();
-  });
+  // io.use((socket, next) => {
+  //   const token = socket.handshake.auth?.token;
+  //   if (!token || token === "") {
+  //     next(new Error("token is required"));
+  //   }
+  //   next();
+  // });
 
-  io.on("connection", (socket) => {
-    const token = socket.handshake.auth?.token;
-    if (token && token !== "") {
-      socket.join(token);
-    }
-
-    Object.values(SocketEvents).forEach((SocketEvent) => {
-      const socketEvent = Container.get(SocketEvent);
-      socketEvent.listen(io, socket);
-    });
-    setTimeout(() => {
-      io.to(token).emit("ready", "ready");
-    }, 1300);
-    // 此刻，socket 已经加入了 token 房间
-    socket.on("disconnect", () => {
-      console.log("disconnect");
-      socket.leave(token);
-    });
-    console.log("a user connected");
-  });
+  registerSocketEvent(io);
   await server.start();
   console.log("Server running on %s", server.info.uri);
 };
