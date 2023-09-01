@@ -6,13 +6,19 @@ import Container from "typedi";
 import Handlebars from "handlebars";
 import { getJwtSecret, getMongoURI, serverConfig } from "./config";
 import { DbSessionAuth } from "./plugins/dbSessionAuth";
-import { AvCategoryModel } from "../models";
+import {
+  AvCategoryModel,
+  FriendshipModel,
+  GlobalChatMessageModel,
+  NotificationModel,
+  UserApplyModel,
+} from "../models";
 import fs from "fs";
 import { Server } from "socket.io";
-import createSocketAdapter from "../utils/createSocketAdapter";
-
-import * as SocketEvents from "../socket_events";
-import registerSocketEvent from "../registerSocketEvent";
+import RoomRoutes from "../RoomRoutes";
+import { registerSocketEvent } from ".";
+import { createSocketAdapter } from "./utils";
+import { GoogleNewsService } from "../services/google.news.service";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -34,6 +40,10 @@ export const startApp = async (startAppConfig: {
     const defaultAvCategory = await AvCategoryModel.findOne({
       isDefault: true,
     });
+    await NotificationModel.deleteMany({});
+    await UserApplyModel.deleteMany({});
+    await GlobalChatMessageModel.deleteMany({});
+    await FriendshipModel.deleteMany({});
     if (!defaultAvCategory) {
       await AvCategoryModel.create({
         name: "默认分类",
@@ -134,16 +144,10 @@ export const startApp = async (startAppConfig: {
   });
   const adapter = await createSocketAdapter();
   io.adapter(adapter);
-  // io.use((socket, next) => {
-  //   const token = socket.handshake.auth?.token;
-  //   if (!token || token === "") {
-  //     next(new Error("token is required"));
-  //   }
-  //   next();
-  // });
 
-  registerSocketEvent(io);
+  registerSocketEvent(io, RoomRoutes);
   await server.start();
+
   console.log("Server running on %s", server.info.uri);
 };
 

@@ -1,7 +1,7 @@
 import { Product, ProductModel } from "../models";
 import { Inject, Service } from "typedi";
 import { BaseService } from "./base.service";
-import { GetListQuery, ListData } from "../lib";
+import { GetListQuery, ListData, trimAll } from "../lib";
 import Boom from "@hapi/boom";
 import {
   ImportXianExcelDto,
@@ -12,7 +12,6 @@ import {
 } from "../dtos";
 import { XianProductService } from "./xian.product.service";
 import xlsx from "node-xlsx";
-import trimAll from "../utils/trimAll";
 import { InsertFromXianExcelRecord } from "../events/InsertFromXianExcelRecord";
 import { PublishToXianEvent } from "../events";
 

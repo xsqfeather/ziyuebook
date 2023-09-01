@@ -1,6 +1,7 @@
 import { Job, JobAttributesData } from "agenda";
 
 import { ReqRef, ServerRegisterPluginObject, ServerRoute } from "@hapi/hapi";
+import { Server, Socket } from "socket.io";
 
 export interface Module {
   routes: ServerRoute<ReqRef> | ServerRoute<ReqRef>[];
@@ -24,4 +25,35 @@ export interface GetListQuery<T> {
   sort: { [x in keyof T]: -1 | 1 };
   skip: number;
   limit: number;
+}
+
+export type Rooms = "default" | "global-chat";
+
+export interface RoomRouteMethodInput {
+  socket: Socket;
+  room: string;
+  io?: Server;
+  params?: { [x: string]: string };
+}
+
+export interface RoomRouteMethodInputWithMessage<T>
+  extends RoomRouteMethodInput {
+  message: T;
+}
+
+export type RoomRouteHandler = (input: RoomRouteMethodInput) => void;
+export type RoomRouteMessageReceiver<T> = (
+  input: RoomRouteMethodInputWithMessage<T>
+) => void;
+
+export type RoomRouteCheckJoinable = (input: RoomRouteMethodInput) => {
+  joinable: boolean;
+  reason?: string;
+};
+
+export interface RoomRoute {
+  name: string;
+  handler: RoomRouteHandler;
+  receiver?: RoomRouteMessageReceiver<any>;
+  checkJoinable?: RoomRouteCheckJoinable;
 }

@@ -4,7 +4,7 @@ import { LevelCacheService } from "../lib/services";
 import { KongProductService } from "../services/kong.product.service";
 import { ProductModel } from "../models";
 import { BrowserContextService } from "../services/browser.context.service";
-import { waitTimeout } from "../utils";
+import { waitTimeout } from "../lib";
 
 @Service()
 export class KongPriceJob {

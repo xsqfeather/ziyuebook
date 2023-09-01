@@ -51,7 +51,12 @@ export class ChatMsgService extends BaseService<ChatMsg> {
       const ChatMsg = await ChatMsgModel.create({
         ...input,
       });
-      globalEmitter.emit("new-message", 1);
+      globalEmitter.emit("message", {
+        room: "/global-chat",
+        message: {
+          hasNew: true,
+        },
+      });
       return ChatMsg;
     } catch (error) {
       console.error(error);

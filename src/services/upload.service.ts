@@ -12,7 +12,6 @@ import {
 import { Inject, Service } from "typedi";
 
 import COS from "cos-nodejs-sdk-v5";
-import { getLevelValue, setLevelValue } from "../utils/level";
 import {
   WriteStream,
   createReadStream,
@@ -28,6 +27,7 @@ import {
 } from "@aws-sdk/client-s3";
 
 import { HLSJob } from "../jobs";
+import { getLevelValue, setLevelValue } from "../lib";
 
 const CHUNK_SIZE = 2 * 1024 * 1024;
 

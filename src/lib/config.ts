@@ -162,3 +162,7 @@ export const getCloudflareR2BucketName = () => {
 export const getStaticsOriginUrl = () => {
   return config["STATICS_ORIGIN_URL"];
 };
+
+export const getSendGridApiKey = () => {
+  return config["SENDGRID_API_KEY"];
+};

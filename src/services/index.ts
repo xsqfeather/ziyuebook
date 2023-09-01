@@ -17,3 +17,8 @@ export * from "./chat.msg.service";
 export * from "./gpt.chat.service";
 export * from "./gpt.chat.comment.service";
 export * from "./user.gpt.chat.like.service";
+export * from "./line.post.service";
+export * from "./user.apply.service";
+export * from "./notification.service";
+export * from "./global.chat.message.service";
+export * from "./friendship.service";

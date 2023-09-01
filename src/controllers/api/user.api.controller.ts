@@ -26,12 +26,27 @@ export class UserApiController extends MController {
     validate: {
       query: ListQuerySchema,
     },
+    auth: {
+      strategy: "jwt",
+      scope: ["user", "admin"],
+    },
   })
   async list(req: hapi.Request): Promise<ListData<User>> {
     const query = req.query as ListQueryDto;
     let listQuery = this.parseListQuery<User>(query);
     listQuery = JSON.parse(JSON.stringify(listQuery));
-    const userList = await this.userService.getUserList(listQuery);
+    const userList = await this.userService.getUserList({
+      ...listQuery,
+      filter: {
+        ...listQuery.filter,
+        roles: {
+          $in: ["user"],
+        },
+        id: {
+          $ne: req.auth?.credentials?.userId,
+        },
+      },
+    });
     const safeUserList = userList.data?.map((user) => {
       user.password = undefined;
       return user;

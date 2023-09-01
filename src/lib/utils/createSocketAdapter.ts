@@ -1,6 +1,6 @@
 import { createAdapter } from "@socket.io/mongo-adapter";
 import { MongoClient } from "mongodb";
-import { getMongoBaseURI } from "../lib/config";
+import { getMongoBaseURI } from "../config";
 const COLLECTION = "socket.io-adapter-events";
 const DB = "sockets";
 
@@ -8,7 +8,7 @@ const client = new MongoClient(getMongoBaseURI(), {
   useUnifiedTopology: true,
 } as any);
 
-export default async function createSocketAdapter() {
+export async function createSocketAdapter() {
   await client.connect();
 
   try {

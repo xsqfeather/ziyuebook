@@ -23,7 +23,7 @@ import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
 import Joi from "joi";
 
 @Service()
-@controller("/api/gpt_chats")
+@controller("/api/gpt-chats")
 export class GptChatApiController extends MController {
   @Inject(() => GptChatService)
   gptChatService!: GptChatService;

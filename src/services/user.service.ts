@@ -18,9 +18,9 @@ export class UserService extends BaseService<User> {
 
   public async getUserList(input: GetListQuery<User>): Promise<ListData<User>> {
     const { data, total } = await this.getListData<User>(UserModel, input, [
-      "title",
-      "bookData.isbn",
-      "category",
+      "username",
+      "nickname",
+      "email",
     ]);
     return {
       data,

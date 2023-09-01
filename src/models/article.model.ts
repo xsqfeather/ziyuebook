@@ -2,7 +2,6 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { getSchema } from "joi-typescript-validator";
 import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
-import { SchemaTypes } from "mongoose";
 
 @modelOptions({ options: { allowMixed: 0 } })
 export class Article extends Base {
@@ -27,19 +26,24 @@ export class Article extends Base {
   })
   public cover!: string;
 
-  @Required()
   @prop({
     type: String,
-    required: true,
   })
-  public description!: string;
+  public originUrl?: string;
 
-  @Required()
   @prop({
-    type: SchemaTypes.Array,
-    required: true,
+    type: String,
   })
-  public tags!: string[];
+  public publishTime?: string;
+
+  @prop({
+    type: Object,
+  })
+  public provider?: {
+    name: string;
+    href: string;
+    logo: string;
+  };
 
   @Required()
   @prop({
@@ -48,6 +52,12 @@ export class Article extends Base {
     default: 0,
   })
   public hot!: number;
+
+  @prop({
+    type: Boolean,
+    default: false,
+  })
+  public washed!: boolean;
 }
 
 export const ArticleModel = getModelForClass(Article);

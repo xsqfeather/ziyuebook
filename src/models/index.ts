@@ -18,3 +18,8 @@ export * from "./chat.msg.model";
 export * from "./gpt.chat.model";
 export * from "./gpt.chat.comment.model";
 export * from "./user.gpt.chat.like.model";
+export * from "./line.post.model";
+export * from "./user.apply.model";
+export * from "./notification.model";
+export * from "./global.chat.message.model";
+export * from "./friendship.model";

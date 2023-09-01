@@ -23,15 +23,22 @@ import {
   ChatMsgApiController,
   GptChatApiController,
   DeviceGptChatsController,
+  NotificationApiController,
+  GlobalChatMessageApiController,
+  LinePostApiController,
 } from "./controllers";
 import {
+  MyFriendApplyController,
+  MyFriendshipController,
   UserAvPostCommentsController,
   UserGptChatCommentsController,
   UserGptChatsController,
+  UserNotificationController,
   UserUserAvPostLikesController,
 } from "./controllers/api/users";
 import { GptChatCommentApiController } from "./controllers/api/gpt.chat.comment.api.controller";
 import { UserUserGptChatLikesController } from "./controllers/api/users/user.gpt.chat.like";
+import { UserApplyApiController } from "./controllers/api/user.apply.api.controller";
 
 startApp({
   apiControllers: [
@@ -61,6 +68,13 @@ startApp({
     GptChatCommentApiController,
     UserUserGptChatLikesController,
     DeviceGptChatsController,
+    UserApplyApiController,
+    NotificationApiController,
+    UserNotificationController,
+    MyFriendApplyController,
+    GlobalChatMessageApiController,
+    MyFriendshipController,
+    LinePostApiController,
   ],
   pageControllers: [],
   jwtValidation: Container.get(SessionService).validate,

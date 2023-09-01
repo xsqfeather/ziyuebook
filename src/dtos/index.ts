@@ -16,3 +16,8 @@ export * from "./gpt.chat.dto";
 export * from "./gpt.chat.comment.dto";
 export * from "./user.av.posts.likes.dto";
 export * from "./user.gpt.chat.like";
+export * from "./line.post.dto";
+export * from "./user.apply.dto";
+export * from "./notification.dto";
+export * from "./global.chat.message.dto";
+export * from "./friendship.dto";

@@ -13,6 +13,12 @@ export class User extends Base {
   })
   public username!: string;
 
+  @prop({
+    type: Boolean,
+    default: false,
+  })
+  public isRobot!: boolean;
+
   @Required()
   @prop({
     type: String,

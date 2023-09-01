@@ -15,9 +15,9 @@ import {
   BeAnObject,
   IObjectWithTypegooseFunction,
 } from "@typegoose/typegoose/lib/types";
-import trimAll from "../utils/trimAll";
 import { BrowserContextService } from "./browser.context.service";
 import { ProductService } from "./product.service";
+import { trimAll } from "../lib";
 
 const generator = new AvatarGenerator();
 
