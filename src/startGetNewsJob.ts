@@ -103,8 +103,9 @@ const getNews = async (
 
   const newElements = await page.$$(".card-container > cs-card");
   let newPage = await browser.newPage();
+  let length = 3;
 
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < length; index++) {
     console.log("index", index);
     try {
       const element = newElements[index];
@@ -121,6 +122,7 @@ const getNews = async (
       let article = await ArticleModel.findOne({ originUrl: href });
       if (article) {
         console.log("article already exist");
+        length++;
         continue;
       } else {
         article = new ArticleModel();

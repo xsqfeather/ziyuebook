@@ -56,6 +56,11 @@ export class Article extends Base {
   @prop({
     type: String,
   })
+  public tagsStr?: string;
+
+  @prop({
+    type: String,
+  })
   public publishTime?: string;
 
   @prop({

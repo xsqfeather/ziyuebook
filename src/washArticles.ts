@@ -20,6 +20,7 @@ const washArticles = async () => {
         },
       }
     );
+    console.log("old article================", article);
     if (!article) {
       console.log("no article");
       return;
@@ -34,15 +35,25 @@ const washArticles = async () => {
         title,
         twitterPost,
         tags,
-      } = await openaiService.rewrite(content, imagePosition);
+      } = await openaiService.rewrite(
+        content,
+        imagePosition,
+        article.locale || "en"
+      );
 
       article.content = washedContent;
       article.tags = tags.split(",");
+      article.tagsStr = tags;
       article.twitterPost = twitterPost;
       article.title = title;
       article.washed = true;
       article.status = 2;
+      if (article.twitterPost.length > 90) {
+        article.twitterPost = article.twitterPost.slice(0, 90) + "...";
+      }
       await article.save();
+      //shorten twitter post to 90
+
       await TwitterPostTaskModel.create({
         queryWord: article.tags[0],
         post: `${article.twitterPost} https://wolove.life/articles/${article.id}`,
@@ -53,12 +64,12 @@ const washArticles = async () => {
       article.status = 0;
       await article.save();
       console.log("error", error);
-      // continue;
-      break;
+      continue;
+      // break;
     }
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 1000 * 60 * 60 * 2 + Math.random() * 10000)
+      setTimeout(resolve, 1000 * 60 * 2 + Math.random() * 10000)
     );
   }
 };

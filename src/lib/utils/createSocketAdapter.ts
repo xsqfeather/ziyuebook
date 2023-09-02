@@ -6,8 +6,6 @@ const DB = "sockets";
 
 const client = new MongoClient(getMongoBaseURI(), {
   useUnifiedTopology: true,
-  keepAlive: true,
-  keepAliveInitialDelay: 300000,
 } as any);
 
 export async function createSocketAdapter() {
