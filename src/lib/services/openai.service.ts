@@ -132,7 +132,7 @@ export class OpenAIService {
       }
     }
     //merge
-    content = contentParagraphs.join("\n");
-    return { content: newRewrite, title, tags, twitterPost };
+    const newContent = contentParagraphs.join("\n");
+    return { content: newContent, title, tags, twitterPost };
   }
 }
