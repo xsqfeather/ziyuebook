@@ -69,6 +69,7 @@ const getNews = async (
   const page = await browser.newPage();
   console.log("start get news");
   await page.goto(url);
+  await page.waitForLoadState();
 
   await page.waitForSelector(".heading");
   //scroll to bottom  1000px per 10times
