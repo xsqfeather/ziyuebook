@@ -113,7 +113,8 @@ const getNews = async () => {
     }
   );
   const page = await browser.newPage();
-  await page.goto("https://www.msn.com/zh-cn/feed");
+  await page.goto("https://www.msn.com/zh-cn/feed", { timeout: 0 });
+
   await page.waitForSelector(".heading");
   //scroll to bottom  1000px per 10times
   for (let index = 0; index < 10; index++) {
