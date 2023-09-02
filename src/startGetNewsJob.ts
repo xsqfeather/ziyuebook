@@ -106,8 +106,8 @@ const getNews = async () => {
       proxy:
         process.env.NODE_ENV === "production"
           ? {
-              server: "socks5://127.0.0.1:9909",
-              // server: "socks5://127.0.0.1:7890",
+              // server: "socks5://127.0.0.1:9909",
+              server: "socks5://127.0.0.1:7890",
             }
           : undefined,
     }
@@ -151,7 +151,7 @@ const getNews = async () => {
         continue;
       }
       const newPage = await browser.newPage();
-      await newPage.goto(href);
+      await newPage.goto(href, { timeout: 0 });
       await newPage.waitForSelector(".articlePage_gridarea_article");
       for (let index = 0; index < 10; index++) {
         await newPage.evaluate(() => {
