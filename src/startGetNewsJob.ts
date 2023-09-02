@@ -8,6 +8,7 @@ import html2md from "html-to-md";
 import Container from "typedi";
 import { OpenAIService } from "./lib/services/openai.service";
 import { ChatCompletionRequestMessage } from "openai";
+import { ArticleModel } from "./models";
 
 const washContent = async (newPage: Page) => {
   const contentElement = await newPage.waitForSelector(".views-article-body");
@@ -73,7 +74,7 @@ const AIRewrite = async (content: string) => {
   });
   input.push({
     role: "user",
-    content: "我想要转发这篇的链接到twitter上, 写个推文吧",
+    content: "我想要转发这篇到twitter上, 写个推文吧",
   });
   messages = await Container.get(OpenAIService).getContent(input);
   const twitterPost = messages.choices[0].message.content;
@@ -105,7 +106,8 @@ const getNews = async () => {
       proxy:
         process.env.NODE_ENV === "production"
           ? {
-              server: "socks5://127.0.0.1:9909",
+              //   server: "socks5://127.0.0.1:9909",
+              server: "socks5://127.0.0.1:7890",
             }
           : undefined,
     }
@@ -138,6 +140,8 @@ const getNews = async () => {
       providerHref: "",
       providerLogo: "",
       publishTime: "",
+      tags: [] as string[],
+      twitterPost: "",
     };
 
     if (!article.href?.includes("https://www.msn")) {
@@ -158,7 +162,7 @@ const getNews = async () => {
     try {
       const {
         content: aiContent,
-        title,
+        title: newTitle,
         twitterPost,
         tags,
       } = await AIRewrite(markdown);
@@ -174,18 +178,15 @@ const getNews = async () => {
       }
       //merge
       content = contentParagraphs.join("\n");
-
-      console.log("content", content);
-      console.log("title", title);
-      console.log("twitterPost", twitterPost);
-      console.log("tags", tags);
+      article.content = content;
+      article.tags = tags.split(",");
+      article.title = newTitle;
+      article.twitterPost = twitterPost;
     } catch (error) {
       console.log("error", error);
       await newPage.close();
       continue;
     }
-
-    article.content = markdown;
 
     //get provider
     const providerElement = await newPage.waitForSelector(
@@ -211,26 +212,24 @@ const getNews = async () => {
     article.publishTime = publishTime;
     article.providerLogo = providerLogo;
 
-    //   let newArticle = await ArticleModel.findOne({ originUrl: article.href });
-    //   if (!newArticle) {
-    //     newArticle = new ArticleModel({
-    //       ...article,
-    //       provider: {
-    //         name: article.provider,
-    //         href: article.providerHref,
-    //         logo: article.providerLogo,
-    //       },
-    //       originUrl: article.href,
-    //     });
-    //     await newArticle.save();
-    //   } else {
-    //     console.log(
-    //       "======================article already exist======================"
-    //     );
-    //   }
-    //   console.log({ newArticle });
-
-    // console.log({ article });
+    let newArticle = await ArticleModel.findOne({ originUrl: article.href });
+    if (!newArticle) {
+      newArticle = new ArticleModel({
+        ...article,
+        provider: {
+          name: article.provider,
+          href: article.providerHref,
+          logo: article.providerLogo,
+        },
+        originUrl: article.href,
+      });
+      await newArticle.save();
+    } else {
+      console.log(
+        "======================article already exist======================"
+      );
+    }
+    console.log({ newArticle });
 
     await newPage.waitForTimeout(1000);
     //   await newPage.waitForTimeout(1000 * 60 * 60);

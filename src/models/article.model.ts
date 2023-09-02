@@ -2,6 +2,7 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { getSchema } from "joi-typescript-validator";
 import { Required } from "joi-typescript-validator";
 import { Base } from "../lib/models";
+import { Schema } from "mongoose";
 
 @modelOptions({ options: { allowMixed: 0 } })
 export class Article extends Base {
@@ -30,6 +31,16 @@ export class Article extends Base {
     type: String,
   })
   public originUrl?: string;
+
+  @prop({
+    type: String,
+  })
+  public twitterPost?: string;
+
+  @prop({
+    type: Schema.Types.Array,
+  })
+  public tags?: string[];
 
   @prop({
     type: String,
