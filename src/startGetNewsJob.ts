@@ -54,8 +54,6 @@ const getNews = async (
   locale: "zh" | "en" | "zhTW",
   proxy: boolean
 ) => {
-  mongoose.set("strictQuery", true);
-  await mongoose.connect(getMongoURI());
   const browser = await firefox.launchPersistentContext("user_data_bing_news", {
     headless: process.env.NODE_ENV === "production" ? true : false,
     proxy:
@@ -178,6 +176,8 @@ const getNews = async (
 };
 
 const startJob = async () => {
+  mongoose.set("strictQuery", true);
+  await mongoose.connect(getMongoURI());
   for (let index = 0; index < Number.MAX_SAFE_INTEGER; index++) {
     await getNews("https://www.msn.cn/zh-cn/feed", "zh", false);
     await getNews("https://www.msn.com/zh-tw/feed", "zhTW", true);
