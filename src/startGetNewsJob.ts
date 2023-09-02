@@ -76,7 +76,7 @@ const getNews = async () => {
 
   const newElements = await page.$$(".card-container > cs-card");
 
-  for (let index = 0; index < 50; index++) {
+  for (let index = 0; index < 40; index++) {
     console.log("index", index);
     try {
       const element = newElements[index];
