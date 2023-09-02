@@ -45,7 +45,8 @@ export class OpenAIService {
         imageAlt: string;
         imageTitle: string;
       };
-    }
+    },
+    locale = "en"
   ) {
     const input: ChatCompletionRequestMessage[] = [
       {

@@ -38,7 +38,7 @@ const formatContent = async (newPage: Page) => {
       formattedContent += `<p>${paragraphContent}</p>`;
     }
   }
-  // console.log("imagePosition", imagePosition);
+  console.log("imagePosition", imagePosition);
   //   console.log("washed", washContent);
   return { formattedContent, imagePosition };
 };
