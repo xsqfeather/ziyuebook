@@ -15,7 +15,10 @@ const formatContent = async (newPage: Page) => {
 
   if ((await contentElement.innerHTML()).includes("msn-article-image")) {
     const firstImage = await contentElement.waitForSelector(
-      "msn-article-image img"
+      "msn-article-image img",
+      {
+        timeout: 30000 * 4,
+      }
     );
 
     const firstImageSrc = await firstImage?.getAttribute("src");
