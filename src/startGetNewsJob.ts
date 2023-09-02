@@ -11,9 +11,24 @@ import { waitTimeout } from "./lib";
 
 const formatContent = async (newPage: Page) => {
   const contentElement = await newPage.waitForSelector("article");
+  const imagePosition = {} as any;
+
+  if ((await contentElement.innerHTML()).includes("msn-article-image")) {
+    const firstImage = await contentElement.waitForSelector(
+      "msn-article-image img"
+    );
+
+    const firstImageSrc = await firstImage?.getAttribute("src");
+    const firstImageAlt = await firstImage?.getAttribute("alt");
+    const firstImageTitle = await firstImage?.getAttribute("title");
+    imagePosition[0] = {
+      imageSrc: firstImageSrc,
+      firstImageAlt,
+      firstImageTitle,
+    };
+  }
 
   const paragraphs = await contentElement.$$("p");
-  const imagePosition = {} as any;
   let formattedContent = "";
   for (let index = 0; index < paragraphs.length; index++) {
     const paragraph = paragraphs[index];
@@ -34,7 +49,7 @@ const formatContent = async (newPage: Page) => {
       const imageSrc = await imageElement?.getAttribute("src");
       const imageAlt = await imageElement?.getAttribute("alt");
       const imageTitle = await imageElement?.getAttribute("title");
-      imagePosition[index] = { imageSrc, imageAlt, imageTitle };
+      imagePosition[index + 1] = { imageSrc, imageAlt, imageTitle };
       continue;
     } else {
       //   console.log("imageContent", imageContent);
