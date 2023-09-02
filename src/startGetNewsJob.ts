@@ -74,9 +74,10 @@ const getNews = async (
   //scroll to bottom  1000px per 10times
   for (let index = 0; index < 10; index++) {
     await page.evaluate(() => {
-      window.scrollBy(0, 1000);
+      window.scrollBy(0, 800);
     });
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState();
+    await page.waitForTimeout(3000);
   }
 
   const newElements = await page.$$(".card-container > cs-card");
