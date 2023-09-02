@@ -175,7 +175,7 @@ const getNews = async (
 
 const startJob = async () => {
   for (let index = 0; index < Number.MAX_SAFE_INTEGER; index++) {
-    await getNews("https://www.msn.com/zh-cn/feed", "zh", false);
+    await getNews("https://www.msn.cn/zh-cn/feed", "zh", false);
     await getNews("https://www.msn.com/zh-tw/feed", "zhTW", true);
     await waitTimeout(1000 * 18);
   }
