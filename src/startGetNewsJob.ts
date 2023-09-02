@@ -125,115 +125,123 @@ const getNews = async () => {
 
   const newElements = await page.$$(".card-container > cs-card");
   for (let index = 0; index < newElements.length; index++) {
-    const element = newElements[index];
-    const contentElement = await element.waitForSelector("cs-content-card");
-    const title = await contentElement?.getAttribute("title");
-    const href = await contentElement?.getAttribute("href");
-    const imgElement = await element?.$("img");
-    const imgSrc = await imgElement?.getAttribute("src");
-    const article = {
-      title,
-      href,
-      cover: imgSrc,
-      content: "",
-      provider: "",
-      providerHref: "",
-      providerLogo: "",
-      publishTime: "",
-      tags: [] as string[],
-      twitterPost: "",
-    };
-
-    if (!article.href?.includes("https://www.msn")) {
-      continue;
-    }
-    const newPage = await browser.newPage();
-    await newPage.goto(href);
-    await newPage.waitForSelector(".articlePage_gridarea_article");
-    for (let index = 0; index < 10; index++) {
-      await newPage.evaluate(() => {
-        window.scrollBy(0, 500);
-      });
-      await newPage.waitForTimeout(1000);
-    }
-
-    let { content, imagePosition } = await washContent(newPage);
-    const markdown = await toMarkdown(content);
     try {
-      const {
-        content: aiContent,
-        title: newTitle,
-        twitterPost,
-        tags,
-      } = await AIRewrite(markdown);
-      const contentParagraphs = aiContent.split("\n");
-      console.log("rewrite success", imagePosition);
-      //insert images to markdown paragraphs
-      for (const key in imagePosition) {
-        if (Object.prototype.hasOwnProperty.call(imagePosition, key)) {
-          const image = imagePosition[key];
-          const imageMarkdown = `![${image.imageAlt}](${image.imageSrc})`;
-          contentParagraphs.splice(parseInt(key), 0, imageMarkdown);
-        }
+      const element = newElements[index];
+      await page.waitForTimeout(4000);
+      const contentElement = await element.waitForSelector("cs-content-card");
+      const title = await contentElement?.getAttribute("title");
+      const href = await contentElement?.getAttribute("href");
+      const imgElement = await element?.$("img");
+      const imgSrc = await imgElement?.getAttribute("src");
+      const article = {
+        title,
+        href,
+        cover: imgSrc,
+        content: "",
+        provider: "",
+        providerHref: "",
+        providerLogo: "",
+        publishTime: "",
+        tags: [] as string[],
+        twitterPost: "",
+      };
+
+      if (!article.href?.includes("https://www.msn")) {
+        continue;
       }
-      //merge
-      content = contentParagraphs.join("\n");
-      article.content = content;
-      article.tags = tags.split(",");
-      article.title = newTitle;
-      article.twitterPost = twitterPost;
+      const newPage = await browser.newPage();
+      await newPage.goto(href);
+      await newPage.waitForSelector(".articlePage_gridarea_article");
+      for (let index = 0; index < 10; index++) {
+        await newPage.evaluate(() => {
+          window.scrollBy(0, 500);
+        });
+        await newPage.waitForTimeout(1000);
+      }
+
+      let { content, imagePosition } = await washContent(newPage);
+      const markdown = await toMarkdown(content);
+      try {
+        const {
+          content: aiContent,
+          title: newTitle,
+          twitterPost,
+          tags,
+        } = await AIRewrite(markdown);
+        const contentParagraphs = aiContent.split("\n");
+        console.log("rewrite success", imagePosition);
+        //insert images to markdown paragraphs
+        for (const key in imagePosition) {
+          if (Object.prototype.hasOwnProperty.call(imagePosition, key)) {
+            const image = imagePosition[key];
+            const imageMarkdown = `![${image.imageAlt}](${image.imageSrc})`;
+            contentParagraphs.splice(parseInt(key), 0, imageMarkdown);
+          }
+        }
+        //merge
+        content = contentParagraphs.join("\n");
+        article.content = content;
+        article.tags = tags.split(",");
+        article.title = newTitle;
+        article.twitterPost = twitterPost;
+      } catch (error) {
+        console.log("error", error);
+        await newPage.close();
+        continue;
+      }
+
+      //get provider
+      const providerElement = await newPage.waitForSelector(
+        "msnews-views-title .providerContainer"
+      );
+
+      const provider = await providerElement?.innerText();
+      const providerHref = await providerElement?.getAttribute("href");
+
+      //get publishTime
+      const publishTimeElement = await newPage.waitForSelector(
+        "msnews-views-title .viewsInfo .content .tooltip"
+      );
+      const publishTime = await publishTimeElement?.getAttribute(
+        "data-content"
+      );
+
+      //get providerLogo
+      const providerLogoElement = await newPage.waitForSelector(
+        "msnews-views-title .providerContainer .providerLogo img"
+      );
+      const providerLogo = await providerLogoElement?.getAttribute("src");
+      article.provider = provider;
+      article.providerHref = providerHref;
+      article.publishTime = publishTime;
+      article.providerLogo = providerLogo;
+
+      let newArticle = await ArticleModel.findOne({ originUrl: article.href });
+      if (!newArticle) {
+        newArticle = new ArticleModel({
+          ...article,
+          provider: {
+            name: article.provider,
+            href: article.providerHref,
+            logo: article.providerLogo,
+          },
+          originUrl: article.href,
+        });
+        await newArticle.save();
+      } else {
+        console.log(
+          "======================article already exist======================"
+        );
+      }
+      console.log({ newArticle });
+
+      await newPage.waitForTimeout(1000);
+      //   await newPage.waitForTimeout(1000 * 60 * 60);
+      await newPage.close();
     } catch (error) {
       console.log("error", error);
-      await newPage.close();
       continue;
     }
-
-    //get provider
-    const providerElement = await newPage.waitForSelector(
-      "msnews-views-title .providerContainer"
-    );
-
-    const provider = await providerElement?.innerText();
-    const providerHref = await providerElement?.getAttribute("href");
-
-    //get publishTime
-    const publishTimeElement = await newPage.waitForSelector(
-      "msnews-views-title .viewsInfo .content .tooltip"
-    );
-    const publishTime = await publishTimeElement?.getAttribute("data-content");
-
-    //get providerLogo
-    const providerLogoElement = await newPage.waitForSelector(
-      "msnews-views-title .providerContainer .providerLogo img"
-    );
-    const providerLogo = await providerLogoElement?.getAttribute("src");
-    article.provider = provider;
-    article.providerHref = providerHref;
-    article.publishTime = publishTime;
-    article.providerLogo = providerLogo;
-
-    let newArticle = await ArticleModel.findOne({ originUrl: article.href });
-    if (!newArticle) {
-      newArticle = new ArticleModel({
-        ...article,
-        provider: {
-          name: article.provider,
-          href: article.providerHref,
-          logo: article.providerLogo,
-        },
-        originUrl: article.href,
-      });
-      await newArticle.save();
-    } else {
-      console.log(
-        "======================article already exist======================"
-      );
-    }
-    console.log({ newArticle });
-
-    await newPage.waitForTimeout(1000);
-    //   await newPage.waitForTimeout(1000 * 60 * 60);
-    await newPage.close();
   }
   await page.close();
   await browser.close();
