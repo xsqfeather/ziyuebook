@@ -189,6 +189,7 @@ const getNews = async (
       console.log("error", error);
       await newPage.close();
       newPage = await browser.newPage();
+      length++;
       continue;
     }
   }

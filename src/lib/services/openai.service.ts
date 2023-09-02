@@ -122,13 +122,13 @@ export class OpenAIService {
 
     messages = await this.getContent(input);
     const title = messages.choices[0].message.content;
-    const contentParagraphs = newRewrite.split("\n");
+    let contentParagraphs = newRewrite.split("\n");
     //insert images to markdown paragraphs
     for (const key in imagePosition) {
       if (Object.prototype.hasOwnProperty.call(imagePosition, key)) {
         const image = imagePosition[key];
-        const imageMarkdown = `![${image.imageAlt}](${image.imageSrc})`;
-        contentParagraphs.splice(parseInt(key), 0, imageMarkdown);
+        const imageMarkdown = `\n ![${image.imageAlt}](${image.imageSrc})`;
+        contentParagraphs.splice(parseInt(key) + 1, 0, imageMarkdown);
       }
     }
     //merge
