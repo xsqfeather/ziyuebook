@@ -1,20 +1,19 @@
 import "reflect-metadata";
 
-import { ElementHandle, Page, chromium } from "playwright"; // Or 'chromium' or 'webkit'.
+import { ElementHandle, Page, firefox } from "playwright"; // Or 'chromium' or 'webkit'.
 import mongoose from "mongoose";
 import { getMongoURI } from "./lib/config";
 
 import html2md from "html-to-md";
-import Container from "typedi";
-import { OpenAIService } from "./lib/services/openai.service";
-import { ChatCompletionRequestMessage } from "openai";
+
 import { ArticleModel } from "./models";
 
-const washContent = async (newPage: Page) => {
-  const contentElement = await newPage.waitForSelector(".views-article-body");
+const formatContent = async (newPage: Page) => {
+  const contentElement = await newPage.waitForSelector("article");
+
   const paragraphs = await contentElement.$$("p");
   const imagePosition = {} as any;
-  let content = "";
+  let formattedContent = "";
   for (let index = 0; index < paragraphs.length; index++) {
     const paragraph = paragraphs[index];
     //check if where is a image next the paragraph
@@ -35,12 +34,12 @@ const washContent = async (newPage: Page) => {
     } else {
       //   console.log("imageContent", imageContent);
       const paragraphContent = await paragraph.innerHTML();
-      content += `<p>${paragraphContent}</p>`;
+      formattedContent += `<p>${paragraphContent}</p>`;
     }
   }
   // console.log("imagePosition", imagePosition);
   //   console.log("washed", washContent);
-  return { content, imagePosition };
+  return { formattedContent, imagePosition };
 };
 
 const toMarkdown = async (content: string) => {
@@ -49,69 +48,19 @@ const toMarkdown = async (content: string) => {
   return markdown;
 };
 
-const AIRewrite = async (content: string) => {
-  const input: ChatCompletionRequestMessage[] = [
-    {
-      role: "user",
-      content: `${content}, 请以更个人博主的角度重新阐述，加上一点吐槽和表情, 但是尽量保持信息的完整吧`,
-    },
-  ];
-  let messages = await Container.get(OpenAIService).getContent(input);
-  const newRewrite = messages.choices[0].message.content;
-  input.push({
-    role: "assistant",
-    content: newRewrite,
-  });
-  input.push({
-    role: "user",
-    content: "给出对这篇文章SEO友好的标签吧,用逗号分隔下吧",
-  });
-  messages = await Container.get(OpenAIService).getContent(input);
-  const tags = messages.choices[0].message.content;
-  input.push({
-    role: "assistant",
-    content: tags,
-  });
-  input.push({
-    role: "user",
-    content: "我想要转发这篇到twitter上, 写个推文吧",
-  });
-  messages = await Container.get(OpenAIService).getContent(input);
-  const twitterPost = messages.choices[0].message.content;
-  input.push({
-    role: "assistant",
-    content: twitterPost,
-  });
-  input.push({
-    role: "user",
-    content: "为这篇文章起个更吸引人的标题吧",
-  });
-  messages = await Container.get(OpenAIService).getContent(input);
-  const title = messages.choices[0].message.content;
-  return {
-    content: newRewrite,
-    tags,
-    twitterPost,
-    title,
-  };
-};
-
 const getNews = async () => {
   mongoose.set("strictQuery", true);
   await mongoose.connect(getMongoURI());
-  const browser = await chromium.launchPersistentContext(
-    "user_data_bing_news",
-    {
-      headless: process.env.NODE_ENV === "production" ? true : false,
-      // proxy:
-      //   process.env.NODE_ENV === "production"
-      //     ? {
-      //         // server: "socks5://127.0.0.1:9909",
-      //         server: "socks5://127.0.0.1:7890",
-      //       }
-      //     : undefined,
-    }
-  );
+  const browser = await firefox.launchPersistentContext("user_data_bing_news", {
+    // headless: process.env.NODE_ENV === "production" ? true : false,
+    // proxy:
+    //   process.env.NODE_ENV === "production"
+    //     ? {
+    //         // server: "socks5://127.0.0.1:9909",
+    //         server: "socks5://127.0.0.1:7890",
+    //       }
+    //     : undefined,
+  });
   const page = await browser.newPage();
   console.log("start get news");
   await page.goto("https://www.msn.com/zh-cn/feed");
@@ -126,7 +75,8 @@ const getNews = async () => {
   }
 
   const newElements = await page.$$(".card-container > cs-card");
-  for (let index = 0; index < newElements.length; index++) {
+
+  for (let index = 0; index < 50; index++) {
     console.log("index", index);
     try {
       const element = newElements[index];
@@ -136,25 +86,23 @@ const getNews = async () => {
       const href = await contentElement?.getAttribute("href");
       const imgElement = await element?.$("img");
       const imgSrc = await imgElement?.getAttribute("src");
-      const article = {
-        title,
-        href,
-        cover: imgSrc,
-        content: "",
-        provider: "",
-        providerHref: "",
-        providerLogo: "",
-        publishTime: "",
-        tags: [] as string[],
-        twitterPost: "",
-      };
 
-      if (!article.href?.includes("https://www.msn")) {
+      let article = await ArticleModel.findOne({ originUrl: href });
+      if (article) {
+        console.log("article already exist");
+        continue;
+      } else {
+        article = new ArticleModel();
+      }
+      if (!href?.includes("https://www.msn")) {
         continue;
       }
+      article.cover = imgSrc;
+      article.title = title;
       const newPage = await browser.newPage();
+      console.log("href", href);
       await newPage.goto(href);
-      await newPage.waitForSelector(".articlePage_gridarea_article");
+      await newPage.waitForLoadState();
       for (let index = 0; index < 10; index++) {
         await newPage.evaluate(() => {
           window.scrollBy(0, 500);
@@ -162,41 +110,17 @@ const getNews = async () => {
         await newPage.waitForTimeout(1000);
       }
 
-      let { content, imagePosition } = await washContent(newPage);
-      const markdown = await toMarkdown(content);
+      let { formattedContent, imagePosition } = await formatContent(newPage);
+      const markdown = await toMarkdown(formattedContent);
       console.log("markdown", markdown);
-      try {
-        const {
-          content: aiContent,
-          title: newTitle,
-          twitterPost,
-          tags,
-        } = await AIRewrite(markdown);
-        const contentParagraphs = aiContent.split("\n");
-        console.log("rewrite success", imagePosition);
-        //insert images to markdown paragraphs
-        for (const key in imagePosition) {
-          if (Object.prototype.hasOwnProperty.call(imagePosition, key)) {
-            const image = imagePosition[key];
-            const imageMarkdown = `![${image.imageAlt}](${image.imageSrc})`;
-            contentParagraphs.splice(parseInt(key), 0, imageMarkdown);
-          }
-        }
-        //merge
-        content = contentParagraphs.join("\n");
-        article.content = content;
-        article.tags = tags.split(",");
-        article.title = newTitle;
-        article.twitterPost = twitterPost;
-      } catch (error) {
-        console.log("error", error);
-        await newPage.close();
-        continue;
-      }
+
+      article.content = markdown;
+      article.imagePosition = imagePosition;
 
       //get provider
       const providerElement = await newPage.waitForSelector(
-        "msnews-views-title .providerContainer"
+        "msnews-views-title .providerContainer",
+        { timeout: 0 }
       );
 
       const provider = await providerElement?.innerText();
@@ -215,29 +139,16 @@ const getNews = async () => {
         "msnews-views-title .providerContainer .providerLogo img"
       );
       const providerLogo = await providerLogoElement?.getAttribute("src");
-      article.provider = provider;
-      article.providerHref = providerHref;
+      article.provider = {
+        name: provider,
+        href: providerHref,
+        logo: providerLogo,
+      };
       article.publishTime = publishTime;
-      article.providerLogo = providerLogo;
+      article.originUrl = href;
 
-      let newArticle = await ArticleModel.findOne({ originUrl: article.href });
-      if (!newArticle) {
-        newArticle = new ArticleModel({
-          ...article,
-          provider: {
-            name: article.provider,
-            href: article.providerHref,
-            logo: article.providerLogo,
-          },
-          originUrl: article.href,
-        });
-        await newArticle.save();
-      } else {
-        console.log(
-          "======================article already exist======================"
-        );
-      }
-      console.log({ newArticle });
+      await article.save();
+      console.log("newArticle=================", article);
 
       await newPage.waitForTimeout(1000);
       //   await newPage.waitForTimeout(1000 * 60 * 60);

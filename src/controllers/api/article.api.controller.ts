@@ -26,7 +26,14 @@ export class ArticleApiController extends MController {
   async list(req: hapi.Request): Promise<ListData<Article>> {
     const query = req.query as ListQueryDto;
     const listQuery = this.parseListQuery<Article>(query);
-    return this.articleService.getArticleList(listQuery);
+    return this.articleService.getArticleList({
+      ...listQuery,
+      filter: {
+        ...listQuery.filter,
+        status: 2,
+        washed: true,
+      },
+    });
   }
 
   @post("/")

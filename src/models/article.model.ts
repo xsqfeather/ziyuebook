@@ -33,6 +33,17 @@ export class Article extends Base {
   public originUrl?: string;
 
   @prop({
+    type: Object,
+  })
+  public imagePosition?: {
+    [x: number]: {
+      imageSrc: string;
+      imageAlt: string;
+      imageTitle: string;
+    };
+  };
+
+  @prop({
     type: String,
   })
   public twitterPost?: string;
@@ -69,6 +80,12 @@ export class Article extends Base {
     default: false,
   })
   public washed!: boolean;
+
+  @prop({
+    type: Number,
+    default: 0,
+  })
+  public status!: number;
 }
 
 export const ArticleModel = getModelForClass(Article);
