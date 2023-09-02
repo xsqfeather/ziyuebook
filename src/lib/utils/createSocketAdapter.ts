@@ -21,7 +21,7 @@ export async function createSocketAdapter() {
   } catch (e) {
     // collection already exists
   }
-  const mongoCollection = client.db(DB).collection(COLLECTION);
+  const mongoCollection: any = client.db(DB).collection(COLLECTION);
 
-  return createAdapter(mongoCollection);
+  return createAdapter(mongoCollection, {});
 }

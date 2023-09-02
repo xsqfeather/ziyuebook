@@ -25,8 +25,12 @@ const formatContent = async (newPage: Page) => {
     const siblingElement = nextElement.asElement();
 
     const imageContent = await siblingElement?.innerHTML();
+
     if (imageContent?.includes("msn-article-image")) {
-      const imageElement = await siblingElement.$("img");
+      console.log("imageContent", imageContent);
+      const imageElement = await siblingElement.waitForSelector("img", {
+        timeout: 30000 * 4,
+      });
       const imageSrc = await imageElement?.getAttribute("src");
       const imageAlt = await imageElement?.getAttribute("alt");
       const imageTitle = await imageElement?.getAttribute("title");
@@ -59,8 +63,8 @@ const getNews = async (
     proxy:
       process.env.NODE_ENV === "production" && proxy
         ? {
-            // server: "socks5://127.0.0.1:9909",
-            server: "socks5://127.0.0.1:7890",
+            server: "socks5://127.0.0.1:9909",
+            // server: "socks5://127.0.0.1:7890",
           }
         : undefined,
   });
