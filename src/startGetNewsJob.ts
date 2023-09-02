@@ -97,6 +97,8 @@ const getNews = async (
       const imgElement = await element?.$("img");
       const imgSrc = await imgElement?.getAttribute("src");
 
+      console.log({ href });
+
       let article = await ArticleModel.findOne({ originUrl: href });
       if (article) {
         console.log("article already exist");
