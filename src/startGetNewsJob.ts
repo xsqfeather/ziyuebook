@@ -113,7 +113,8 @@ const getNews = async () => {
     }
   );
   const page = await browser.newPage();
-  await page.goto("https://www.msn.com/zh-cn/feed", { timeout: 0 });
+  console.log("start get news");
+  await page.goto("https://www.msn.com/zh-cn/feed");
 
   await page.waitForSelector(".heading");
   //scroll to bottom  1000px per 10times
@@ -126,6 +127,7 @@ const getNews = async () => {
 
   const newElements = await page.$$(".card-container > cs-card");
   for (let index = 0; index < newElements.length; index++) {
+    console.log("index", index);
     try {
       const element = newElements[index];
       await page.waitForTimeout(4000);
@@ -151,7 +153,7 @@ const getNews = async () => {
         continue;
       }
       const newPage = await browser.newPage();
-      await newPage.goto(href, { timeout: 0 });
+      await newPage.goto(href);
       await newPage.waitForSelector(".articlePage_gridarea_article");
       for (let index = 0; index < 10; index++) {
         await newPage.evaluate(() => {
@@ -162,6 +164,7 @@ const getNews = async () => {
 
       let { content, imagePosition } = await washContent(newPage);
       const markdown = await toMarkdown(content);
+      console.log("markdown", markdown);
       try {
         const {
           content: aiContent,
