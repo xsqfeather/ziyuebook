@@ -3,10 +3,7 @@ import mongoose from "mongoose";
 import { getMongoURI } from "./lib/config";
 import { OpenAIService } from "./lib/services/openai.service";
 import { ArticleModel } from "./models";
-import {
-  TwitterPostTask,
-  TwitterPostTaskModel,
-} from "./models/twitter.post.task.model";
+import { TwitterPostTaskModel } from "./models/twitter.post.task.model";
 
 const washArticles = async () => {
   mongoose.set("strictQuery", true);
@@ -14,7 +11,15 @@ const washArticles = async () => {
   const openaiService = Container.get(OpenAIService);
   for (let index = 0; index < Number.MAX_SAFE_INTEGER; index++) {
     console.log("start wash article");
-    const article = await ArticleModel.findOne({ washed: false, status: 0 });
+    const article = await ArticleModel.findOne(
+      { washed: false, status: 0 },
+      null,
+      {
+        sort: {
+          createdAt: -1,
+        },
+      }
+    );
     if (!article) {
       console.log("no article");
       return;
@@ -44,8 +49,8 @@ const washArticles = async () => {
         queryWord: article.tags[0],
         post: `${article.twitterPost} https://wolove.life/articles/${article.id}`,
       });
-      const tasks = await TwitterPostTaskModel.find({}).sort({ createdAt: -1 });
-      console.log("washed", tasks);
+
+      console.log("washed article", article.content);
     } catch (error) {
       article.status = 0;
       await article.save();

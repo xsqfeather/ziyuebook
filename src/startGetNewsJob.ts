@@ -48,22 +48,26 @@ const toMarkdown = async (content: string) => {
   return markdown;
 };
 
-const getNews = async () => {
+const getNews = async (
+  url: string,
+  locale: "zh" | "en" | "zhTW",
+  proxy: boolean
+) => {
   mongoose.set("strictQuery", true);
   await mongoose.connect(getMongoURI());
   const browser = await firefox.launchPersistentContext("user_data_bing_news", {
-    // headless: process.env.NODE_ENV === "production" ? true : false,
-    // proxy:
-    //   process.env.NODE_ENV === "production"
-    //     ? {
-    //         // server: "socks5://127.0.0.1:9909",
-    //         server: "socks5://127.0.0.1:7890",
-    //       }
-    //     : undefined,
+    headless: process.env.NODE_ENV === "production" ? true : false,
+    proxy:
+      process.env.NODE_ENV === "production" && proxy
+        ? {
+            // server: "socks5://127.0.0.1:9909",
+            server: "socks5://127.0.0.1:7890",
+          }
+        : undefined,
   });
   const page = await browser.newPage();
   console.log("start get news");
-  await page.goto("https://www.msn.com/zh-cn/feed");
+  await page.goto(url);
 
   await page.waitForSelector(".heading");
   //scroll to bottom  1000px per 10times
@@ -75,13 +79,17 @@ const getNews = async () => {
   }
 
   const newElements = await page.$$(".card-container > cs-card");
+  let newPage = await browser.newPage();
 
-  for (let index = 0; index < 40; index++) {
+  for (let index = 0; index < 5; index++) {
     console.log("index", index);
     try {
       const element = newElements[index];
+      if (!element) {
+        continue;
+      }
       await page.waitForTimeout(4000);
-      const contentElement = await element.waitForSelector("cs-content-card");
+      const contentElement = await element?.waitForSelector("cs-content-card");
       const title = await contentElement?.getAttribute("title");
       const href = await contentElement?.getAttribute("href");
       const imgElement = await element?.$("img");
@@ -99,7 +107,7 @@ const getNews = async () => {
       }
       article.cover = imgSrc;
       article.title = title;
-      const newPage = await browser.newPage();
+
       console.log("href", href);
       await newPage.goto(href);
       await newPage.waitForLoadState();
@@ -119,8 +127,7 @@ const getNews = async () => {
 
       //get provider
       const providerElement = await newPage.waitForSelector(
-        "msnews-views-title .providerContainer",
-        { timeout: 0 }
+        "msnews-views-title .providerContainer"
       );
 
       const provider = await providerElement?.innerText();
@@ -146,20 +153,30 @@ const getNews = async () => {
       };
       article.publishTime = publishTime;
       article.originUrl = href;
+      article.locale = locale;
 
       await article.save();
       console.log("newArticle=================", article);
 
       await newPage.waitForTimeout(1000);
       //   await newPage.waitForTimeout(1000 * 60 * 60);
-      await newPage.close();
     } catch (error) {
       console.log("error", error);
+      await newPage.close();
+      newPage = await browser.newPage();
       continue;
     }
   }
   await page.close();
   await browser.close();
+  await newPage.close();
 };
 
-getNews();
+const startJob = async () => {
+  for (let index = 0; index < Number.MAX_SAFE_INTEGER; index++) {
+    await getNews("https://www.msn.com/zh-tw/feed", "zhTW", true);
+    await getNews("https://www.msn.com/zh-cn/feed", "zh", false);
+  }
+};
+
+startJob();
