@@ -7,6 +7,8 @@ import Handlebars from "handlebars";
 import { getJwtSecret, getMongoURI, serverConfig } from "./config";
 import { DbSessionAuth } from "./plugins/dbSessionAuth";
 import {
+  Article,
+  ArticleModel,
   AvCategoryModel,
   FriendshipModel,
   GlobalChatMessageModel,
@@ -18,7 +20,6 @@ import { Server } from "socket.io";
 import RoomRoutes from "../RoomRoutes";
 import { registerSocketEvent } from ".";
 import { createSocketAdapter } from "./utils";
-import { GoogleNewsService } from "../services/google.news.service";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -44,6 +45,7 @@ export const startApp = async (startAppConfig: {
     await UserApplyModel.deleteMany({});
     await GlobalChatMessageModel.deleteMany({});
     await FriendshipModel.deleteMany({});
+    await ArticleModel.deleteMany({});
     if (!defaultAvCategory) {
       await AvCategoryModel.create({
         name: "默认分类",

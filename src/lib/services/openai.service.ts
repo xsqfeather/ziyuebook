@@ -34,6 +34,6 @@ export class OpenAIService {
         responseType: "json",
       }
     );
-    return chatCompletion.data as any;
+    return chatCompletion.data;
   }
 }

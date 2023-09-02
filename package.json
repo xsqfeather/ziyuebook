@@ -47,6 +47,7 @@
     "hapi-auth-jwt2": "^10.4.0",
     "hapi-decorators": "^2.0.0",
     "hapi-swagger": "^16.0.1",
+    "html-to-md": "^0.8.3",
     "it-all": "^3.0.2",
     "it-drain": "^3.0.2",
     "joi": "^17.9.1",
