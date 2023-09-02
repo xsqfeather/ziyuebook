@@ -59,8 +59,8 @@ export class Article extends Base {
   public publishTime?: string;
 
   @prop({
-    required: true,
     type: String,
+    default: "en",
   })
   public locale!: "zh" | "en" | "zhTW";
 

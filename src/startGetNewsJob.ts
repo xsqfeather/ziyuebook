@@ -104,7 +104,7 @@ const getNews = async (
   const newElements = await page.$$(".card-container > cs-card");
   let newPage = await browser.newPage();
 
-  for (let index = 0; index < 5; index++) {
+  for (let index = 0; index < 3; index++) {
     console.log("index", index);
     try {
       const element = newElements[index];
@@ -117,8 +117,6 @@ const getNews = async (
       const href = await contentElement?.getAttribute("href");
       const imgElement = await element?.$("img");
       const imgSrc = await imgElement?.getAttribute("src");
-
-      console.log({ href });
 
       let article = await ArticleModel.findOne({ originUrl: href });
       if (article) {
@@ -203,6 +201,7 @@ const startJob = async () => {
   for (let index = 0; index < Number.MAX_SAFE_INTEGER; index++) {
     await getNews("https://www.msn.cn/zh-cn/feed", "zh", false);
     await getNews("https://www.msn.com/zh-tw/feed", "zhTW", true);
+    await getNews("https://www.msn.com/us-en/feed", "en", true);
     await waitTimeout(1000 * 18);
   }
 };

@@ -36,8 +36,6 @@ const washArticles = async () => {
         tags,
       } = await openaiService.rewrite(content, imagePosition);
 
-      console.log("washedContent", washedContent);
-
       article.content = washedContent;
       article.tags = tags.split(",");
       article.twitterPost = twitterPost;
@@ -50,16 +48,17 @@ const washArticles = async () => {
         post: `${article.twitterPost} https://wolove.life/articles/${article.id}`,
       });
 
-      console.log("washed article", article.content);
+      console.log("washed article", article);
     } catch (error) {
       article.status = 0;
       await article.save();
       console.log("error", error);
-      continue;
+      // continue;
+      break;
     }
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 1000 + Math.random() * 100)
+      setTimeout(resolve, 1000 * 60 * 60 * 2 + Math.random() * 10000)
     );
   }
 };

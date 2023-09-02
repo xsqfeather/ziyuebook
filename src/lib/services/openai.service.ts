@@ -2,6 +2,8 @@ import { Configuration, OpenAIApi, ChatCompletionRequestMessage } from "openai";
 import { Service } from "typedi";
 import { getOpenAIApiKey, getOpenAIOrgId } from "../config";
 
+import axios from "axios";
+
 const configuration = new Configuration({
   apiKey: getOpenAIApiKey(),
   organization: getOpenAIOrgId(),
@@ -27,7 +29,7 @@ export class OpenAIService {
   async getContent(inputMessages: ChatCompletionRequestMessage[]) {
     const chatCompletion = await openai.createChatCompletion(
       {
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
         messages: inputMessages,
       },
       {
@@ -35,6 +37,18 @@ export class OpenAIService {
       }
     );
     return chatCompletion.data;
+  }
+
+  async getHercaiMessage(input: string) {
+    try {
+      const url = `https://hercai.onrender.com/v2/hercai?question=${encodeURI(
+        input
+      )}`;
+      const { data } = await axios.get(url);
+      console.log({ data });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async rewrite(
@@ -48,42 +62,43 @@ export class OpenAIService {
     },
     locale = "en"
   ) {
-    const input: ChatCompletionRequestMessage[] = [
+    const initMsg = `${content},//n 请以更个人博主的角度使用简体中文吧重新阐述,有大量吐槽和emoji表情, 在尽量保持原有的信息完整的基础上有趣接地气。`;
+    // await this.getHercaiMessage(initMsg);
+    // throw new Error("not implemented");
+    let input: ChatCompletionRequestMessage[] = [
       {
         role: "user",
-        content: `${content}, 请以更个人博主的角度重新阐述，加上一点吐槽和表情, 但是尽量保持信息的完整吧`,
+        content: initMsg,
       },
     ];
     let messages = await this.getContent(input);
     const newRewrite = messages.choices[0].message.content;
-    input.push({
-      role: "assistant",
-      content: newRewrite,
-    });
-    input.push({
-      role: "user",
-      content: "给出对这篇文章SEO友好的标签吧,用逗号分隔下吧",
-    });
+
+    input = [
+      {
+        role: "user",
+        content: `${newRewrite}  给出对这篇文章SEO友好的标签吧,用逗号分隔下吧`,
+      },
+    ];
+
     messages = await this.getContent(input);
     const tags = messages.choices[0].message.content;
-    input.push({
-      role: "assistant",
-      content: tags,
-    });
-    input.push({
-      role: "user",
-      content: "我想要转发这篇到twitter上, 写个推文吧，95字数以内",
-    });
+    input = [
+      {
+        role: "user",
+        content: `${newRewrite}  我想要转发这篇到twitter上, 写个简中的推文吧，95字数以内`,
+      },
+    ];
+
     messages = await this.getContent(input);
     const twitterPost = messages.choices[0].message.content;
-    input.push({
-      role: "assistant",
-      content: twitterPost,
-    });
-    input.push({
-      role: "user",
-      content: "为这篇文章起个更吸引人的标题吧",
-    });
+    input = [
+      {
+        role: "user",
+        content: `${newRewrite}  为这篇文章起个更吸引人的标题吧`,
+      },
+    ];
+
     messages = await this.getContent(input);
     const title = messages.choices[0].message.content;
     const contentParagraphs = newRewrite.split("\n");
