@@ -137,7 +137,10 @@ export const startApp = async (startAppConfig: {
 
   registerSocketEvent(io, RoomRoutes);
   await server.start();
-  washArticles();
+  if (process.env.NODE_ENV === "production") {
+    washArticles();
+  }
+
   console.log("Server running on %s", server.info.uri);
 };
 
