@@ -63,7 +63,7 @@ export class TwitterService {
       proxy:
         process.env.NODE_ENV === "production"
           ? {
-              server: "socks5://127.0.0.1:9909",
+              server: "socks5://127.0.0.1:7890",
             }
           : undefined,
     });
