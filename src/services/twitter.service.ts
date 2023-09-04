@@ -73,6 +73,7 @@ export class TwitterService {
       let input = await TwitterPostTaskModel.findOne({}, null, {
         sort: {
           posted: 1,
+          createdAt: -1,
         },
       });
       if (!input) {

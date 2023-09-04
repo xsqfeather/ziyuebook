@@ -4,12 +4,14 @@ import { ArticleModel } from "./models";
 import { TwitterPostTaskModel } from "./models/twitter.post.task.model";
 import moment from "moment";
 
+const locales = ["en", "zh", "zhTW"];
+
 export const washArticles = async () => {
   const openaiService = Container.get(OpenAIService);
   for (let index = 0; index < Number.MAX_SAFE_INTEGER; index++) {
     console.log("start wash article", index);
     const article = await ArticleModel.findOne(
-      { washed: false, status: 0 },
+      { washed: false, status: 0, locale: locales[index % 3] },
       null,
       {
         sort: {
@@ -71,7 +73,7 @@ export const washArticles = async () => {
     }
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 1000 * 60 * 30 + Math.random() * 10000)
+      setTimeout(resolve, 1000 * 60 * 15 + Math.random() * 10000)
     );
   }
 };
