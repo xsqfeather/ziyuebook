@@ -127,7 +127,9 @@ export class OpenAIService {
     for (const key in imagePosition) {
       if (Object.prototype.hasOwnProperty.call(imagePosition, key)) {
         const image = imagePosition[key];
-        const imageMarkdown = `\n ![${image.imageAlt}](${image.imageSrc})`;
+        const imageMarkdown = `\n ![${image.imageAlt || "未知來源"}](${
+          image.imageSrc
+        })`;
         contentParagraphs.splice(parseInt(key) + 1, 0, imageMarkdown);
       }
     }

@@ -116,7 +116,9 @@ const getNews = async (
       const contentElement = await element?.waitForSelector("cs-content-card");
       const title = await contentElement?.getAttribute("title");
       const href = await contentElement?.getAttribute("href");
-      const imgElement = await element?.$("img");
+      const imgElement = await element?.waitForSelector("img[slot='media']", {
+        timeout: 30000 * 4,
+      });
       const imgSrc = await imgElement?.getAttribute("src");
 
       let article = await ArticleModel.findOne({ originUrl: href });
