@@ -59,9 +59,9 @@ export class Article extends Base {
   public tagsStr?: string;
 
   @prop({
-    type: String,
+    type: Schema.Types.Date,
   })
-  public publishTime?: string;
+  public publishTime?: Date;
 
   @prop({
     type: String,

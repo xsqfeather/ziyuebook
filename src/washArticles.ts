@@ -1,16 +1,13 @@
 import Container from "typedi";
-import mongoose from "mongoose";
-import { getMongoURI } from "./lib/config";
 import { OpenAIService } from "./lib/services/openai.service";
 import { ArticleModel } from "./models";
 import { TwitterPostTaskModel } from "./models/twitter.post.task.model";
+import moment from "moment";
 
-const washArticles = async () => {
-  mongoose.set("strictQuery", true);
-  await mongoose.connect(getMongoURI());
+export const washArticles = async () => {
   const openaiService = Container.get(OpenAIService);
   for (let index = 0; index < Number.MAX_SAFE_INTEGER; index++) {
-    console.log("start wash article");
+    console.log("start wash article", index);
     const article = await ArticleModel.findOne(
       { washed: false, status: 0 },
       null,
@@ -20,12 +17,13 @@ const washArticles = async () => {
         },
       }
     );
-    console.log("old article================", article);
     if (!article) {
       console.log("no article");
       return;
     }
     article.status = 1;
+    article.updatedAt = new Date();
+    article.publishTime = moment(article.publishTime || Date.now()).toDate();
     await article.save();
     const { content, imagePosition } = article;
 
@@ -46,8 +44,12 @@ const washArticles = async () => {
       article.tagsStr = tags;
       article.twitterPost = twitterPost;
       article.title = title;
+      if (article.title.length > 90) {
+        article.title = article.title.slice(0, 100) + "...";
+      }
       article.washed = true;
       article.status = 2;
+      article.publishTime = moment(article.publishTime || Date.now()).toDate();
       if (article.twitterPost.length > 90) {
         article.twitterPost = article.twitterPost.slice(0, 90) + "...";
       }
@@ -58,10 +60,10 @@ const washArticles = async () => {
         queryWord: article.tags[0],
         post: `${article.twitterPost} https://wolove.life/${article.locale}/articles/${article.id}`,
       });
-
-      console.log("washed article", article);
     } catch (error) {
       article.status = 0;
+      article.washed = false;
+      article.publishTime = moment(article.publishTime || Date.now()).toDate();
       await article.save();
       console.log("error", error);
       continue;
@@ -69,7 +71,7 @@ const washArticles = async () => {
     }
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 1000 * 60 * 2 + Math.random() * 10000)
+      setTimeout(resolve, 1000 * 60 * 30 + Math.random() * 10000)
     );
   }
 };

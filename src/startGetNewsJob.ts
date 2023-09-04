@@ -9,6 +9,9 @@ import html2md from "html-to-md";
 import { ArticleModel } from "./models";
 import { waitTimeout } from "./lib";
 
+import moment from "moment";
+import "moment/locale/zh-cn";
+
 const formatContent = async (newPage: Page) => {
   const contentElement = await newPage.waitForSelector("article");
   const imagePosition = {} as any;
@@ -81,8 +84,8 @@ const getNews = async (
     proxy:
       process.env.NODE_ENV === "production" && proxy
         ? {
-            server: "socks5://127.0.0.1:9909",
-            // server: "socks5://127.0.0.1:7890",
+            // server: "socks5://127.0.0.1:9909",
+            server: "socks5://127.0.0.1:7890",
           }
         : undefined,
   });
@@ -92,13 +95,13 @@ const getNews = async (
   await page.waitForLoadState();
 
   await page.waitForSelector(".heading");
-  //scroll to bottom  1000px per 10times
-  for (let index = 0; index < 10; index++) {
+  //   await page.waitForTimeout(1000);
+  for (let index = 0; index < 5; index++) {
     await page.evaluate(() => {
       window.scrollBy(0, 800);
     });
     await page.waitForLoadState();
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(2000);
   }
 
   const newElements = await page.$$(".card-container > cs-card");
@@ -181,7 +184,7 @@ const getNews = async (
         href: providerHref,
         logo: providerLogo,
       };
-      article.publishTime = publishTime;
+      article.publishTime = moment(publishTime).toDate();
       article.originUrl = href;
       article.locale = locale;
 

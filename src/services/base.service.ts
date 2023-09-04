@@ -37,13 +37,14 @@ export class BaseService<T> {
   async getListData<T>(
     model: ReturnModelType<any, BeAnObject>,
     input: GetListQuery<T>,
-    searchFields: string[] = []
+    searchFields: string[] = [],
+    projection: object | null = null
   ) {
     const { filter, sort, skip, limit } = input;
 
     const paredFilter = this.parseFilter(filter, searchFields);
     const data = await model
-      .find(paredFilter)
+      .find(paredFilter, projection)
       .limit(limit)
       .skip(skip)
       .sort(sort);

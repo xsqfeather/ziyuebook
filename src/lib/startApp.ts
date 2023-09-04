@@ -6,20 +6,13 @@ import Container from "typedi";
 import Handlebars from "handlebars";
 import { getJwtSecret, getMongoURI, serverConfig } from "./config";
 import { DbSessionAuth } from "./plugins/dbSessionAuth";
-import {
-  Article,
-  ArticleModel,
-  AvCategoryModel,
-  FriendshipModel,
-  GlobalChatMessageModel,
-  NotificationModel,
-  UserApplyModel,
-} from "../models";
+import { AvCategoryModel } from "../models";
 import fs from "fs";
 import { Server } from "socket.io";
 import RoomRoutes from "../RoomRoutes";
 import { registerSocketEvent } from ".";
 import { createSocketAdapter } from "./utils";
+import { washArticles } from "../washArticles";
 
 export const startApp = async (startAppConfig: {
   pageControllers: any[];
@@ -41,11 +34,6 @@ export const startApp = async (startAppConfig: {
     const defaultAvCategory = await AvCategoryModel.findOne({
       isDefault: true,
     });
-    await NotificationModel.deleteMany({});
-    await UserApplyModel.deleteMany({});
-    await GlobalChatMessageModel.deleteMany({});
-    await FriendshipModel.deleteMany({});
-    await ArticleModel.deleteMany({});
     if (!defaultAvCategory) {
       await AvCategoryModel.create({
         name: "默认分类",
@@ -149,7 +137,7 @@ export const startApp = async (startAppConfig: {
 
   registerSocketEvent(io, RoomRoutes);
   await server.start();
-
+  washArticles();
   console.log("Server running on %s", server.info.uri);
 };
 

@@ -36,6 +36,16 @@ export class ArticleApiController extends MController {
     });
   }
 
+  @get("/{id}")
+  @options({
+    tags: ["api", "文章"],
+    description: "查询文章详情",
+    notes: "测试",
+  })
+  async getOne(req: hapi.Request): Promise<Article | null> {
+    return this.articleService.getOne(req.params.id as string);
+  }
+
   @post("/")
   @options({
     description: "新建文章",
@@ -45,7 +55,6 @@ export class ArticleApiController extends MController {
       strategy: "jwt",
       scope: ["admin"],
     },
-
     validate: {
       payload: CreateArticleSchema,
     },
