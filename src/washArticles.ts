@@ -75,5 +75,3 @@ export const washArticles = async () => {
     );
   }
 };
-
-washArticles();
