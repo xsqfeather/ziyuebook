@@ -10,7 +10,6 @@ import { ArticleModel } from "./models";
 import { waitTimeout } from "./lib";
 
 import moment from "moment";
-import "moment/locale/zh-cn";
 
 const formatContent = async (newPage: Page) => {
   const contentElement = await newPage.waitForSelector("article");
