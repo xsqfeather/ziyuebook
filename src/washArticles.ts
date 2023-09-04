@@ -73,7 +73,7 @@ export const washArticles = async () => {
     }
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 1000 * 60 * 15 + Math.random() * 10000)
+      setTimeout(resolve, 1000 * 60 + Math.random() * 10000)
     );
   }
 };
