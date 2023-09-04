@@ -107,6 +107,9 @@ const getNews = async (
 
   for (let index = 0; index < length; index++) {
     console.log("index", index);
+    if (index > 20) {
+      break;
+    }
     try {
       const element = newElements[index];
       if (!element) {

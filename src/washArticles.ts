@@ -56,7 +56,7 @@ const washArticles = async () => {
 
       await TwitterPostTaskModel.create({
         queryWord: article.tags[0],
-        post: `${article.twitterPost} https://wolove.life/articles/${article.id}`,
+        post: `${article.twitterPost} https://wolove.life/${article.locale}/articles/${article.id}`,
       });
 
       console.log("washed article", article);
