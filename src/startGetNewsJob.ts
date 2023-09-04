@@ -9,11 +9,6 @@ import html2md from "html-to-md";
 import { ArticleModel } from "./models";
 import { waitTimeout } from "./lib";
 
-import moment from "moment";
-import "moment/locale/zh-cn";
-
-moment.locale("zh-cn");
-
 const formatContent = async (newPage: Page) => {
   const contentElement = await newPage.waitForSelector("article");
   const imagePosition = {} as any;
@@ -185,9 +180,7 @@ const getNews = async (
         href: providerHref,
         logo: providerLogo,
       };
-      console.log("publishTime", publishTime);
-      //format like  2023/9/4 上午11:39:01
-      article.publishTime = moment(publishTime, "YYYY/M/D A h:mm:ss").toDate();
+      article.publishTime = new Date();
       article.originUrl = href;
       article.locale = locale;
 
