@@ -21,6 +21,10 @@ export const washArticles = async () => {
     );
     if (!article) {
       console.log("no article");
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 * 60 + Math.random() * 10000)
+      );
       return;
     }
     article.status = 1;
