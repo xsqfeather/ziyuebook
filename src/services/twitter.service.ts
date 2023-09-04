@@ -73,7 +73,7 @@ export class TwitterService {
       let input = await TwitterPostTaskModel.findOne({}, null, {
         sort: {
           posted: 1,
-          createdAt: -1,
+          updatedAt: Math.random() > 0.5 ? 1 : -1,
         },
       });
       if (!input) {
@@ -100,6 +100,7 @@ export class TwitterService {
       await page.waitForTimeout(seed + 7000);
       await this.replyTweets(page, input);
       input.posted++;
+      input.updatedAt = new Date();
       await input.save();
       await page.close();
       await browser.close();
