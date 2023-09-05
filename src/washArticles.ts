@@ -25,7 +25,7 @@ export const washArticles = async () => {
       await new Promise((resolve) =>
         setTimeout(resolve, 1000 * 60 + Math.random() * 10000)
       );
-      return;
+      continue;
     }
     article.status = 1;
     article.updatedAt = new Date();
