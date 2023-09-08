@@ -211,7 +211,8 @@ const startJob = async () => {
     await getNews("https://www.msn.com/en-us/feed", "en", true);
     await getNews("https://www.msn.com/en-gb/feed", "en", true);
     await getNews("https://www.msn.com/zh-hk/feed", "zhTW", true);
-    await waitTimeout(1000 * 60 * 10);
+    await getNews("https://www.msn.com/en-in/feed", "zhTW", true);
+    https: await waitTimeout(1000 * 60 * 30);
   }
 };
 

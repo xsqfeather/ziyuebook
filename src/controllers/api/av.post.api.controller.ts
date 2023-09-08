@@ -23,7 +23,7 @@ import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
 import Joi from "joi";
 
 @Service()
-@controller("/api/av_posts")
+@controller("/api/av-posts")
 export class AvPostApiController extends MController {
   @Inject(() => AvPostService)
   avPostService!: AvPostService;
