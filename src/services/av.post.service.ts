@@ -113,7 +113,6 @@ export class AvPostService extends BaseService<AvPost> {
     avPost.images = input.images || [];
     avPost.introduction = input.introduction;
     avPost.designator = input.designator;
-    avPost.isFemaleFriendly = input.isFemaleFriendly;
     avPost.abyssCode = input.abyssCode;
 
     await avPost.save();
@@ -185,7 +184,6 @@ export class AvPostService extends BaseService<AvPost> {
     avPost.images = input.images || [];
     avPost.introduction = input.introduction;
     avPost.designator = input.designator;
-    avPost.isFemaleFriendly = input.isFemaleFriendly;
     avPost.abyssCode = input.abyssCode;
 
     await avPost.save();
