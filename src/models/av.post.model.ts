@@ -149,14 +149,6 @@ export class AvPost extends Base {
     default: 0,
   })
   public likeCount!: number;
-
-  @Optional()
-  @prop({
-    type: Number,
-    required: true,
-    default: false,
-  })
-  public isFemaleFriendly?: boolean;
 }
 
 export const AvPostModel = getModelForClass(AvPost);

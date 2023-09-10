@@ -15,7 +15,7 @@ import { ListQueryDto, ListQuerySchema } from "../../lib/dtos/list.query.dto";
 import Joi from "joi";
 
 @Service()
-@controller("/api/av_categories")
+@controller("/api/av-post-categories")
 export class AvCategoryApiController extends MController {
   @Inject(() => AvCategoryService)
   AvCategoryService!: AvCategoryService;
